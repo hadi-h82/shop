@@ -1,0 +1,44 @@
+.home-hero {
+  min-height: 70vh;
+  padding: var(--space-2xl) var(--space-lg);
+
+  &__container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+  }
+
+  &__card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-2xl);
+  }
+
+  &__eyebrow {
+    color: var(--color-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  &__title {
+    color: var(--color-text);
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: var(--space-md);
+  }
+
+  &__description {
+    color: var(--color-muted);
+    font-size: 1.125rem;
+    line-height: 2;
+    max-width: 42rem;
+    margin-bottom: var(--space-xl);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+}
