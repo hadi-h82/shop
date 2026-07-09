@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @import "tailwindcss";
+@import "vazirmatn/Vazirmatn-font-face.css";
 
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
@@ -15,7 +16,7 @@ html {
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
       ),
-      typography: Roboto,
+      typography: Vazirmatn,
       density: 0,
     )
   );
@@ -37,5 +38,8 @@ body {
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  font-family: Vazirmatn, sans-serif;
+  direction: rtl;
+  text-align: right;
 }
 /* You can add global styles to this file, and also import other style files */
