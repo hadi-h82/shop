@@ -1,6 +1,9 @@
 .site-header {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 
   &__container {
     max-width: var(--container-width);
@@ -8,24 +11,68 @@
     padding: var(--space-md) var(--space-lg);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--space-lg);
   }
 
   &__logo {
     color: var(--color-primary);
-    font-weight: 800;
-    font-size: 1.25rem;
+    font-weight: 900;
+    font-size: 1.35rem;
     text-decoration: none;
+    white-space: nowrap;
+  }
+
+  &__search {
+    flex: 1;
+    height: 44px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 0 var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+
+    mat-icon {
+      color: var(--color-muted);
+    }
+
+    input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font-family: inherit;
+      color: var(--color-text);
+    }
   }
 
   &__nav {
     display: flex;
+    align-items: center;
     gap: var(--space-lg);
 
     a {
       color: var(--color-text);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
+      white-space: nowrap;
     }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  &__cart {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
   }
 }

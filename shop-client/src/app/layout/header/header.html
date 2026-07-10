@@ -2,10 +2,25 @@
   <div class="site-header__container">
     <a routerLink="/" class="site-header__logo">فروشگاه</a>
 
+    <div class="site-header__search">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="جستجوی محصول..." />
+    </div>
+
     <nav class="site-header__nav">
       <a routerLink="/">خانه</a>
       <a routerLink="/products">محصولات</a>
-      <a routerLink="/cart">سبد خرید</a>
     </nav>
+
+    <div class="site-header__actions">
+      <a routerLink="/cart" class="site-header__cart">
+        <mat-icon>shopping_cart</mat-icon>
+        <span>سبد خرید</span>
+      </a>
+
+      <button mat-flat-button color="primary">
+        ورود / ثبت‌نام
+      </button>
+    </div>
   </div>
 </header>
