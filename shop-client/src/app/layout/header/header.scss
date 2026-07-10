@@ -1,9 +1,16 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: block;
+}
 .site-header {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 1000;
+
 
   &__container {
     max-width: var(--container-width);
