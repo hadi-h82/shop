@@ -1,0 +1,54 @@
+<article class="product-card">
+  <a
+    class="product-card__image-link"
+    [routerLink]="['/products', product().slug]"
+  >
+    <img
+      class="product-card__image"
+      [src]="product().imageUrl"
+      [alt]="product().title"
+      loading="lazy"
+    />
+  </a>
+
+  <div class="product-card__content">
+    <span class="product-card__category">
+      {{ product().categoryName }}
+    </span>
+
+    <h3 class="product-card__title">
+      <a [routerLink]="['/products', product().slug]">
+        {{ product().title }}
+      </a>
+    </h3>
+
+    <div class="product-card__price">
+      @if (product().discountPrice) {
+        <span class="product-card__old-price">
+          {{ product().price | number }}
+          تومان
+        </span>
+
+        <strong>
+          {{ product().discountPrice | number }}
+          تومان
+        </strong>
+      } @else {
+        <strong>
+          {{ product().price | number }}
+          تومان
+        </strong>
+      }
+    </div>
+
+    <button
+      mat-flat-button
+      class="product-card__cart-button"
+      [disabled]="!product().isAvailable"
+    >
+      <mat-icon>shopping_cart</mat-icon>
+
+      {{ product().isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}
+    </button>
+  </div>
+</article>

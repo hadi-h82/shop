@@ -27,17 +27,17 @@
       <div class="home-hero__panel">
         <div class="home-hero__stat">
           <strong>+۲۵۰</strong>
-          <span>محصول فعال</span>
+          <p>محصول فعال</p>
         </div>
   
         <div class="home-hero__stat">
           <strong>۲۴ ساعته</strong>
-          <span>پشتیبانی فروشگاه</span>
+          <p>پشتیبانی فروشگاه</p>
         </div>
   
         <div class="home-hero__stat">
           <strong>ارسال سریع</strong>
-          <span>برای سفارش‌های ثبت‌شده</span>
+          <p>برای سفارش‌های ثبت‌شده</p>
         </div>
       </div>
     </div>
@@ -46,8 +46,10 @@
   <section class="home-categories">
     <div class="home-categories__container">
       <div class="section-heading">
-        <h2>دسته‌بندی‌های محبوب</h2>
-        <p>سریع‌تر به محصول موردنظرت برس</p>
+        <div>
+          <h2>دسته‌بندی‌های محبوب</h2>
+          <p>سریع‌تر به محصول موردنظرت برس</p>
+        </div>
       </div>
   
       <div class="home-categories__grid">
@@ -73,4 +75,28 @@
       </div>
     </div>
   </section>
+
+  <section class="featured-products">
+  <div class="featured-products__container">
+
+    <div class="section-heading">
+      <div>
+        <h2>محصولات ویژه</h2>
+        <p>منتخب محصولات محبوب فروشگاه</p>
+      </div>
+
+      <a routerLink="/products" class="section-heading__link">
+        مشاهده همه محصولات
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+    </div>
+
+    <div class="featured-products__grid">
+      @for (product of featuredProducts; track product.id) {
+        <app-product-card [product]="product" />
+      }
+    </div>
+
+  </div>
+</section>
 </div>
