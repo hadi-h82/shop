@@ -1,42 +1,76 @@
-<section class="home-hero">
-  <div class="home-hero__container">
-    <div class="home-hero__content">
-      <p class="home-hero__eyebrow">فروشگاه آنلاین</p>
 
-      <h1 class="home-hero__title">
-        هر چیزی که نیاز داری، ساده‌تر و سریع‌تر بخر
-      </h1>
+<div class="home-page">
 
-      <p class="home-hero__description">
-        تجربه خرید آنلاین با دسته‌بندی‌های متنوع، قیمت مناسب، ارسال سریع و پشتیبانی مطمئن.
-      </p>
-
-      <div class="home-hero__actions">
-        <button mat-flat-button color="primary">
-          مشاهده محصولات
-        </button>
-
-        <button mat-stroked-button>
-          دسته‌بندی‌ها
-        </button>
+  <section class="home-hero">
+    <div class="home-hero__container">
+      <div class="home-hero__content">
+  
+        <h1 class="home-hero__title">
+          هر چیزی که نیاز داری، ساده‌تر و سریع‌تر بخر
+        </h1>
+  
+        <p class="home-hero__description">
+          تجربه خرید آنلاین با دسته‌بندی‌های متنوع، قیمت مناسب، ارسال سریع و پشتیبانی مطمئن.
+        </p>
+  
+        <div class="home-hero__actions">
+          <button mat-flat-button color="primary">
+            مشاهده محصولات
+          </button>
+  
+          <button mat-stroked-button>
+            دسته‌بندی‌ها
+          </button>
+        </div>
+      </div>
+  
+      <div class="home-hero__panel">
+        <div class="home-hero__stat">
+          <strong>+۲۵۰</strong>
+          <span>محصول فعال</span>
+        </div>
+  
+        <div class="home-hero__stat">
+          <strong>۲۴ ساعته</strong>
+          <span>پشتیبانی فروشگاه</span>
+        </div>
+  
+        <div class="home-hero__stat">
+          <strong>ارسال سریع</strong>
+          <span>برای سفارش‌های ثبت‌شده</span>
+        </div>
       </div>
     </div>
-
-    <div class="home-hero__panel">
-      <div class="home-hero__stat">
-        <strong>+۲۵۰</strong>
-        <span>محصول فعال</span>
+  </section>
+  
+  <section class="home-categories">
+    <div class="home-categories__container">
+      <div class="section-heading">
+        <h2>دسته‌بندی‌های محبوب</h2>
+        <p>سریع‌تر به محصول موردنظرت برس</p>
       </div>
-
-      <div class="home-hero__stat">
-        <strong>۲۴ ساعته</strong>
-        <span>پشتیبانی فروشگاه</span>
-      </div>
-
-      <div class="home-hero__stat">
-        <strong>ارسال سریع</strong>
-        <span>برای سفارش‌های ثبت‌شده</span>
+  
+      <div class="home-categories__grid">
+        <a class="category-card" routerLink="/products">
+          <mat-icon>phone_iphone</mat-icon>
+          <span>موبایل</span>
+        </a>
+  
+        <a class="category-card" routerLink="/products">
+          <mat-icon>laptop_mac</mat-icon>
+          <span>لپ‌تاپ</span>
+        </a>
+  
+        <a class="category-card" routerLink="/products">
+          <mat-icon>headphones</mat-icon>
+          <span>لوازم جانبی</span>
+        </a>
+  
+        <a class="category-card" routerLink="/products">
+          <mat-icon>watch</mat-icon>
+          <span>ساعت هوشمند</span>
+        </a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
