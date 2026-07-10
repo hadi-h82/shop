@@ -1,40 +1,39 @@
-
 <div class="home-page">
 
   <section class="home-hero">
     <div class="home-hero__container">
       <div class="home-hero__content">
-  
+
         <h1 class="home-hero__title">
           هر چیزی که نیاز داری، ساده‌تر و سریع‌تر بخر
         </h1>
-  
+
         <p class="home-hero__description">
           تجربه خرید آنلاین با دسته‌بندی‌های متنوع، قیمت مناسب، ارسال سریع و پشتیبانی مطمئن.
         </p>
-  
+
         <div class="home-hero__actions">
-          <button mat-flat-button color="primary">
+          <a mat-flat-button routerLink="/products">
             مشاهده محصولات
-          </button>
-  
-          <button mat-stroked-button>
+          </a>
+
+          <a mat-stroked-button href="#popular-categories">
             دسته‌بندی‌ها
-          </button>
+          </a>
         </div>
       </div>
-  
+
       <div class="home-hero__panel">
         <div class="home-hero__stat">
           <strong>+۲۵۰</strong>
           <p>محصول فعال</p>
         </div>
-  
+
         <div class="home-hero__stat">
           <strong>۲۴ ساعته</strong>
           <p>پشتیبانی فروشگاه</p>
         </div>
-  
+
         <div class="home-hero__stat">
           <strong>ارسال سریع</strong>
           <p>برای سفارش‌های ثبت‌شده</p>
@@ -42,8 +41,8 @@
       </div>
     </div>
   </section>
-  
-  <section class="home-categories">
+
+  <section class="home-categories" id="popular-categories">
     <div class="home-categories__container">
       <div class="section-heading">
         <div>
@@ -51,23 +50,23 @@
           <p>سریع‌تر به محصول موردنظرت برس</p>
         </div>
       </div>
-  
+
       <div class="home-categories__grid">
         <a class="category-card" routerLink="/products">
           <mat-icon>phone_iphone</mat-icon>
           <span>موبایل</span>
         </a>
-  
+
         <a class="category-card" routerLink="/products">
           <mat-icon>laptop_mac</mat-icon>
           <span>لپ‌تاپ</span>
         </a>
-  
+
         <a class="category-card" routerLink="/products">
           <mat-icon>headphones</mat-icon>
           <span>لوازم جانبی</span>
         </a>
-  
+
         <a class="category-card" routerLink="/products">
           <mat-icon>watch</mat-icon>
           <span>ساعت هوشمند</span>
@@ -77,26 +76,26 @@
   </section>
 
   <section class="featured-products">
-  <div class="featured-products__container">
+    <div class="featured-products__container">
 
-    <div class="section-heading">
-      <div>
-        <h2>محصولات ویژه</h2>
-        <p>منتخب محصولات محبوب فروشگاه</p>
+      <div class="section-heading">
+        <div>
+          <h2>محصولات ویژه</h2>
+          <p>منتخب محصولات محبوب فروشگاه</p>
+        </div>
+
+        <a routerLink="/products" class="section-heading__link">
+          مشاهده همه محصولات
+          <mat-icon>arrow_back</mat-icon>
+        </a>
       </div>
 
-      <a routerLink="/products" class="section-heading__link">
-        مشاهده همه محصولات
-        <mat-icon>arrow_back</mat-icon>
-      </a>
-    </div>
-
-    <div class="featured-products__grid">
-      @for (product of featuredProducts; track product.id) {
+      <div class="featured-products__grid">
+        @for (product of featuredProducts; track product.id) {
         <app-product-card [product]="product" />
-      }
-    </div>
+        }
+      </div>
 
-  </div>
-</section>
+    </div>
+  </section>
 </div>

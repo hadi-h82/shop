@@ -96,10 +96,6 @@
       flex-basis: 100%;
     }
 
-    &__nav {
-      display: none;
-    }
-
     &__actions {
       margin-inline-start: auto;
     }
@@ -111,6 +107,9 @@
     &__container {
       gap: var(--space-md);
     }
+      &__nav {
+    display: none;
+  }
 
     &__logo {
       font-size: 1.15rem;
