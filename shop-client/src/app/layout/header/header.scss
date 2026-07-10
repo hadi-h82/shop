@@ -76,3 +76,45 @@
     white-space: nowrap;
   }
 }
+
+
+@media (max-width: 900px) {
+  .site-header {
+    &__container {
+      flex-wrap: wrap;
+    }
+
+    &__search {
+      order: 4;
+      flex-basis: 100%;
+    }
+
+    &__nav {
+      display: none;
+    }
+
+    &__actions {
+      margin-inline-start: auto;
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .site-header {
+    &__container {
+      gap: var(--space-md);
+    }
+
+    &__logo {
+      font-size: 1.15rem;
+    }
+
+    &__cart span {
+      display: none;
+    }
+
+    &__actions button {
+      padding-inline: var(--space-md);
+    }
+  }
+}
