@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { ProductCard } from '../../shared/ui/product-card/product-card';
 import { Seo } from '../../core/services/seo';
+const SITE_URL = 'https://example.com';
 
 @Component({
   selector: 'app-products',
@@ -14,10 +15,13 @@ export class Products {
 
   readonly products = MOCK_PRODUCTS;
 
-  constructor() {
-    this.seo.update(
-      'محصولات | فروشگاه آنلاین',
-      'مشاهده و خرید انواع محصولات با قیمت مناسب، ارسال سریع و پشتیبانی مطمئن.'
-    );
-  }
+constructor() {
+  this.seo.update({
+    title: 'محصولات | فروشگاه آنلاین',
+    description:
+      'مشاهده و خرید انواع محصولات با قیمت مناسب، ارسال سریع و پشتیبانی مطمئن.',
+    canonicalUrl: `${SITE_URL}/products`,
+    type: 'website'
+  });
+}
 }

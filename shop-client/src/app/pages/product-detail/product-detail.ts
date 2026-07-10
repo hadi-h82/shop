@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { Seo } from '../../core/services/seo';
+const SITE_URL = 'https://example.com';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,19 +29,25 @@ export class ProductDetail {
     MOCK_PRODUCTS.find(product => product.slug === this.slug)
   );
 
-  constructor() {
-    const product = this.product();
+constructor() {
+  const product = this.product();
 
-    if (product) {
-      this.seo.update(
-        `${product.title} | فروشگاه آنلاین`,
-        `خرید ${product.title} از دسته‌بندی ${product.categoryName} با قیمت مناسب و ارسال سریع.`
-      );
-    } else {
-      this.seo.update(
-        'محصول پیدا نشد | فروشگاه آنلاین',
-        'محصول موردنظر شما در فروشگاه پیدا نشد.'
-      );
-    }
+  if (product) {
+    this.seo.update({
+      title: `${product.title} | فروشگاه آنلاین`,
+      description:
+        `خرید ${product.title} از دسته‌بندی ${product.categoryName} با قیمت مناسب و ارسال سریع.`,
+      canonicalUrl: `${SITE_URL}/products/${product.slug}`,
+      imageUrl: `${SITE_URL}${product.imageUrl}`,
+      type: 'product'
+    });
+  } else {
+    this.seo.update({
+      title: 'محصول پیدا نشد | فروشگاه آنلاین',
+      description: 'محصول موردنظر شما در فروشگاه پیدا نشد.',
+      canonicalUrl: `${SITE_URL}/products/${this.slug}`,
+      type: 'website'
+    });
   }
+}
 }
