@@ -1,1 +1,35 @@
-<p>product-detail works!</p>
+<section class="product-detail">
+  <div class="product-detail__container">
+    @if (product(); as item) {
+      <div class="product-detail__content">
+        <nav class="product-detail__breadcrumb">
+          <a routerLink="/products">محصولات</a>
+          <mat-icon>chevron_left</mat-icon>
+          <span>{{ item.title }}</span>
+        </nav>
+
+        <span class="product-detail__category">{{ item.categoryName }}</span>
+
+        <h1>{{ item.title }}</h1>
+
+        <div class="product-detail__price">
+          @if (item.discountPrice) {
+            <span>{{ item.price | number }} تومان</span>
+            <strong>{{ item.discountPrice | number }} تومان</strong>
+          } @else {
+            <strong>{{ item.price | number }} تومان</strong>
+          }
+        </div>
+
+        <button mat-flat-button color="primary" [disabled]="!item.isAvailable">
+          <mat-icon>shopping_cart</mat-icon>
+          {{ item.isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}
+        </button>
+      </div>
+
+      <div class="product-detail__image">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+    }
+  </div>
+</section>

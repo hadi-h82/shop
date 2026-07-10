@@ -1,0 +1,112 @@
+.product-detail {
+  padding: var(--space-2xl) var(--space-lg);
+
+  &__container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 0.9fr;
+    gap: var(--space-xl);
+    direction: rtl;
+  }
+
+  &__content,
+  &__image {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &__content {
+    padding: var(--space-xl);
+
+    h1 {
+      margin: var(--space-md) 0 var(--space-lg);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1.6;
+    }
+  }
+
+  &__breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.5rem 0.75rem;
+    margin-bottom: var(--space-lg);
+    border-radius: 999px;
+    background: var(--color-background);
+    color: var(--color-muted);
+    font-size: 0.875rem;
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+  }
+
+  &__category {
+    display: inline-block;
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  &__price {
+    margin-bottom: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+
+    span {
+      color: var(--color-muted);
+      text-decoration: line-through;
+    }
+
+    strong {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__image {
+    padding: var(--space-xl);
+    display: grid;
+    place-items: center;
+    min-height: 420px;
+
+    img {
+      max-width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .product-detail {
+    padding: var(--space-lg) var(--space-md);
+
+    &__container {
+      grid-template-columns: 1fr;
+    }
+
+    &__content {
+      padding: var(--space-xl);
+
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+
+    &__image {
+      min-height: auto;
+    }
+  }
+}
