@@ -1,17 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { ProductCard } from '../../shared/ui/product-card/product-card';
+import { Seo } from '../../core/services/seo';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, MatButtonModule, MatIconModule,ProductCard],
+  imports: [RouterLink, MatButtonModule, MatIconModule, ProductCard],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home {
 
-   readonly featuredProducts = MOCK_PRODUCTS;
+  private readonly seo = inject(Seo);
+
+  constructor() {
+    this.seo.update(
+      'فروشگاه آنلاین | خرید آسان و سریع',
+      'خرید اینترنتی محصولات متنوع با ارسال سریع و تجربه کاربری ساده.'
+    );
+  }
+
+  readonly featuredProducts = MOCK_PRODUCTS;
 }
