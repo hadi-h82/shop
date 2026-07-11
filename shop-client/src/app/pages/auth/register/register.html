@@ -1,1 +1,237 @@
-<p>register works!</p>
+<section class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-card__header">
+      <span class="auth-card__eyebrow">
+        ایجاد حساب کاربری
+      </span>
+
+      <h1>ثبت‌نام در فروشگاه</h1>
+
+      <p>
+        برای خرید سریع‌تر و مشاهده سفارش‌ها، حساب کاربری خود را ایجاد کنید.
+      </p>
+    </div>
+
+    <form
+      class="auth-form"
+      [formGroup]="registerForm"
+      (ngSubmit)="submit()"
+    >
+
+      <mat-form-field appearance="outline">
+        <mat-label>نام و نام خانوادگی</mat-label>
+
+        <input
+          matInput
+          type="text"
+          formControlName="fullName"
+          autocomplete="name"
+        />
+
+        <mat-icon matSuffix>person</mat-icon>
+
+        @if (
+          registerForm.controls.fullName.touched &&
+          registerForm.controls.fullName.hasError('required')
+        ) {
+          <mat-error>
+            نام و نام خانوادگی را وارد کنید.
+          </mat-error>
+        }
+
+        @if (
+          registerForm.controls.fullName.touched &&
+          registerForm.controls.fullName.hasError('minlength')
+        ) {
+          <mat-error>
+            نام باید حداقل ۳ کاراکتر باشد.
+          </mat-error>
+        }
+      </mat-form-field>
+
+
+      <mat-form-field appearance="outline">
+        <mat-label>ایمیل</mat-label>
+
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+        />
+
+        <mat-icon matSuffix>mail</mat-icon>
+
+        @if (
+          registerForm.controls.email.touched &&
+          registerForm.controls.email.hasError('required')
+        ) {
+          <mat-error>
+            ایمیل را وارد کنید.
+          </mat-error>
+        }
+
+        @if (
+          registerForm.controls.email.touched &&
+          registerForm.controls.email.hasError('email')
+        ) {
+          <mat-error>
+            فرمت ایمیل معتبر نیست.
+          </mat-error>
+        }
+      </mat-form-field>
+
+
+      <mat-form-field appearance="outline">
+        <mat-label>شماره موبایل</mat-label>
+
+        <input
+          matInput
+          type="tel"
+          inputmode="numeric"
+          formControlName="mobile"
+          autocomplete="tel"
+          placeholder="09123456789"
+        />
+
+        <mat-icon matSuffix>phone</mat-icon>
+
+        @if (
+          registerForm.controls.mobile.touched &&
+          registerForm.controls.mobile.hasError('required')
+        ) {
+          <mat-error>
+            شماره موبایل را وارد کنید.
+          </mat-error>
+        }
+
+        @if (
+          registerForm.controls.mobile.touched &&
+          registerForm.controls.mobile.hasError('pattern')
+        ) {
+          <mat-error>
+            شماره موبایل معتبر نیست.
+          </mat-error>
+        }
+      </mat-form-field>
+
+
+      <mat-form-field appearance="outline">
+        <mat-label>رمز عبور</mat-label>
+
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="new-password"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          [attr.aria-label]="
+            hidePassword
+              ? 'نمایش رمز عبور'
+              : 'مخفی کردن رمز عبور'
+          "
+          (click)="hidePassword = !hidePassword"
+        >
+          <mat-icon>
+            {{ hidePassword ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+        </button>
+
+        @if (
+          registerForm.controls.password.touched &&
+          registerForm.controls.password.hasError('required')
+        ) {
+          <mat-error>
+            رمز عبور را وارد کنید.
+          </mat-error>
+        }
+
+        @if (
+          registerForm.controls.password.touched &&
+          registerForm.controls.password.hasError('minlength')
+        ) {
+          <mat-error>
+            رمز عبور باید حداقل ۶ کاراکتر باشد.
+          </mat-error>
+        }
+      </mat-form-field>
+
+
+      <mat-form-field appearance="outline">
+        <mat-label>تکرار رمز عبور</mat-label>
+
+        <input
+          matInput
+          [type]="hideConfirmPassword ? 'password' : 'text'"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          [attr.aria-label]="
+            hideConfirmPassword
+              ? 'نمایش تکرار رمز عبور'
+              : 'مخفی کردن تکرار رمز عبور'
+          "
+          (click)="hideConfirmPassword = !hideConfirmPassword"
+        >
+          <mat-icon>
+            {{
+              hideConfirmPassword
+                ? 'visibility_off'
+                : 'visibility'
+            }}
+          </mat-icon>
+        </button>
+
+        @if (
+          registerForm.controls.confirmPassword.touched &&
+          registerForm.controls.confirmPassword.hasError('required')
+        ) {
+          <mat-error>
+            تکرار رمز عبور را وارد کنید.
+          </mat-error>
+        }
+
+        @if (
+          registerForm.controls.confirmPassword.touched &&
+          registerForm.hasError('passwordMismatch')
+        ) {
+          <mat-error>
+            رمز عبور و تکرار آن یکسان نیستند.
+          </mat-error>
+        }
+      </mat-form-field>
+
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="auth-form__submit"
+      >
+        ایجاد حساب کاربری
+      </button>
+
+    </form>
+
+
+    <div class="auth-card__footer">
+      <span>قبلاً ثبت‌نام کرده‌اید؟</span>
+
+      <a routerLink="/login">
+        وارد شوید
+      </a>
+    </div>
+
+  </div>
+</section>
