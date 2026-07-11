@@ -1,101 +1,83 @@
-<div class="home-page">
+<section class="home-slider">
 
-  <section class="home-hero">
-    <div class="home-hero__container">
-      <div class="home-hero__content">
+  <div class="home-slider__container">
 
-        <h1 class="home-hero__title">
-          هر چیزی که نیاز داری، ساده‌تر و سریع‌تر بخر
-        </h1>
+    @for (slide of slides; track slide.image; let index = $index) {
 
-        <p class="home-hero__description">
-          تجربه خرید آنلاین با دسته‌بندی‌های متنوع، قیمت مناسب، ارسال سریع و پشتیبانی مطمئن.
-        </p>
+      @if (activeSlide() === index) {
 
-        <div class="home-hero__actions">
-          <a mat-flat-button routerLink="/products">
-            مشاهده محصولات
-          </a>
+        <article class="home-slide">
 
-          <a mat-stroked-button href="#popular-categories">
-            دسته‌بندی‌ها
-          </a>
-        </div>
-      </div>
+          <img
+            class="home-slide__image"
+            [src]="slide.image"
+            [alt]="slide.title"
+            width="1600"
+            height="700"
+          />
 
-      <div class="home-hero__panel">
-        <div class="home-hero__stat">
-          <strong>+۲۵۰</strong>
-          <p>محصول فعال</p>
-        </div>
+          <div class="home-slide__overlay"></div>
 
-        <div class="home-hero__stat">
-          <strong>۲۴ ساعته</strong>
-          <p>پشتیبانی فروشگاه</p>
-        </div>
+          <div class="home-slide__content">
 
-        <div class="home-hero__stat">
-          <strong>ارسال سریع</strong>
-          <p>برای سفارش‌های ثبت‌شده</p>
-        </div>
-      </div>
-    </div>
-  </section>
+            <span class="home-slide__eyebrow">
+              فروشگاه تخصصی لوازم قنادی
+            </span>
 
-  <section class="home-categories" id="popular-categories">
-    <div class="home-categories__container">
-      <div class="section-heading">
-        <div>
-          <h2>دسته‌بندی‌های محبوب</h2>
-          <p>سریع‌تر به محصول موردنظرت برس</p>
-        </div>
-      </div>
+            <h1>{{ slide.title }}</h1>
 
-      <div class="home-categories__grid">
-        <a class="category-card" routerLink="/products">
-          <mat-icon>phone_iphone</mat-icon>
-          <span>موبایل</span>
-        </a>
+            <p>{{ slide.description }}</p>
 
-        <a class="category-card" routerLink="/products">
-          <mat-icon>laptop_mac</mat-icon>
-          <span>لپ‌تاپ</span>
-        </a>
+            <a
+              mat-flat-button
+              routerLink="/products"
+              class="home-slide__button"
+            >
+              مشاهده محصولات
+            </a>
 
-        <a class="category-card" routerLink="/products">
-          <mat-icon>headphones</mat-icon>
-          <span>لوازم جانبی</span>
-        </a>
+          </div>
 
-        <a class="category-card" routerLink="/products">
-          <mat-icon>watch</mat-icon>
-          <span>ساعت هوشمند</span>
-        </a>
-      </div>
-    </div>
-  </section>
+        </article>
 
-  <section class="featured-products">
-    <div class="featured-products__container">
+      }
 
-      <div class="section-heading">
-        <div>
-          <h2>محصولات ویژه</h2>
-          <p>منتخب محصولات محبوب فروشگاه</p>
-        </div>
+    }
 
-        <a routerLink="/products" class="section-heading__link">
-          مشاهده همه محصولات
-          <mat-icon>arrow_back</mat-icon>
-        </a>
-      </div>
+    <button
+      type="button"
+      class="home-slider__arrow home-slider__arrow--previous"
+      aria-label="اسلاید قبلی"
+      (click)="previousSlide()"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
 
-      <div class="featured-products__grid">
-        @for (product of featuredProducts; track product.id) {
-        <app-product-card [product]="product" />
-        }
-      </div>
+    <button
+      type="button"
+      class="home-slider__arrow home-slider__arrow--next"
+      aria-label="اسلاید بعدی"
+      (click)="nextSlide()"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <div class="home-slider__dots">
+
+      @for (slide of slides; track slide.image; let index = $index) {
+
+        <button
+          type="button"
+          class="home-slider__dot"
+          [class.home-slider__dot--active]="activeSlide() === index"
+          [attr.aria-label]="'رفتن به اسلاید ' + (index + 1)"
+          (click)="goToSlide(index)"
+        ></button>
+
+      }
 
     </div>
-  </section>
-</div>
+
+  </div>
+
+</section>
