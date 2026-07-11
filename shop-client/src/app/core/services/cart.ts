@@ -1,4 +1,12 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  computed,
+  effect,
+  inject,
+  Injectable,
+  PLATFORM_ID,
+  signal
+} from '@angular/core';
 
 import { CartItem } from '../models/cart-item.model';
 import { Product } from '../models/product.model';
@@ -6,8 +14,13 @@ import { Product } from '../models/product.model';
 @Injectable({
   providedIn: 'root'
 })
-export class CartService  {
-  private readonly itemsState = signal<CartItem[]>([]);
+export class CartService {
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly storageKey = 'shop-cart';
+
+  private readonly itemsState = signal<CartItem[]>(
+    this.loadInitialCart()
+  );
 
   readonly items = this.itemsState.asReadonly();
 
@@ -27,9 +40,21 @@ export class CartService  {
     }, 0)
   );
 
+  constructor() {
+    effect(() => {
+      if (!isPlatformBrowser(this.platformId)) {
+        return;
+      }
+
+      localStorage.setItem(
+        this.storageKey,
+        JSON.stringify(this.itemsState())
+      );
+    });
+  }
+
   add(product: Product): void {
-    const currentItems = this.itemsState();
-    const existingItem = currentItems.find(
+    const existingItem = this.itemsState().find(
       item => item.product.id === product.id
     );
 
@@ -84,5 +109,25 @@ export class CartService  {
 
   clear(): void {
     this.itemsState.set([]);
+  }
+
+  private loadInitialCart(): CartItem[] {
+    if (!isPlatformBrowser(this.platformId)) {
+      return [];
+    }
+
+    try {
+      const storedCart = localStorage.getItem(this.storageKey);
+
+      if (!storedCart) {
+        return [];
+      }
+
+      const parsedCart = JSON.parse(storedCart);
+
+      return Array.isArray(parsedCart) ? parsedCart : [];
+    } catch {
+      return [];
+    }
   }
 }
