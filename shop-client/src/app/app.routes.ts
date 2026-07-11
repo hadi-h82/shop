@@ -15,7 +15,29 @@ export const routes: Routes = [
       { path: 'products', component: Products },
       { path: 'products/:id', component: ProductDetail },
       { path: 'cart', component: Cart },
-      { path: 'checkout', component: Checkout }
+      { path: 'checkout', component: Checkout },
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./pages/auth/login/login').then(m => m.Login)
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./pages/auth/register/register').then(m => m.Register)
+      },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./pages/auth/forgot-password/forgot-password')
+            .then(m => m.ForgotPassword)
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('./pages/auth/reset-password/reset-password')
+            .then(m => m.ResetPassword)
+      }
     ]
   },
   { path: '**', redirectTo: '' }
