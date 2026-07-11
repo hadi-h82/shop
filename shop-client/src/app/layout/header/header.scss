@@ -82,6 +82,35 @@
     font-weight: 600;
     white-space: nowrap;
   }
+
+  &__cart-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+&__cart-badge {
+  position: absolute;
+  top: -9px;
+  inset-inline-start: -10px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: white;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
 }
 
 
@@ -105,22 +134,61 @@
 @media (max-width: 520px) {
   .site-header {
     &__container {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas:
+        "actions spacer logo"
+        "search search search";
+
+      align-items: center;
       gap: var(--space-md);
     }
-      &__nav {
-    display: none;
-  }
 
     &__logo {
+      grid-area: logo;
       font-size: 1.15rem;
+      white-space: nowrap;
     }
 
-    &__cart span {
+    &__actions {
+      grid-area: actions;
+
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+
+      margin: 0;
+    }
+
+    &__cart {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-width: 40px;
+      min-height: 40px;
+    }
+
+    &__cart-text {
+      display: none;
+    }
+
+    &__search {
+      grid-area: search;
+
+      width: 100%;
+      min-width: 0;
+      order: initial;
+    }
+
+    &__nav {
       display: none;
     }
 
     &__actions button {
       padding-inline: var(--space-md);
+      white-space: nowrap;
     }
   }
 }
+

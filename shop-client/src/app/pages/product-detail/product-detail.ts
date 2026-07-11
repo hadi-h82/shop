@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
+import { CartService } from '../../core/services/cart'; 
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { Seo } from '../../core/services/seo';
 const SITE_URL = 'https://example.com';
@@ -20,6 +20,8 @@ const SITE_URL = 'https://example.com';
   styleUrl: './product-detail.scss'
 })
 export class ProductDetail {
+
+  private readonly cart = inject(CartService);
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(Seo);
 
@@ -28,6 +30,17 @@ export class ProductDetail {
   readonly product = computed(() =>
     MOCK_PRODUCTS.find(product => product.slug === this.slug)
   );
+
+
+  addToCart(): void {
+  const product = this.product();
+
+  if (!product || !product.isAvailable) {
+    return;
+  }
+
+  this.cart.add(product);
+}
 
 constructor() {
   const product = this.product();

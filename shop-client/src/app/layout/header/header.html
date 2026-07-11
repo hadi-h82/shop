@@ -13,9 +13,18 @@
     </nav>
 
     <div class="site-header__actions">
-      <a routerLink="/cart" class="site-header__cart">
-        <mat-icon>shopping_cart</mat-icon>
-        <span>سبد خرید</span>
+      <a routerLink="/cart" class="site-header__cart" aria-label="سبد خرید">
+        <span class="site-header__cart-icon">
+          <mat-icon>shopping_cart</mat-icon>
+
+          @if (cart.totalItems() > 0) {
+          <span class="site-header__cart-badge">
+            {{ cart.totalItems() }}
+          </span>
+          }
+        </span>
+
+        <span class="site-header__cart-text">سبد خرید</span>
       </a>
 
       <button mat-flat-button color="primary">

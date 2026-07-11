@@ -1,14 +1,6 @@
 <article class="product-card">
-  <a
-    class="product-card__image-link"
-    [routerLink]="['/products', product().slug]"
-  >
-    <img
-      class="product-card__image"
-      [src]="product().imageUrl"
-      [alt]="product().title"
-      loading="lazy"
-    />
+  <a class="product-card__image-link" [routerLink]="['/products', product().slug]">
+    <img class="product-card__image" [src]="product().imageUrl" [alt]="product().title" loading="lazy" />
   </a>
 
   <div class="product-card__content">
@@ -24,28 +16,24 @@
 
     <div class="product-card__price">
       @if (product().discountPrice) {
-        <span class="product-card__old-price">
-          {{ product().price | number }}
-          تومان
-        </span>
+      <span class="product-card__old-price">
+        {{ product().price | number }}
+        تومان
+      </span>
 
-        <strong>
-          {{ product().discountPrice | number }}
-          تومان
-        </strong>
+      <strong>
+        {{ product().discountPrice | number }}
+        تومان
+      </strong>
       } @else {
-        <strong>
-          {{ product().price | number }}
-          تومان
-        </strong>
+      <strong>
+        {{ product().price | number }}
+        تومان
+      </strong>
       }
     </div>
 
-    <button
-      mat-flat-button
-      class="product-card__cart-button"
-      [disabled]="!product().isAvailable"
-    >
+    <button mat-flat-button class="product-card__cart-button" [disabled]="!product().isAvailable" (click)="addToCart()">
       <mat-icon>shopping_cart</mat-icon>
 
       {{ product().isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}

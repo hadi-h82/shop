@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component,inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../core/services/cart';
 
 @Component({
   selector: 'app-header',
@@ -9,4 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header {}
+export class Header {
+
+   readonly cart = inject(CartService);
+}
