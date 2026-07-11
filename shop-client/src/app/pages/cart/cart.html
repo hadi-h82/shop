@@ -1,124 +1,106 @@
 <section class="cart-page">
-  <div class="cart-page__container">
-    <div class="cart-page__header">
-      <div>
-        <h1>سبد خرید</h1>
-        <p>{{ cart.totalItems() }} کالا در سبد شما</p>
-      </div>
+    <div class="cart-page__container">
+        <div class="cart-page__header">
+            <div>
+                <h1>سبد خرید</h1>
+                <p>{{ cart.totalItems() }} کالا در سبد شما</p>
+            </div>
 
-      @if (cart.items().length > 0) {
-        <button mat-button type="button" (click)="cart.clear()">
-          پاک کردن سبد
-        </button>
-      }
-    </div>
-
-    @if (cart.items().length > 0) {
-      <div class="cart-page__layout">
-        <div class="cart-page__items">
-          @for (item of cart.items(); track item.product.id) {
-            <article class="cart-item">
-              <a
-                class="cart-item__image"
-                [routerLink]="['/products', item.product.slug]"
-              >
-                <img
-                  [src]="item.product.imageUrl"
-                  [alt]="item.product.title"
-                />
-              </a>
-
-              <div class="cart-item__content">
-                <span class="cart-item__category">
-                  {{ item.product.categoryName }}
-                </span>
-
-                <h2>
-                  <a [routerLink]="['/products', item.product.slug]">
-                    {{ item.product.title }}
-                  </a>
-                </h2>
-
-                <strong class="cart-item__price">
-                  {{
-                    (item.product.discountPrice ?? item.product.price) | number
-                  }}
-                  تومان
-                </strong>
-              </div>
-
-              <div class="cart-item__quantity">
-                <button
-                  mat-icon-button
-                  type="button"
-                  aria-label="افزایش تعداد"
-                  (click)="cart.increase(item.product.id)"
-                >
-                  <mat-icon>add</mat-icon>
-                </button>
-
-                <span>{{ item.quantity }}</span>
-
-                <button
-                  mat-icon-button
-                  type="button"
-                  aria-label="کاهش تعداد"
-                  (click)="cart.decrease(item.product.id)"
-                >
-                  <mat-icon>remove</mat-icon>
-                </button>
-              </div>
-
-              <div class="cart-item__total">
-                <strong>
-                  {{
-                    (item.product.discountPrice ?? item.product.price) *
-                      item.quantity | number
-                  }}
-                  تومان
-                </strong>
-
-                <button
-                  mat-icon-button
-                  type="button"
-                  aria-label="حذف محصول"
-                  (click)="cart.remove(item.product.id)"
-                >
-                  <mat-icon>delete_outline</mat-icon>
-                </button>
-              </div>
-            </article>
-          }
+            @if (cart.items().length > 0) {
+            <button mat-button type="button" (click)="cart.clear()">
+                پاک کردن سبد
+            </button>
+            }
         </div>
 
-        <aside class="cart-summary">
-          <h2>خلاصه سفارش</h2>
+        @if (cart.items().length > 0) {
+        <div class="cart-page__layout">
+            <div class="cart-page__items">
+                @for (item of cart.items(); track item.product.id) {
+                <article class="cart-item">
+                    <a class="cart-item__image" [routerLink]="['/products', item.product.slug]">
+                        <img [src]="item.product.imageUrl" [alt]="item.product.title" />
+                    </a>
 
-          <div class="cart-summary__row">
-            <span>تعداد کالا</span>
-            <strong>{{ cart.totalItems() }}</strong>
-          </div>
+                    <div class="cart-item__content">
+                        <span class="cart-item__category">
+                            {{ item.product.categoryName }}
+                        </span>
 
-          <div class="cart-summary__row cart-summary__row--total">
-            <span>مبلغ کل</span>
-            <strong>{{ cart.totalPrice() | number }} تومان</strong>
-          </div>
+                        <h2>
+                            <a [routerLink]="['/products', item.product.slug]">
+                                {{ item.product.title }}
+                            </a>
+                        </h2>
 
-          <button mat-flat-button color="primary" class="cart-summary__checkout">
-            ادامه فرایند خرید
-          </button>
-        </aside>
-      </div>
-    } @else {
-      <div class="cart-empty">
-        <mat-icon>shopping_cart</mat-icon>
-        <h2>سبد خرید شما خالی است</h2>
-        <p>محصولات موردنظرتان را به سبد خرید اضافه کنید.</p>
+                        <strong class="cart-item__price">
+                            {{
+                            (item.product.discountPrice ?? item.product.price) | number
+                            }}
+                            تومان
+                        </strong>
+                    </div>
 
-        <a mat-flat-button color="primary" routerLink="/products">
-          مشاهده محصولات
-        </a>
-      </div>
-    }
-  </div>
+                    <div class="cart-item__quantity">
+                        <button mat-icon-button type="button" aria-label="افزایش تعداد"
+                            (click)="cart.increase(item.product.id)">
+                            <mat-icon>add</mat-icon>
+                        </button>
+
+                        <span>{{ item.quantity }}</span>
+
+                        <button mat-icon-button type="button" aria-label="کاهش تعداد"
+                            (click)="cart.decrease(item.product.id)">
+                            <mat-icon>remove</mat-icon>
+                        </button>
+                    </div>
+
+                    <div class="cart-item__total">
+                        <strong>
+                            {{
+                            (item.product.discountPrice ?? item.product.price) *
+                            item.quantity | number
+                            }}
+                            تومان
+                        </strong>
+
+                        <button mat-icon-button type="button" aria-label="حذف محصول"
+                            (click)="cart.remove(item.product.id)">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                    </div>
+                </article>
+                }
+            </div>
+
+            <aside class="cart-summary">
+                <h2>خلاصه سفارش</h2>
+
+                <div class="cart-summary__row">
+                    <span>تعداد کالا</span>
+                    <strong>{{ cart.totalItems() }}</strong>
+                </div>
+
+                <div class="cart-summary__row cart-summary__row--total">
+                    <span>مبلغ کل</span>
+                    <strong>{{ cart.totalPrice() | number }} تومان</strong>
+                </div>
+
+                <a mat-flat-button color="primary" class="cart-summary__checkout" routerLink="/checkout">
+                    ادامه فرایند خرید
+                </a>
+            </aside>
+        </div>
+        } @else {
+        <div class="cart-empty">
+            <mat-icon>shopping_cart</mat-icon>
+            <h2>سبد خرید شما خالی است</h2>
+            <p>محصولات موردنظرتان را به سبد خرید اضافه کنید.</p>
+
+            <a mat-flat-button color="primary" routerLink="/products">
+                مشاهده محصولات
+            </a>
+        </div>
+        }
+    </div>
 </section>
