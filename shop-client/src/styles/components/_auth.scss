@@ -105,3 +105,31 @@
     }
   }
 }
+
+
+.auth-message {
+  padding: var(--space-xl);
+  text-align: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-background);
+
+  mat-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--space-md);
+    color: var(--color-primary);
+    font-size: 56px;
+  }
+
+  h2 {
+    margin: 0 0 var(--space-sm);
+    font-size: 1.25rem;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-muted);
+    line-height: 1.9;
+  }
+}
