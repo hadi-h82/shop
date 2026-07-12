@@ -1,35 +1,80 @@
 <header class="site-header">
   <div class="site-header__container">
-    <a routerLink="/" class="site-header__logo">فروشگاه</a>
 
+    <!-- Logo -->
+    <a routerLink="/" class="site-header__logo">
+      <span class="site-header__logo-icon">
+        <mat-icon>cake</mat-icon>
+      </span>
+
+      <span class="site-header__logo-content">
+        <strong>شیرین‌مارکت</strong>
+        <small>لوازم تخصصی قنادی</small>
+      </span>
+    </a>
+
+    <!-- Search -->
     <div class="site-header__search">
       <mat-icon>search</mat-icon>
-      <input type="text" placeholder="جستجوی محصول..." />
+
+      <input
+        type="text"
+        placeholder="دنبال چه محصولی می‌گردی؟"
+      />
     </div>
 
+    <!-- Navigation -->
     <nav class="site-header__nav">
-      <a routerLink="/">خانه</a>
-      <a routerLink="/products">محصولات</a>
+      <a
+        routerLink="/"
+        routerLinkActive="site-header__nav-link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="site-header__nav-link"
+      >
+        خانه
+      </a>
+
+      <a
+        routerLink="/products"
+        routerLinkActive="site-header__nav-link--active"
+        class="site-header__nav-link"
+      >
+        محصولات
+      </a>
     </nav>
 
+    <!-- Actions -->
     <div class="site-header__actions">
-      <a routerLink="/cart" class="site-header__cart" aria-label="سبد خرید">
+
+      <a
+        routerLink="/cart"
+        class="site-header__cart"
+        aria-label="سبد خرید"
+      >
         <span class="site-header__cart-icon">
-          <mat-icon>shopping_cart</mat-icon>
+          <mat-icon>shopping_bag</mat-icon>
 
           @if (cart.totalItems() > 0) {
-          <span class="site-header__cart-badge">
-            {{ cart.totalItems() }}
-          </span>
+            <span class="site-header__cart-badge">
+              {{ cart.totalItems() }}
+            </span>
           }
         </span>
 
-        <span class="site-header__cart-text">سبد خرید</span>
+        <span class="site-header__cart-text">
+          سبد خرید
+        </span>
       </a>
 
-      <a mat-flat-button color="primary" routerLink="/login">
+      <a
+        mat-flat-button
+        routerLink="/login"
+        class="site-header__login"
+      >
         ورود / ثبت‌نام
       </a>
+
     </div>
+
   </div>
 </header>
