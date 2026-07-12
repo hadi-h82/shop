@@ -1,42 +1,91 @@
 :root {
+  /* Brand */
   --color-primary: #a66a3f;
   --color-primary-hover: #8f5833;
+  --color-on-primary: #ffffff;
+
+  /* Page surfaces */
   --color-background: #f8f3ea;
   --color-surface: #fffcf7;
+  --color-surface-elevated: #ffffff;
+
+  /* Text */
   --color-text: #33261d;
   --color-muted: #806f62;
+
+  /* Borders */
   --color-border: #e8dccb;
+  --color-border-strong: #cdbba5;
 
+  /* Inputs */
+  --color-input-background: #fffaf3;
+  --color-input-background-hover: #fffdf9;
+  --color-input-text: #33261d;
+  --color-input-placeholder: #958578;
+  --color-input-border: #d6c6b4;
+  --color-input-border-focus: #a66a3f;
 
-  --radius-md: 0.75rem;
+  /* Buttons */
+  --color-button-primary: #a66a3f;
+  --color-button-primary-hover: #8f5833;
+  --color-button-primary-text: #ffffff;
+
+  /* States */
+  --color-danger: #c63f3f;
+  --color-success: #46815b;
+
+    --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
 
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
-
-  --shadow-sm: 0 4px 14px rgba(79, 55, 38, 0.06);
-  --shadow-md: 0 10px 30px rgba(79, 55, 38, 0.09);
-
   --container-width: 1200px;
+
+
+  /* Shadows */
+  --shadow-sm: 0 4px 14px rgb(79 55 38 / 6%);
+  --shadow-md: 0 10px 30px rgb(79 55 38 / 9%);
 }
 
 html[data-theme='dark'] {
-  --color-primary: #d7a679;
-  --color-primary-hover: #e4b78f;
+  /* Brand */
+  --color-primary: #d5a06f;
+  --color-primary-hover: #e2b486;
+  --color-on-primary: #241710;
 
-  --color-background: #1b1714;
-  --color-surface: #28211c;
+  /* Page surfaces */
+  --color-background: #171310;
+  --color-surface: #251e19;
+  --color-surface-elevated: #302720;
 
-  --color-text: #f7eee5;
-  --color-muted: #bcae9f;
+  /* Text */
+  --color-text: #f8eee5;
+  --color-muted: #c0ae9e;
+
+  /* Borders */
   --color-border: #493b31;
+  --color-border-strong: #695548;
 
-  --shadow-sm:
-    0 4px 16px rgb(0 0 0 / 18%);
+  /* Inputs */
+  --color-input-background: #342a23;
+  --color-input-background-hover: #3a2f27;
+  --color-input-text: #fff7ef;
+  --color-input-placeholder: #b9a89a;
+  --color-input-border: #6b5749;
+  --color-input-border-focus: #d5a06f;
 
-  --shadow-md:
-    0 12px 34px rgb(0 0 0 / 28%);
+  /* Buttons */
+  --color-button-primary: #d5a06f;
+  --color-button-primary-hover: #e2b486;
+  --color-button-primary-text: #241710;
+
+  /* States */
+  --color-danger: #ff7979;
+  --color-success: #79bd8b;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 16px rgb(0 0 0 / 20%);
+  --shadow-md: 0 12px 34px rgb(0 0 0 / 32%);
 }
-

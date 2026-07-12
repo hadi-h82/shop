@@ -12,15 +12,15 @@
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Vazirmatn,
-      density: 0,
-    )
+@include mat.theme(
+  (
+    color: (
+      primary: mat.$orange-palette,
+      tertiary: mat.$red-palette,
+    ),
+    typography: Vazirmatn,
+    density: 0,
+  )
   );
   scroll-behavior: smooth;
 }
@@ -56,4 +56,214 @@ app-root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+
+
+
+
+/* ==================================================
+   Angular Material form fields
+================================================== */
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+/* زمینه اصلی input */
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: var(--color-input-background);
+  border-radius: 10px;
+
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  background-color: var(--color-input-background-hover);
+}
+
+/* متن واردشده توسط کاربر */
+.mat-mdc-form-field .mat-mdc-input-element {
+  color: var(--color-input-text) !important;
+  caret-color: var(--color-primary) !important;
+  font-family: inherit;
+}
+
+/* Placeholder */
+.mat-mdc-form-field .mat-mdc-input-element::placeholder {
+  color: var(--color-input-placeholder) !important;
+  opacity: 1;
+}
+
+/* Textarea */
+.mat-mdc-form-field textarea.mat-mdc-input-element {
+  color: var(--color-input-text) !important;
+}
+
+/* Label */
+.mat-mdc-form-field .mdc-floating-label {
+  color: var(--color-muted) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: var(--color-primary) !important;
+}
+
+/* آیکن داخل فیلد */
+.mat-mdc-form-field mat-icon {
+  color: var(--color-muted);
+}
+
+.mat-mdc-form-field.mat-focused mat-icon {
+  color: var(--color-primary);
+}
+
+/* Border عادی */
+.mat-mdc-form-field
+  .mdc-notched-outline__leading,
+.mat-mdc-form-field
+  .mdc-notched-outline__notch,
+.mat-mdc-form-field
+  .mdc-notched-outline__trailing {
+  border-color: var(--color-input-border) !important;
+}
+
+/* Border هنگام Hover */
+.mat-mdc-form-field:hover
+  .mdc-notched-outline__leading,
+.mat-mdc-form-field:hover
+  .mdc-notched-outline__notch,
+.mat-mdc-form-field:hover
+  .mdc-notched-outline__trailing {
+  border-color: var(--color-border-strong) !important;
+}
+
+/* Border هنگام Focus */
+.mat-mdc-form-field.mat-focused
+  .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused
+  .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused
+  .mdc-notched-outline__trailing {
+  border-color: var(--color-input-border-focus) !important;
+  border-width: 2px !important;
+}
+
+/* Error */
+.mat-mdc-form-field.mat-form-field-invalid
+  .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-invalid
+  .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-form-field-invalid
+  .mdc-notched-outline__trailing {
+  border-color: var(--color-danger) !important;
+}
+
+.mat-mdc-form-field-error {
+  color: var(--color-danger) !important;
+}
+
+
+
+
+/* ==================================================
+   Angular Material buttons
+================================================== */
+
+/* mat-flat-button */
+.mat-mdc-unelevated-button.mat-primary {
+  background-color: var(--color-button-primary) !important;
+  color: var(--color-button-primary-text) !important;
+
+  box-shadow:
+    0 7px 18px
+    color-mix(
+      in srgb,
+      var(--color-button-primary) 22%,
+      transparent
+    );
+
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.mat-mdc-unelevated-button.mat-primary:hover {
+  background-color: var(--color-button-primary-hover) !important;
+  color: var(--color-button-primary-text) !important;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 9px 22px
+    color-mix(
+      in srgb,
+      var(--color-button-primary) 30%,
+      transparent
+    );
+}
+
+/* mat-raised-button */
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--color-button-primary) !important;
+  color: var(--color-button-primary-text) !important;
+}
+
+/* mat-stroked-button */
+.mat-mdc-outlined-button.mat-primary {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.mat-mdc-outlined-button.mat-primary:hover {
+  background-color:
+    color-mix(
+      in srgb,
+      var(--color-primary) 10%,
+      transparent
+    ) !important;
+}
+
+/* آیکن دکمه */
+.mat-mdc-button mat-icon,
+.mat-mdc-unelevated-button mat-icon,
+.mat-mdc-raised-button mat-icon,
+.mat-mdc-outlined-button mat-icon {
+  color: currentColor;
+}
+
+
+
+::selection {
+  background:
+    color-mix(
+      in srgb,
+      var(--color-primary) 35%,
+      transparent
+    );
+
+  color: var(--color-text);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-input-text) !important;
+
+  box-shadow:
+    0 0 0 1000px
+    var(--color-input-background)
+    inset !important;
+
+  transition:
+    background-color 9999s ease-in-out 0s;
 }
