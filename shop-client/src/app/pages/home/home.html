@@ -1,83 +1,72 @@
-<section class="home-slider">
+<div class="home-page">
 
-  <div class="home-slider__container">
+  <section
+    class="home-slider"
+    aria-label="پیشنهادهای فروشگاه"
+    (mouseenter)="pauseAutoPlay()"
+    (mouseleave)="resumeAutoPlay()"
+  >
+    <div class="home-slider__container">
 
-    @for (slide of slides; track slide.image; let index = $index) {
-
-      @if (activeSlide() === index) {
-
-        <article class="home-slide">
-
+      @for (slide of slides; track slide.image; let index = $index) {
+        <a
+          class="home-slide"
+          [class.home-slide--active]="activeSlide() === index"
+          [routerLink]="slide.link"
+          [attr.aria-hidden]="activeSlide() !== index"
+          [attr.tabindex]="activeSlide() === index ? 0 : -1"
+        >
           <img
             class="home-slide__image"
             [src]="slide.image"
             [alt]="slide.title"
-            width="1600"
-            height="700"
           />
 
           <div class="home-slide__overlay"></div>
 
           <div class="home-slide__content">
-
             <span class="home-slide__eyebrow">
               فروشگاه تخصصی لوازم قنادی
             </span>
 
             <h1>{{ slide.title }}</h1>
-
             <p>{{ slide.description }}</p>
-
-            <a
-              mat-flat-button
-              routerLink="/products"
-              class="home-slide__button"
-            >
-              مشاهده محصولات
-            </a>
-
           </div>
-
-        </article>
-
+        </a>
       }
 
-    }
+      <button
+        type="button"
+        class="home-slider__arrow home-slider__arrow--previous"
+        aria-label="اسلاید قبلی"
+        (click)="previousSlide()"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
 
-    <button
-      type="button"
-      class="home-slider__arrow home-slider__arrow--previous"
-      aria-label="اسلاید قبلی"
-      (click)="previousSlide()"
-    >
-      <mat-icon>chevron_right</mat-icon>
-    </button>
+      <button
+        type="button"
+        class="home-slider__arrow home-slider__arrow--next"
+        aria-label="اسلاید بعدی"
+        (click)="nextSlide()"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
 
-    <button
-      type="button"
-      class="home-slider__arrow home-slider__arrow--next"
-      aria-label="اسلاید بعدی"
-      (click)="nextSlide()"
-    >
-      <mat-icon>chevron_left</mat-icon>
-    </button>
-
-    <div class="home-slider__dots">
-
-      @for (slide of slides; track slide.image; let index = $index) {
-
-        <button
-          type="button"
-          class="home-slider__dot"
-          [class.home-slider__dot--active]="activeSlide() === index"
-          [attr.aria-label]="'رفتن به اسلاید ' + (index + 1)"
-          (click)="goToSlide(index)"
-        ></button>
-
-      }
+      <div class="home-slider__dots">
+        @for (slide of slides; track slide.image; let index = $index) {
+          <button
+            type="button"
+            class="home-slider__dot"
+            [class.home-slider__dot--active]="activeSlide() === index"
+            [attr.aria-label]="'رفتن به اسلاید ' + (index + 1)"
+            (click)="goToSlide(index)"
+          ></button>
+        }
+      </div>
 
     </div>
+  </section>
 
-  </div>
-
-</section>
+  <!-- دسته‌بندی‌ها و محصولات بعد از این -->
+</div>
