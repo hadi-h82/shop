@@ -22,3 +22,21 @@
   --container-width: 1200px;
 }
 
+html[data-theme='dark'] {
+  --color-primary: #d7a679;
+  --color-primary-hover: #e4b78f;
+
+  --color-background: #1b1714;
+  --color-surface: #28211c;
+
+  --color-text: #f7eee5;
+  --color-muted: #bcae9f;
+  --color-border: #493b31;
+
+  --shadow-sm:
+    0 4px 16px rgb(0 0 0 / 18%);
+
+  --shadow-md:
+    0 12px 34px rgb(0 0 0 / 28%);
+}
+

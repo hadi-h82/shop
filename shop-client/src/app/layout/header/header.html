@@ -46,6 +46,21 @@
     <!-- Actions -->
     <div class="site-header__actions">
 
+      <button
+  type="button"
+  class="site-header__theme-toggle"
+  aria-label="تغییر حالت روشن و تاریک"
+  title="تغییر حالت نمایش"
+  (click)="themeService.toggle()"
+>
+  <mat-icon class="site-header__theme-icon--light">
+    light_mode
+  </mat-icon>
+
+  <mat-icon class="site-header__theme-icon--dark">
+    dark_mode
+  </mat-icon>
+</button>
       <a
         routerLink="/cart"
         class="site-header__cart"

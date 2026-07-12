@@ -10,7 +10,12 @@
   top: 0;
   z-index: 1000;
 
-  background: rgb(255 252 247 / 96%);
+  background:
+  color-mix(
+    in srgb,
+    var(--color-surface) 96%,
+    transparent
+  );
   border-bottom: 1px solid var(--color-border);
 
   backdrop-filter: blur(14px);
@@ -109,7 +114,7 @@
     align-items: center;
     gap: var(--space-sm);
 
-    background: #f8f3ea;
+    background: var(--color-background);
     border: 1px solid var(--color-border);
     border-radius: 15px;
 
@@ -119,7 +124,7 @@
       background 200ms ease;
 
     &:focus-within {
-      background: #fffaf3;
+      background: var(--color-surface);
       border-color: var(--color-primary);
 
       box-shadow:
@@ -224,7 +229,7 @@
 
     border: 1px solid var(--color-border);
     border-radius: 13px;
-    background: #fffcf7;
+    background: var(--color-surface);
 
     transition:
       color 200ms ease,
@@ -264,7 +269,7 @@
     align-items: center;
     justify-content: center;
 
-    border: 2px solid #fffcf7;
+    border: 2px solid var(--color-surface);
     border-radius: 999px;
 
     background: var(--color-primary);
@@ -296,6 +301,65 @@
       transform: translateY(-1px);
       box-shadow:
         0 9px 20px rgb(166 106 63 / 24%);
+    }
+  }
+
+  &__theme-toggle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  background: var(--color-surface);
+  color: var(--color-text);
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+
+  &:hover {
+    color: var(--color-primary);
+    background: var(--color-background);
+    border-color: var(--color-primary);
+    transform: rotate(8deg) scale(1.05);
+  }
+
+  mat-icon {
+    grid-area: 1 / 1;
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+  }
+}
+
+&__theme-icon--light {
+  display: none;
+}
+
+&__theme-icon--dark {
+  display: block;
+}
+}
+
+:host-context(html[data-theme='dark']) {
+  .site-header {
+    &__theme-icon--light {
+      display: block;
+    }
+
+    &__theme-icon--dark {
+      display: none;
     }
   }
 }
@@ -337,14 +401,15 @@
 
       display: grid;
 
-      grid-template-columns:
-        minmax(0, 1fr)
-        auto
-        auto;
+grid-template-columns:
+  minmax(0, 1fr)
+  auto
+  auto
+  auto;
 
-      grid-template-areas:
-        "logo cart login"
-        "search search search";
+grid-template-areas:
+  "logo theme cart login"
+  "search search search search";
 
       gap: 0.75rem 0.5rem;
     }
@@ -474,5 +539,16 @@
       height: 36px;
       min-height: 36px;
     }
+  }
+}
+
+
+:host-context(html[data-theme='dark']) {
+  .site-header__theme-icon--light {
+    display: block;
+  }
+
+  .site-header__theme-icon--dark {
+    display: none;
   }
 }

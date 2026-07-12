@@ -2,12 +2,13 @@ import { Component, inject } from '@angular/core';
 import {
   RouterLink,
   RouterLinkActive
-} from '@angular/router'; 
+} from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CartService } from '../../core/services/cart';
+import { ThemeService } from '../../core/services/theme';
 
 @Component({
   selector: 'app-header',
@@ -22,6 +23,5 @@ import { CartService } from '../../core/services/cart';
 })
 export class Header {
   readonly cart = inject(CartService);
-
-
+  readonly themeService = inject(ThemeService);
 }
