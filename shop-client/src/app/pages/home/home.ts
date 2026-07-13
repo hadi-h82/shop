@@ -24,6 +24,13 @@ interface HeroSlide {
   link: string;
 }
 
+interface HomeCategory {
+  title: string;
+  subtitle: string;
+  image: string;
+  link: string;
+}
+
 @Component({
   selector: 'app-home',
   imports: [
@@ -67,6 +74,46 @@ export class Home implements OnInit {
       link: '/products'
     }
   ];
+
+
+readonly categories: HomeCategory[] = [
+  {
+    title: 'قالب و ابزار پخت',
+    subtitle: 'قالب، وردنه، همزن و ابزارهای ضروری',
+    image: '/images/home/category-baking-tools.webp',
+    link: '/products'
+  },
+  {
+    title: 'ابزار تزئین',
+    subtitle: 'قیف، ماسوره، کاردک و لوازم تزئین',
+    image: '/images/home/category-decoration.webp',
+    link: '/products'
+  },
+  {
+    title: 'مواد اولیه',
+    subtitle: 'مواد موردنیاز برای پخت و شیرینی‌پزی',
+    image: '/images/home/category-ingredients.webp',
+    link: '/products'
+  },
+  {
+    title: 'رنگ و اسانس',
+    subtitle: 'رنگ‌های خوراکی و طعم‌دهنده‌های متنوع',
+    image: '/images/home/category-colors.webp',
+    link: '/products'
+  },
+  {
+    title: 'بسته‌بندی',
+    subtitle: 'جعبه کیک و شیرینی برای ارائه‌ای زیباتر',
+    image: '/images/home/category-packaging.webp',
+    link: '/products'
+  },
+  {
+    title: 'تجهیزات حرفه‌ای',
+    subtitle: 'تجهیزات مناسب قنادی‌ها و کارگاه‌ها',
+    image: '/images/home/category-equipment.webp',
+    link: '/products'
+  }
+];
 
   readonly featuredProducts = MOCK_PRODUCTS;
 
