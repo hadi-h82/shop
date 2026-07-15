@@ -72,7 +72,8 @@
           "options": {
                  "allowedHosts": [
     "127.0.0.1",
-    "localhost"
+    "localhost",
+    "carolyne-unincreasing-nondiscriminatively.ngrok-free.dev"
   ]
           },
           "builder": "@angular/build:dev-server",
