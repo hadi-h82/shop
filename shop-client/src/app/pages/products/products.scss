@@ -1,24 +1,117 @@
 .products-page {
-  padding: var(--space-lg) var(--space-md);
+  min-height: calc(100vh - 160px);
+  padding: var(--space-xl) var(--space-lg) 5rem;
+  background: var(--color-background);
 
   &__container {
-    max-width: var(--container-width);
+    width: min(100%, 1180px);
     margin: 0 auto;
   }
 
   &__header {
-    margin-bottom: var(--space-xl);
+    position: relative;
 
-    h1 {
-      margin: 0 0 var(--space-sm);
-      font-size: 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+
+    margin-bottom: var(--space-xl);
+    padding: 1.75rem 2rem;
+
+    overflow: hidden;
+    border: 1px solid rgba(36, 31, 27, 0.08);
+    border-radius: var(--radius-xl);
+
+    background:
+      radial-gradient(
+        circle at left top,
+        rgba(201, 162, 39, 0.13),
+        transparent 42%
+      ),
+      var(--color-surface);
+
+    box-shadow: var(--shadow-sm);
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      top: -75px;
+      left: -55px;
+
+      width: 180px;
+      height: 180px;
+
+      border: 28px solid rgba(201, 162, 39, 0.06);
+      border-radius: 50%;
+
+      pointer-events: none;
+    }
+  }
+
+  &__heading {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__eyebrow {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+
+    color: var(--color-primary);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  &__title {
+    margin: 0;
+
+    color: var(--color-text);
+    font-size: clamp(1.65rem, 3vw, 2.25rem);
+    font-weight: 900;
+    line-height: 1.35;
+  }
+
+  &__description {
+    max-width: 560px;
+    margin: 0.65rem 0 0;
+
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    line-height: 1.9;
+  }
+
+  &__count {
+    position: relative;
+    z-index: 1;
+
+    min-width: 88px;
+    padding: 0.75rem 1rem;
+
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.35rem;
+
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    border-radius: var(--radius-lg);
+
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.75);
+
+    white-space: nowrap;
+
+    strong {
+      color: var(--color-primary);
+      font-size: 1.25rem;
       font-weight: 900;
     }
 
-    p {
-      margin: 0;
-      padding-top: 0.5rem;
+    span {
       color: var(--color-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
     }
   }
 
@@ -26,18 +119,103 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-lg);
+    align-items: stretch;
+
+    app-product-card {
+      display: block;
+      min-width: 0;
+      height: 100%;
+    }
+  }
+
+  &__empty {
+    padding: 4rem 1.5rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px dashed rgba(36, 31, 27, 0.16);
+    border-radius: var(--radius-xl);
+
+    text-align: center;
+    background: var(--color-surface);
+
+    h2 {
+      margin: 1rem 0 0.4rem;
+      color: var(--color-text);
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 0.9rem;
+    }
+  }
+
+  &__empty-icon {
+    width: 64px;
+    height: 64px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: var(--color-primary);
+    background: rgba(201, 162, 39, 0.12);
   }
 }
 
 @media (max-width: 1000px) {
-  .products-page__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .products-page {
+    &__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .products-page {
+    &__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
   }
 }
 
 @media (max-width: 600px) {
   .products-page {
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--space-lg) var(--space-md) 3rem;
+
+    &__header {
+      align-items: flex-start;
+      padding: 1.4rem;
+    }
+
+    &__description {
+      font-size: 0.88rem;
+    }
+
+    &__count {
+      min-width: 70px;
+      padding: 0.6rem 0.7rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .products-page {
+    &__header {
+      flex-direction: column;
+    }
+
+    &__count {
+      align-self: flex-start;
+    }
 
     &__grid {
       grid-template-columns: 1fr;

@@ -1,14 +1,47 @@
 <section class="products-page">
   <div class="products-page__container">
-    <div class="products-page__header">
-      <h1>همه محصولات</h1>
-      <p>لیست محصولات فروشگاه</p>
-    </div>
+    <header class="products-page__header">
+      <div class="products-page__heading">
+        <span class="products-page__eyebrow">فروشگاه</span>
 
-    <div class="products-page__grid">
-      @for (product of products; track product.id) {
-        <app-product-card [product]="product" />
-      }
-    </div>
+        <h1 class="products-page__title">همه محصولات</h1>
+
+        <p class="products-page__description">
+          محصولات موردنظرت را بررسی و بهترین انتخاب را پیدا کن.
+        </p>
+      </div>
+
+      <div class="products-page__count">
+        <strong>{{ products.length }}</strong>
+        <span>محصول</span>
+      </div>
+    </header>
+
+    @if (products.length > 0) {
+      <div class="products-page__grid">
+        @for (product of products; track product.id) {
+          <app-product-card [product]="product" />
+        }
+      </div>
+    } @else {
+      <div class="products-page__empty">
+        <div class="products-page__empty-icon" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            width="32"
+            height="32"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path d="M6 8h12l-1 12H7L6 8Z" />
+            <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+          </svg>
+        </div>
+
+        <h2>محصولی پیدا نشد</h2>
+        <p>در حال حاضر محصولی برای نمایش وجود ندارد.</p>
+      </div>
+    }
   </div>
 </section>
