@@ -78,38 +78,44 @@ export class Home implements OnInit {
 
 readonly categories: HomeCategory[] = [
   {
-    title: 'قالب و ابزار پخت',
-    subtitle: 'قالب، وردنه، همزن و ابزارهای ضروری',
+    title: 'سینی کیک',
+    subtitle: 'انواع سینی مناسب کیک و شیرینی',
     image: '/images/home/category-baking-tools.webp',
     link: '/products'
   },
   {
-    title: 'ابزار تزئین',
-    subtitle: 'قیف، ماسوره، کاردک و لوازم تزئین',
+    title: 'سینی فینگر فود',
+    subtitle: 'سینی‌های مناسب سرو فینگر فود',
     image: '/images/home/category-decoration.webp',
     link: '/products'
   },
   {
-    title: 'مواد اولیه',
-    subtitle: 'مواد موردنیاز برای پخت و شیرینی‌پزی',
+    title: 'پلکسی',
+    subtitle: 'انواع محصولات پلکسی طرح‌دار و ساده',
     image: '/images/home/category-ingredients.webp',
     link: '/products'
   },
   {
-    title: 'رنگ و اسانس',
-    subtitle: 'رنگ‌های خوراکی و طعم‌دهنده‌های متنوع',
+    title: 'باکس',
+    subtitle: 'باکس‌های متنوع برای چیدمان و ارائه',
     image: '/images/home/category-colors.webp',
     link: '/products'
   },
   {
-    title: 'بسته‌بندی',
-    subtitle: 'جعبه کیک و شیرینی برای ارائه‌ای زیباتر',
+    title: 'استنسیل',
+    subtitle: 'طرح‌های متنوع استنسیل برای تزئین',
+    image: '/images/home/category-decoration.webp',
+    link: '/products'
+  },
+  {
+    title: 'جعبه',
+    subtitle: 'انواع جعبه کیک، شیرینی و هدیه',
     image: '/images/home/category-packaging.webp',
     link: '/products'
   },
   {
-    title: 'تجهیزات حرفه‌ای',
-    subtitle: 'تجهیزات مناسب قنادی‌ها و کارگاه‌ها',
+    title: 'ابزار و لوازم قنادی',
+    subtitle: 'ابزارهای کاربردی برای پخت و تزئین',
     image: '/images/home/category-equipment.webp',
     link: '/products'
   }
