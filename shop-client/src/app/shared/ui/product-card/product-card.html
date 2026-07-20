@@ -14,8 +14,9 @@
       </a>
     </h3>
 
-    <div class="product-card__price">
-      @if (product().discountPrice) {
+<div class="product-card__price">
+  @if (product().price > 0) {
+    @if (product().discountPrice) {
       <span class="product-card__old-price">
         {{ product().price | number }}
         تومان
@@ -25,18 +26,37 @@
         {{ product().discountPrice | number }}
         تومان
       </strong>
-      } @else {
+    } @else {
       <strong>
         {{ product().price | number }}
         تومان
       </strong>
-      }
-    </div>
+    }
+  } @else {
+    <strong>قیمت پس از انتخاب ویژگی‌ها</strong>
+  }
+</div>
 
-    <button mat-flat-button class="product-card__cart-button" [disabled]="!product().isAvailable" (click)="addToCart()">
-      <mat-icon>shopping_cart</mat-icon>
+@if (product().price > 0) {
+  <button
+    mat-flat-button
+    class="product-card__cart-button"
+    [disabled]="!product().isAvailable"
+    (click)="addToCart()"
+  >
+    <mat-icon>shopping_cart</mat-icon>
 
-      {{ product().isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}
-    </button>
+    {{ product().isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}
+  </button>
+} @else {
+  <a
+    mat-flat-button
+    class="product-card__cart-button"
+    [routerLink]="['/products', product().slug]"
+  >
+    <mat-icon>tune</mat-icon>
+    مشاهده و انتخاب ویژگی‌ها
+  </a>
+}
   </div>
 </article>

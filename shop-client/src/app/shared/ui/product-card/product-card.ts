@@ -27,11 +27,10 @@ export class ProductCard {
 addToCart(): void {
   const item = this.product();
 
-  if (!item.isAvailable) {
+  if (!item.isAvailable || item.price <= 0) {
     return;
   }
 
   this.cart.add(item);
-  console.log(this.cart.items());
 }
 }

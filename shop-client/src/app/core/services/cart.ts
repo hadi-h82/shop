@@ -54,6 +54,9 @@ export class CartService {
   }
 
   add(product: Product): void {
+    if (!product.isAvailable || product.price <= 0) {
+      return;
+    }
     const existingItem = this.itemsState().find(
       item => item.product.id === product.id
     );
