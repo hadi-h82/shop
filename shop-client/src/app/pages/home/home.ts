@@ -13,6 +13,7 @@ import {
   signal
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
 
 
 const SITE_URL = 'https://example.com';
@@ -20,13 +21,6 @@ const SITE_URL = 'https://example.com';
 interface HeroSlide {
   title: string;
   description: string;
-  image: string;
-  link: string;
-}
-
-interface HomeCategory {
-  title: string;
-  subtitle: string;
   image: string;
   link: string;
 }
@@ -76,50 +70,9 @@ export class Home implements OnInit {
   ];
 
 
-readonly categories: HomeCategory[] = [
-  {
-    title: 'سینی کیک',
-    subtitle: 'انواع سینی مناسب کیک و شیرینی',
-    image: '/images/home/category-baking-tools.webp',
-    link: '/products'
-  },
-  {
-    title: 'سینی فینگر فود',
-    subtitle: 'سینی‌های مناسب سرو فینگر فود',
-    image: '/images/home/category-decoration.webp',
-    link: '/products'
-  },
-  {
-    title: 'پلکسی',
-    subtitle: 'انواع محصولات پلکسی طرح‌دار و ساده',
-    image: '/images/home/category-ingredients.webp',
-    link: '/products'
-  },
-  {
-    title: 'باکس',
-    subtitle: 'باکس‌های متنوع برای چیدمان و ارائه',
-    image: '/images/home/category-colors.webp',
-    link: '/products'
-  },
-  {
-    title: 'استنسیل',
-    subtitle: 'طرح‌های متنوع استنسیل برای تزئین',
-    image: '/images/home/category-decoration.webp',
-    link: '/products'
-  },
-  {
-    title: 'جعبه',
-    subtitle: 'انواع جعبه کیک، شیرینی و هدیه',
-    image: '/images/home/category-packaging.webp',
-    link: '/products'
-  },
-  {
-    title: 'ابزار و لوازم قنادی',
-    subtitle: 'ابزارهای کاربردی برای پخت و تزئین',
-    image: '/images/home/category-equipment.webp',
-    link: '/products'
-  }
-];
+readonly categories = MOCK_CATEGORIES
+  .filter(category => category.isActive)
+  .sort((first, second) => first.displayOrder - second.displayOrder);
 
   readonly featuredProducts = MOCK_PRODUCTS;
 

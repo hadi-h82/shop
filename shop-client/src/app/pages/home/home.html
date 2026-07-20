@@ -64,24 +64,29 @@
       </div>
 
       <div class="home-categories__grid">
-        @for (category of categories; track category.title) {
-        <a class="category-card" [routerLink]="category.link">
-          <img class="category-card__image" [src]="category.image" [alt]="category.title" loading="lazy" />
+@for (category of categories; track category.id) {
+  <a class="category-card" routerLink="/products">
+    <img
+      class="category-card__image"
+      [src]="category.imageUrl"
+      [alt]="category.name"
+      loading="lazy"
+    />
 
-          <div class="category-card__overlay"></div>
+    <div class="category-card__overlay"></div>
 
-          <div class="category-card__content">
-            <h3>{{ category.title }}</h3>
+    <div class="category-card__content">
+      <h3>{{ category.name }}</h3>
 
-            <p>{{ category.subtitle }}</p>
+      <p>{{ category.description }}</p>
 
-            <span class="category-card__action">
-              مشاهده دسته‌بندی
-              <mat-icon>arrow_back</mat-icon>
-            </span>
-          </div>
-        </a>
-        }
+      <span class="category-card__action">
+        مشاهده دسته‌بندی
+        <mat-icon>arrow_back</mat-icon>
+      </span>
+    </div>
+  </a>
+}
       </div>
     </div>
   </section>
