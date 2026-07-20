@@ -12,7 +12,10 @@ import {
   PLATFORM_ID,
   signal
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import {
+  isPlatformBrowser,
+  NgOptimizedImage
+} from '@angular/common';
 import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
 
 
@@ -28,10 +31,11 @@ interface HeroSlide {
 @Component({
   selector: 'app-home',
   imports: [
-    RouterLink,
-    MatButtonModule,
-    MatIconModule,
-    ProductCard
+  RouterLink,
+  MatButtonModule,
+  MatIconModule,
+  NgOptimizedImage,
+  ProductCard
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss'

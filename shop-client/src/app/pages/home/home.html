@@ -64,14 +64,16 @@
       </div>
 
       <div class="home-categories__grid">
-@for (category of categories; track category.id) {
+@for (category of categories; track category.id; let index = $index) {
   <a class="category-card" routerLink="/products">
-    <img
-      class="category-card__image"
-      [src]="category.imageUrl"
-      [alt]="category.name"
-      loading="lazy"
-    />
+<img
+  class="category-card__image"
+  [ngSrc]="category.imageUrl"
+  [alt]="category.name"
+  [priority]="index < 3"
+  sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+  fill
+/>
 
     <div class="category-card__overlay"></div>
 
