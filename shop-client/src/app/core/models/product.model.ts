@@ -1,5 +1,7 @@
+import { ProductOption } from './product-option.model';
 export interface Product {
   id: number;
+  categoryId?: number;
   title: string;
   slug: string;
   price: number;
@@ -7,4 +9,5 @@ export interface Product {
   imageUrl: string;
   categoryName: string;
   isAvailable: boolean;
+  options?: ProductOption[];
 }
