@@ -104,6 +104,27 @@
   }
 }
 
+/* Shared image styles */
+
+.home-slide__media,
+.category-card__media {
+  position: absolute;
+  inset: -2px;
+  overflow: hidden;
+}
+
+.home-slide__image,
+.category-card__image {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  backface-visibility: hidden;
+}
+
 /* Slide */
 
 .home-slide {
@@ -111,8 +132,6 @@
   inset: 0;
 
   display: block;
-  overflow: hidden;
-  border-radius: inherit;
 
   color: #fff;
   text-decoration: none;
@@ -138,24 +157,7 @@
     transform: scale(1);
   }
 
-  &__media {
-    position: absolute;
-    inset: -2px;
-
-    overflow: hidden;
-  }
-
   &__image {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    backface-visibility: hidden;
-    will-change: transform;
-
     transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
@@ -167,7 +169,6 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    border-radius: inherit;
 
     background: linear-gradient(
       90deg,
@@ -221,7 +222,7 @@
   }
 }
 
-/* مشترک بین بخش‌ها */
+/* Shared section styles */
 
 .home-categories,
 .featured-products {
@@ -333,24 +334,10 @@
     box-shadow 280ms ease;
 
   &__media {
-    position: absolute;
-    inset: -2px;
     z-index: -2;
-
-    overflow: hidden;
   }
 
   &__image {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    backface-visibility: hidden;
-    will-change: transform;
-
     transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
@@ -358,7 +345,6 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    border-radius: inherit;
 
     background: linear-gradient(
       to top,
