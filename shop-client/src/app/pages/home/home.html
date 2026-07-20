@@ -1,44 +1,69 @@
 <div class="home-page">
-
-  <section class="home-slider" aria-label="پیشنهادهای فروشگاه" (mouseenter)="pauseAutoPlay()"
-    (mouseleave)="resumeAutoPlay()">
+  <section
+    class="home-slider"
+    aria-label="پیشنهادهای فروشگاه"
+    (mouseenter)="pauseAutoPlay()"
+    (mouseleave)="resumeAutoPlay()"
+  >
     <div class="home-slider__container">
-
       @for (slide of slides; track slide.image; let index = $index) {
-      <a class="home-slide" [class.home-slide--active]="activeSlide() === index" [routerLink]="slide.link"
-        [attr.aria-hidden]="activeSlide() !== index" [attr.tabindex]="activeSlide() === index ? 0 : -1">
-        <img class="home-slide__image" [src]="slide.image" [alt]="slide.title" />
+        <a
+          class="home-slide"
+          [class.home-slide--active]="activeSlide() === index"
+          [routerLink]="slide.link"
+          [attr.aria-hidden]="activeSlide() !== index"
+          [attr.tabindex]="activeSlide() === index ? 0 : -1"
+        >
+          <div class="home-slide__media">
+            <img
+              class="home-slide__image"
+              [src]="slide.image"
+              [alt]="slide.title"
+            />
+          </div>
 
-        <div class="home-slide__overlay"></div>
+          <div class="home-slide__overlay"></div>
 
-        <div class="home-slide__content">
-          <span class="home-slide__eyebrow">
-            فروشگاه تخصصی لوازم قنادی
-          </span>
+          <div class="home-slide__content">
+            <span class="home-slide__eyebrow">
+              فروشگاه تخصصی لوازم قنادی
+            </span>
 
-          <h1>{{ slide.title }}</h1>
-          <p>{{ slide.description }}</p>
-        </div>
-      </a>
+            <h1>{{ slide.title }}</h1>
+            <p>{{ slide.description }}</p>
+          </div>
+        </a>
       }
 
-      <button type="button" class="home-slider__arrow home-slider__arrow--previous" aria-label="اسلاید قبلی"
-        (click)="previousSlide()">
+      <button
+        type="button"
+        class="home-slider__arrow home-slider__arrow--previous"
+        aria-label="اسلاید قبلی"
+        (click)="previousSlide()"
+      >
         <mat-icon>chevron_right</mat-icon>
       </button>
 
-      <button type="button" class="home-slider__arrow home-slider__arrow--next" aria-label="اسلاید بعدی"
-        (click)="nextSlide()">
+      <button
+        type="button"
+        class="home-slider__arrow home-slider__arrow--next"
+        aria-label="اسلاید بعدی"
+        (click)="nextSlide()"
+      >
         <mat-icon>chevron_left</mat-icon>
       </button>
 
       <div class="home-slider__dots">
         @for (slide of slides; track slide.image; let index = $index) {
-        <button type="button" class="home-slider__dot" [class.home-slider__dot--active]="activeSlide() === index"
-          [attr.aria-label]="'رفتن به اسلاید ' + (index + 1)" (click)="goToSlide(index)"></button>
+          <button
+            type="button"
+            class="home-slider__dot"
+            [class.home-slider__dot--active]="activeSlide() === index"
+            [attr.aria-label]="'رفتن به اسلاید ' + (index + 1)"
+            (click)="goToSlide(index)"
+          ></button>
         }
       </div>
-
     </div>
   </section>
 
@@ -64,31 +89,32 @@
       </div>
 
       <div class="home-categories__grid">
-@for (category of categories; track category.id; let index = $index) {
-  <a class="category-card" routerLink="/products">
-<img
-  class="category-card__image"
-  [ngSrc]="category.imageUrl"
-  [alt]="category.name"
-  [priority]="index < 3"
-  sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
-  fill
-/>
+        @for (category of categories; track category.id; let index = $index) {
+          <a class="category-card" routerLink="/products">
+            <div class="category-card__media">
+              <img
+                class="category-card__image"
+                [ngSrc]="category.imageUrl"
+                [alt]="category.name"
+                [priority]="index < 3"
+                sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                fill
+              />
+            </div>
 
-    <div class="category-card__overlay"></div>
+            <div class="category-card__overlay"></div>
 
-    <div class="category-card__content">
-      <h3>{{ category.name }}</h3>
+            <div class="category-card__content">
+              <h3>{{ category.name }}</h3>
+              <p>{{ category.description }}</p>
 
-      <p>{{ category.description }}</p>
-
-      <span class="category-card__action">
-        مشاهده دسته‌بندی
-        <mat-icon>arrow_back</mat-icon>
-      </span>
-    </div>
-  </a>
-}
+              <span class="category-card__action">
+                مشاهده دسته‌بندی
+                <mat-icon>arrow_back</mat-icon>
+              </span>
+            </div>
+          </a>
+        }
       </div>
     </div>
   </section>
