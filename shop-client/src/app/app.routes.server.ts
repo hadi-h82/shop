@@ -9,7 +9,7 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
       return MOCK_PRODUCTS.map(product => ({
-        id: String(product.id)
+         id: product.slug
       }));
     }
   },

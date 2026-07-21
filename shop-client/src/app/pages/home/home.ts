@@ -2,7 +2,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
-import { ProductCard } from '../../shared/ui/product-card/product-card';
+
 import { Seo } from '../../core/services/seo';
 import {
   Component,
@@ -35,7 +35,7 @@ interface HeroSlide {
   MatButtonModule,
   MatIconModule,
   NgOptimizedImage,
-  ProductCard
+
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss'
