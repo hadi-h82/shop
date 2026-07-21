@@ -14,38 +14,48 @@
         <span>{{ currentCategory.name }}</span>
       </nav>
 
-<header class="category-page__header">
-  <img
-    class="category-page__cover"
-    [ngSrc]="currentCategory.imageUrl"
-    [alt]="currentCategory.name"
-    sizes="100vw"
-    priority
-    fill
-  />
-
-  <div class="category-page__heading">
-    <span class="category-page__eyebrow">
-      دسته‌بندی محصولات
-    </span>
-
-    <h1>{{ currentCategory.name }}</h1>
-
-    <p>{{ currentCategory.description }}</p>
-
-    <div class="category-page__count">
-      <strong>{{ products().length }}</strong>
-      <span>محصول در این دسته</span>
-    </div>
-  </div>
-</header>
-
       @if (products().length > 0) {
         <div class="category-page__grid">
           @for (product of products(); track product.id) {
             <app-product-card [product]="product" />
           }
         </div>
+
+        @if (guide(); as categoryGuide) {
+          <section
+            class="category-page__guide"
+            aria-labelledby="category-guide-title"
+          >
+            <div class="category-page__guide-main">
+              <span class="category-page__guide-label">
+                راهنمای انتخاب و خرید
+              </span>
+
+              <h1 id="category-guide-title">
+                {{ categoryGuide.title }}
+              </h1>
+
+              <p>
+                {{ categoryGuide.intro }}
+              </p>
+            </div>
+
+            <div class="category-page__guide-tips">
+              @for (tip of categoryGuide.tips; track tip) {
+                <div class="category-page__tip">
+                  <span aria-hidden="true">✓</span>
+
+                  <p>{{ tip }}</p>
+                </div>
+              }
+            </div>
+
+            <p class="category-page__guide-note">
+              <strong>نکته:</strong>
+              {{ categoryGuide.note }}
+            </p>
+          </section>
+        }
       } @else {
         <div class="category-page__empty">
           <div
@@ -55,7 +65,7 @@
             !
           </div>
 
-          <h2>هنوز محصولی ثبت نشده است</h2>
+          <h1>هنوز محصولی ثبت نشده است</h1>
 
           <p>
             در حال حاضر محصول فعالی در این دسته‌بندی وجود ندارد.

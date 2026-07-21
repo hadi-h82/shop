@@ -4,7 +4,6 @@ import {
   effect,
   inject
 } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -15,11 +14,32 @@ import { ProductCard } from '../../shared/ui/product-card/product-card';
 
 const SITE_URL = 'https://sevart.ir';
 
+interface CategoryGuide {
+  title: string;
+  intro: string;
+  tips: string[];
+  note: string;
+}
+
+const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
+  'cake-trays': {
+    title: 'راهنمای انتخاب سینی کیک',
+    intro:
+      'سینی کیک علاوه بر زیباتر کردن ارائه، باید وزن کیک را بدون خم‌شدن تحمل کند. برای انتخاب بهتر، اندازه، جنس و ضخامت سینی را با نوع کیک هماهنگ کنید.',
+    tips: [
+      'سینی را حداقل ۴ تا ۶ سانتی‌متر بزرگ‌تر از قطر کیک انتخاب کنید.',
+      'برای کیک‌های سنگین و چندطبقه، MDF ضخیم‌تر انتخاب مطمئن‌تری است.',
+      'مدل دورو برای ارائه تمیزتر و استفاده دوباره مناسب‌تر است.'
+    ],
+    note:
+      'اندازه و ویژگی‌های محصول را در صفحه هر مدل انتخاب کنید تا قیمت نهایی نمایش داده شود.'
+  }
+};
+
 @Component({
   selector: 'app-category-products',
   imports: [
     RouterLink,
-    NgOptimizedImage,
     ProductCard
   ],
   templateUrl: './category-products.html',
@@ -62,6 +82,27 @@ export class CategoryProducts {
     );
   });
 
+  readonly guide = computed<CategoryGuide | undefined>(() => {
+    const category = this.category();
+
+    if (!category) {
+      return undefined;
+    }
+
+    return (
+      CATEGORY_GUIDES[category.slug] ?? {
+        title: `راهنمای خرید ${category.name}`,
+        intro: category.description,
+        tips: [
+          'قبل از خرید، اندازه و جنس موردنیازتان را بررسی کنید.',
+          'توضیحات و ویژگی‌های هر محصول را با مدل‌های دیگر مقایسه کنید.'
+        ],
+        note:
+          'با انتخاب ویژگی‌های هر محصول، قیمت نهایی آن نمایش داده می‌شود.'
+      }
+    );
+  });
+
   constructor() {
     effect(() => {
       const category = this.category();
@@ -81,10 +122,12 @@ export class CategoryProducts {
       }
 
       this.seo.update({
-        title: 'دسته‌بندی پیدا نشد | فروشگاه لوازم قنادی',
+        title:
+          'دسته‌بندی پیدا نشد | فروشگاه لوازم قنادی',
         description:
           'دسته‌بندی موردنظر در فروشگاه پیدا نشد.',
-        canonicalUrl: `${SITE_URL}/categories/${this.slug() ?? ''}`,
+        canonicalUrl:
+          `${SITE_URL}/categories/${this.slug() ?? ''}`,
         type: 'website'
       });
     });

@@ -1,62 +1,68 @@
-<article class="product-card">
-  <a class="product-card__image-link" [routerLink]="['/products', product().slug]">
-    <img class="product-card__image" [src]="product().imageUrl" [alt]="product().title" loading="lazy" />
-  </a>
+<article
+  class="product-card"
+  [class.product-card--unavailable]="!product().isAvailable"
+>
+  <img
+    class="product-card__image"
+    [src]="product().imageUrl"
+    [alt]="product().title"
+    loading="lazy"
+  />
 
-  <div class="product-card__content">
-    <span class="product-card__category">
-      {{ product().categoryName }}
+  @if (!product().isAvailable) {
+    <span class="product-card__availability">
+      ناموجود
     </span>
+  }
 
-    <h3 class="product-card__title">
-      <a [routerLink]="['/products', product().slug]">
-        {{ product().title }}
-      </a>
-    </h3>
-
-<div class="product-card__price">
-  @if (product().price > 0) {
-    @if (product().discountPrice) {
-      <span class="product-card__old-price">
-        {{ product().price | number }}
-        تومان
+  <div class="product-card__overlay">
+    <div class="product-card__information">
+      <span class="product-card__category">
+        {{ product().categoryName }}
       </span>
 
-      <strong>
-        {{ product().discountPrice | number }}
-        تومان
-      </strong>
-    } @else {
-      <strong>
-        {{ product().price | number }}
-        تومان
-      </strong>
-    }
-  } @else {
-    <strong>قیمت پس از انتخاب ویژگی‌ها</strong>
-  }
-</div>
+      <h2 class="product-card__title">
+        {{ product().title }}
+      </h2>
 
-@if (product().price > 0) {
-  <button
-    mat-flat-button
-    class="product-card__cart-button"
-    [disabled]="!product().isAvailable"
-    (click)="addToCart()"
-  >
-    <mat-icon>shopping_cart</mat-icon>
+      <div class="product-card__price">
+        @if (product().discountPrice) {
+          <span class="product-card__old-price">
+            {{ product().price | number }}
+            تومان
+          </span>
 
-    {{ product().isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}
-  </button>
-} @else {
-  <a
-    mat-flat-button
-    class="product-card__cart-button"
-    [routerLink]="['/products', product().slug]"
-  >
-    <mat-icon>tune</mat-icon>
-    مشاهده و انتخاب ویژگی‌ها
-  </a>
-}
+          <strong>
+            {{ product().discountPrice | number }}
+            تومان
+          </strong>
+        } @else {
+          <strong>
+            {{ product().price | number }}
+            تومان
+          </strong>
+        }
+      </div>
+    </div>
+
+    <div class="product-card__actions">
+      <a
+        class="product-card__details-button"
+        [routerLink]="['/products', product().slug]"
+      >
+        <mat-icon>visibility</mat-icon>
+        <span>مشاهده جزئیات</span>
+      </a>
+
+      <button
+        type="button"
+        class="product-card__cart-button"
+        [disabled]="!product().isAvailable"
+        [attr.aria-label]="'افزودن ' + product().title + ' به سبد خرید'"
+        (click)="addToCart()"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+    </div>
   </div>
 </article>
