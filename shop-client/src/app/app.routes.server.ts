@@ -1,11 +1,17 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
 import { MOCK_CATEGORIES } from './core/mock-data/categories.mock';
+import { MOCK_PRODUCTS } from './core/mock-data/products.mock';
 
 export const serverRoutes: ServerRoute[] = [
   {
     path: 'products/:id',
-    renderMode: RenderMode.Server
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return MOCK_PRODUCTS.map(product => ({
+        id: String(product.id)
+      }));
+    }
   },
   {
     path: 'categories/:slug',
