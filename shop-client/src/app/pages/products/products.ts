@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { ProductCard } from '../../shared/ui/product-card/product-card';
 import { Seo } from '../../core/services/seo';
-const SITE_URL = 'https://example.com';
+const SITE_URL = 'https://sevart.ir';
 
 @Component({
   selector: 'app-products',

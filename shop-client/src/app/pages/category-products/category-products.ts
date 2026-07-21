@@ -13,7 +13,7 @@ import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { Seo } from '../../core/services/seo';
 import { ProductCard } from '../../shared/ui/product-card/product-card';
 
-const SITE_URL = 'https://noviraone.ir';
+const SITE_URL = 'https://sevart.ir';
 
 @Component({
   selector: 'app-category-products',

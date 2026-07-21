@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../core/services/cart'; 
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { Seo } from '../../core/services/seo';
-const SITE_URL = 'https://example.com';
+const SITE_URL = 'https://sevart.ir';
 
 @Component({
   selector: 'app-product-detail',

@@ -19,7 +19,7 @@ import {
 import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
 
 
-const SITE_URL = 'https://example.com';
+const SITE_URL = 'https://sevart.ir';
 
 interface HeroSlide {
   title: string;
