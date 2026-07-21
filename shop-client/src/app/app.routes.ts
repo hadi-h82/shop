@@ -5,6 +5,7 @@ import { Products } from './pages/products/products';
 import { ProductDetail } from './pages/product-detail/product-detail';
 import { Cart } from './pages/cart/cart';
 import { Checkout } from './pages/checkout/checkout';
+import { CategoryProducts } from './pages/category-products/category-products';
 
 export const routes: Routes = [
   {
@@ -13,6 +14,7 @@ export const routes: Routes = [
     children: [
       { path: '', component: Home },
       { path: 'products', component: Products },
+      { path: 'categories/:slug', component: CategoryProducts },
       { path: 'products/:id', component: ProductDetail },
       { path: 'cart', component: Cart },
       { path: 'checkout', component: Checkout },
