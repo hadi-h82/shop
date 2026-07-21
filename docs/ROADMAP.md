@@ -32,7 +32,6 @@
 
 | مورد | وضعیت | شواهد |
 | --- | --- | --- |
-| canonical URLهای فعلی هنوز `sevart.ir` هستند | برنامه‌ریزی‌شده · P0 | ثابت `SITE_URL` در صفحه‌های Home، Products، CategoryProducts و ProductDetail |
 | منوی موبایل وجود ندارد و navigation در عرض کوچک پنهان می‌شود | برنامه‌ریزی‌شده · P0 | `src/app/layout/header/header.scss` |
 | حالت loading برای صفحه، داده و فرم وجود ندارد | برنامه‌ریزی‌شده · P1 | `docs/UI_GUIDELINES.md` و قالب‌های فعلی |
 | `--space-sm` استفاده شده ولی تعریف نشده است | برنامه‌ریزی‌شده · P1 | `src/styles/abstracts/_tokens.scss` و استایل‌های Header/Auth/Footer |
@@ -43,11 +42,10 @@
 
 | کار | وضعیت | اولویت |
 | --- | --- | --- |
-| اصلاح canonical و Open Graph URLهای ثابت از `sevart.ir` به `noviraone.ir` | برنامه‌ریزی‌شده | P0 |
 | رفع ناهماهنگی‌های ثبت‌شده در `docs/UI_GUIDELINES.md`، از جمله تعریف `--space-sm` و کاهش استفادهٔ mixed از جهت فیزیکی/منطقی | برنامه‌ریزی‌شده | P1 |
 | تکمیل responsive Header و افزودن منوی موبایل برای navigation پنهان‌شده | برنامه‌ریزی‌شده | P0 |
 | تکمیل حالت‌های loading، empty و error برای داده‌ها و عملیات فرم | برنامه‌ریزی‌شده | P1 |
-| بازبینی SEO و SSR پس از اصلاح دامنه و مسیرهای prerender | برنامه‌ریزی‌شده | P0 |
+| بازبینی SEO، SSR و مسیرهای prerender | برنامه‌ریزی‌شده | P0 |
 | افزودن و تکمیل تست‌های ضروری برای جریان‌های سبد، Routeها، فرم‌ها، تم و SSR-safe بودن | برنامه‌ریزی‌شده | P1 |
 
 ## ۳. فاز دوم: طراحی Backend
@@ -96,4 +94,4 @@
 
 ## پیشنهاد قدم بعدی
 
-**P0 — مقدار ثابت `SITE_URL` را در چهار فایل `src/app/pages/home/home.ts`، `src/app/pages/products/products.ts`، `src/app/pages/category-products/category-products.ts` و `src/app/pages/product-detail/product-detail.ts` از `https://sevart.ir` به `https://noviraone.ir` تغییر دهید.**
+**P0 — در `src/app/layout/header/` یک منوی موبایل برای navigation پنهان‌شده در `max-width: 600px` پیاده‌سازی کنید و رفتار آن را در اندازه‌های کوچک بررسی کنید.**
