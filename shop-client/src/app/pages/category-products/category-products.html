@@ -14,32 +14,31 @@
         <span>{{ currentCategory.name }}</span>
       </nav>
 
-      <header class="category-page__header">
-        <div class="category-page__heading">
-          <span class="category-page__eyebrow">
-            دسته‌بندی محصولات
-          </span>
+<header class="category-page__header">
+  <img
+    class="category-page__cover"
+    [ngSrc]="currentCategory.imageUrl"
+    [alt]="currentCategory.name"
+    sizes="100vw"
+    priority
+    fill
+  />
 
-          <h1>{{ currentCategory.name }}</h1>
+  <div class="category-page__heading">
+    <span class="category-page__eyebrow">
+      دسته‌بندی محصولات
+    </span>
 
-          <p>{{ currentCategory.description }}</p>
+    <h1>{{ currentCategory.name }}</h1>
 
-          <div class="category-page__count">
-            <strong>{{ products().length }}</strong>
-            <span>محصول در این دسته</span>
-          </div>
-        </div>
+    <p>{{ currentCategory.description }}</p>
 
-        <div class="category-page__image">
-          <img
-            [ngSrc]="currentCategory.imageUrl"
-            [alt]="currentCategory.name"
-            sizes="(max-width: 700px) 100vw, 360px"
-            priority
-            fill
-          />
-        </div>
-      </header>
+    <div class="category-page__count">
+      <strong>{{ products().length }}</strong>
+      <span>محصول در این دسته</span>
+    </div>
+  </div>
+</header>
 
       @if (products().length > 0) {
         <div class="category-page__grid">
