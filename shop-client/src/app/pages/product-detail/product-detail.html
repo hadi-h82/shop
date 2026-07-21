@@ -1,35 +1,33 @@
 <section class="product-detail">
   <div class="product-detail__container">
     @if (product(); as item) {
-    <div class="product-detail__content">
-      <nav class="product-detail__breadcrumb">
-        <a routerLink="/products">محصولات</a>
-        <mat-icon>chevron_left</mat-icon>
-        <span>{{ item.title }}</span>
-      </nav>
-
-      <span class="product-detail__category">{{ item.categoryName }}</span>
-
-      <h1>{{ item.title }}</h1>
-
-      <div class="product-detail__price">
-        @if (item.discountPrice) {
-        <span>{{ item.price | number }} تومان</span>
-        <strong>{{ item.discountPrice | number }} تومان</strong>
-        } @else {
-        <strong>{{ item.price | number }} تومان</strong>
-        }
+      <div class="product-detail__content">
+        <!-- محتوای فعلی محصول -->
       </div>
 
-      <button mat-flat-button color="primary" [disabled]="!item.isAvailable" (click)="addToCart()">
-        <mat-icon>shopping_cart</mat-icon>
-        {{ item.isAvailable ? 'افزودن به سبد خرید' : 'ناموجود' }}
-      </button>
-    </div>
+      <div class="product-detail__image">
+        <img [src]="item.imageUrl" [alt]="item.title" />
+      </div>
+    } @else {
+      <div class="product-not-found">
+        <span class="product-not-found__code">404</span>
 
-    <div class="product-detail__image">
-      <img [src]="item.imageUrl" [alt]="item.title" />
-    </div>
+        <h1>محصول پیدا نشد</h1>
+
+        <p>
+          محصولی که دنبالش هستید وجود ندارد یا از فروشگاه حذف شده است.
+        </p>
+
+        <div class="product-not-found__actions">
+          <a mat-flat-button routerLink="/products">
+            مشاهده محصولات
+          </a>
+
+          <a mat-button routerLink="/">
+            بازگشت به صفحه اصلی
+          </a>
+        </div>
+      </div>
     }
   </div>
 </section>
