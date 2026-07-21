@@ -7,7 +7,7 @@ export const MOCK_PRODUCTS: Product[] = [
     title: 'سینی کیک MDF یک‌رو با ضخامت ۳ میلی‌متر',
     slug: 'single-sided-mdf-cake-board-3mm',
     price: 0,
-    imageUrl: '/images/home/category-baking-tools.webp',
+    imageUrl: '/images/home/mdf-cake-board-one-side.webp',
     categoryName: 'سینی کیک',
     isAvailable: true,
     options: []
@@ -18,7 +18,7 @@ export const MOCK_PRODUCTS: Product[] = [
     title: 'سینی کیک MDF دورو با ضخامت ۳ میلی‌متر',
     slug: 'double-sided-mdf-cake-board-3mm',
     price: 0,
-    imageUrl: '/images/home/category-baking-tools.webp',
+    imageUrl: '/images/home/mdf-cake-board-two-side-3mm.webp',
     categoryName: 'سینی کیک',
     isAvailable: true,
     options: []
@@ -29,7 +29,7 @@ export const MOCK_PRODUCTS: Product[] = [
     title: 'سینی کیک MDF دورو با ضخامت ۴ میلی‌متر',
     slug: 'double-sided-mdf-cake-board-4mm',
     price: 0,
-    imageUrl: '/images/home/category-baking-tools.webp',
+    imageUrl: '/images/home/mdf-cake-board-two-side-4mm.webp',
     categoryName: 'سینی کیک',
     isAvailable: true,
     options: []
@@ -40,7 +40,7 @@ export const MOCK_PRODUCTS: Product[] = [
     title: 'سینی کیک مقوایی',
     slug: 'cardboard-cake-board',
     price: 0,
-    imageUrl: '/images/home/category-baking-tools.webp',
+    imageUrl: '/images/home/cardboard-cake-board.webp',
     categoryName: 'سینی کیک',
     isAvailable: true,
     options: []
@@ -51,7 +51,7 @@ export const MOCK_PRODUCTS: Product[] = [
     title: 'زیردسری پلاستیکی کیک',
     slug: 'plastic-cake-board',
     price: 0,
-    imageUrl: '/images/home/category-baking-tools.webp',
+    imageUrl: '/images/home/plastic-cake-board.webp',
     categoryName: 'سینی کیک',
     isAvailable: true,
     options: []

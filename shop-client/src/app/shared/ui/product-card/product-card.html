@@ -25,9 +25,14 @@
         {{ product().categoryName }}
       </span>
 
-      <h2 class="product-card__title">
-        {{ product().title }}
-      </h2>
+      <a
+        class="product-card__title-link"
+        [routerLink]="['/products', product().slug]"
+      >
+        <h2 class="product-card__title">
+          {{ product().title }}
+        </h2>
+      </a>
     </div>
 
     <div class="product-card__actions">
