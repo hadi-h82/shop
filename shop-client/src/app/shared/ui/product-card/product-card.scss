@@ -44,6 +44,36 @@
     filter: brightness(0.68);
   }
 
+  &__preview-title {
+    position: absolute;
+    z-index: 1;
+    inset-inline: 0;
+    bottom: 0;
+
+    padding: 1.5rem 1rem 0.9rem;
+
+    color: #fff;
+    background: linear-gradient(
+      to top,
+      rgb(25 17 13 / 78%),
+      transparent
+    );
+
+    font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+    font-weight: 800;
+    line-height: 1.6;
+
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  &:hover &__preview-title,
+  &:focus-within &__preview-title {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
   &__availability {
     position: absolute;
     z-index: 3;
@@ -134,38 +164,13 @@
     line-height: 1.6;
   }
 
-  &__price {
-    min-height: 2.7rem;
-    margin-bottom: 1rem;
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.15rem;
-
-    strong {
-      color: #fff;
-
-      font-size: 0.95rem;
-      font-weight: 900;
-    }
-  }
-
-  &__old-price {
-    color: rgb(255 255 255 / 62%);
-
-    font-size: 0.75rem;
-    text-decoration: line-through;
-  }
-
   &__actions {
     display: flex;
     align-items: stretch;
     gap: 0.55rem;
   }
 
-  &__details-button,
-  &__cart-button {
+  &__details-button {
     min-height: 44px;
 
     display: inline-flex;
@@ -200,39 +205,30 @@
     padding: 0 0.9rem;
 
     color: var(--color-text);
-    background: #fff;
+    background: var(--color-surface-elevated);
 
     text-decoration: none;
 
     &:hover {
-      color: #fff;
+      color: var(--color-on-primary);
       background: var(--color-primary);
       transform: translateY(-2px);
     }
   }
 
-  &__cart-button {
-    flex: 0 0 44px;
-
-    width: 44px;
-    padding: 0;
-
-    color: #fff;
-    background: var(--color-primary);
-
-    &:hover:not(:disabled) {
-      background: var(--color-primary-hover);
-      transform: translateY(-2px);
-    }
-
-    &:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-  }
-
   &--unavailable &__image {
     filter: grayscale(0.4);
+  }
+}
+
+:host-context(html[data-theme='dark']) {
+  .product-card__details-button {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+
+    &:hover {
+      background: var(--color-primary-hover);
+    }
   }
 }
 
@@ -275,6 +271,10 @@
       transform: none;
     }
 
+    &__preview-title {
+      display: none;
+    }
+
     &__category {
       display: none;
     }
@@ -292,25 +292,11 @@
       -webkit-line-clamp: 2;
     }
 
-    &__price {
-      min-height: 2rem;
-      margin-bottom: 0.45rem;
-
-      strong {
-        font-size: 0.68rem;
-      }
-    }
-
-    &__old-price {
-      font-size: 0.6rem;
-    }
-
     &__actions {
       gap: 0.35rem;
     }
 
-    &__details-button,
-    &__cart-button {
+    &__details-button {
       min-height: 34px;
 
       border-radius: 0.55rem;
@@ -327,12 +313,6 @@
 
     &__details-button {
       padding: 0 0.4rem;
-    }
-
-    &__cart-button {
-      flex-basis: 34px;
-
-      width: 34px;
     }
 
     &__availability {
@@ -353,10 +333,10 @@
 @media (prefers-reduced-motion: reduce) {
   .product-card,
   .product-card__image,
+  .product-card__preview-title,
   .product-card__overlay,
   .product-card__information,
-  .product-card__details-button,
-  .product-card__cart-button {
+  .product-card__details-button {
     transition: none;
   }
 }

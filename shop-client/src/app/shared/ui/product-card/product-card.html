@@ -15,6 +15,10 @@
     </span>
   }
 
+  <span class="product-card__preview-title">
+    {{ product().title }}
+  </span>
+
   <div class="product-card__overlay">
     <div class="product-card__information">
       <span class="product-card__category">
@@ -24,25 +28,6 @@
       <h2 class="product-card__title">
         {{ product().title }}
       </h2>
-
-      <div class="product-card__price">
-        @if (product().discountPrice) {
-          <span class="product-card__old-price">
-            {{ product().price | number }}
-            تومان
-          </span>
-
-          <strong>
-            {{ product().discountPrice | number }}
-            تومان
-          </strong>
-        } @else {
-          <strong>
-            {{ product().price | number }}
-            تومان
-          </strong>
-        }
-      </div>
     </div>
 
     <div class="product-card__actions">
@@ -53,16 +38,6 @@
         <mat-icon>visibility</mat-icon>
         <span>مشاهده جزئیات</span>
       </a>
-
-      <button
-        type="button"
-        class="product-card__cart-button"
-        [disabled]="!product().isAvailable"
-        [attr.aria-label]="'افزودن ' + product().title + ' به سبد خرید'"
-        (click)="addToCart()"
-      >
-        <mat-icon>shopping_cart</mat-icon>
-      </button>
     </div>
   </div>
 </article>
