@@ -494,34 +494,46 @@
 @media (max-width: 700px) {
   .home-categories,
   .featured-products {
-    padding: 3.5rem var(--space-md) 0;
+    padding: 1.25rem var(--space-md) 0;
   }
 
   .home-categories__heading,
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: 0.75rem;
+
+    margin-bottom: 1.25rem;
 
     h2 {
-      font-size: 1.6rem;
+      font-size: 1.25rem;
+      line-height: 1.55;
+    }
+
+    p {
+      font-size: 0.82rem;
+      line-height: 1.75;
     }
   }
 
+
   .home-categories__grid {
-    gap: var(--space-md);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
   }
 
   .category-card {
-    min-height: 220px;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
 
     &__content {
-      inset-inline: var(--space-md);
-      inset-block-end: var(--space-md);
+      inset-inline: 0.75rem;
+      inset-block-end: 0.7rem;
 
       h3 {
         margin: 0;
-        font-size: 1rem;
+        font-size: 0.82rem;
+        line-height: 1.55;
       }
 
       p {
@@ -556,7 +568,7 @@
 @media (max-width: 480px) {
   .home-slider {
     &__container {
-      height: 360px;
+      height: 250px;
       border-radius: var(--radius-lg);
     }
 
@@ -571,16 +583,19 @@
 
   .home-slide {
     &__content {
-      right: var(--space-lg);
-      bottom: 3.5rem;
-      left: var(--space-lg);
+      right: var(--space-md);
+      bottom: 2.5rem;
+      left: var(--space-md);
 
       h1 {
-        font-size: 1.65rem;
+        margin-block: 0.55rem;
+        font-size: 1.4rem;
+        line-height: 1.45;
       }
 
       p {
-        font-size: 0.95rem;
+        font-size: 0.82rem;
+        line-height: 1.75;
       }
     }
 
@@ -591,10 +606,6 @@
 }
 
 @media (max-width: 360px) {
-  .home-categories__grid {
-    grid-template-columns: 1fr;
-  }
-
   .featured-products__grid app-product-card {
     min-width: 90%;
   }
