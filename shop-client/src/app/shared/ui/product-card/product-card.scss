@@ -100,9 +100,9 @@
 
     background: linear-gradient(
       to top,
-      rgb(25 17 13 / 94%) 0%,
-      rgb(25 17 13 / 62%) 48%,
-      rgb(25 17 13 / 5%) 100%
+      rgb(25 17 13 / 78%) 0%,
+      rgb(25 17 13 / 42%) 48%,
+      transparent 100%
     );
 
     opacity: 0;
@@ -115,8 +115,10 @@
 
       position: absolute;
       inset-block: -4px;
-      inset-inline: -24px;
+      inset-inline-start: -24px;
       z-index: -1;
+
+      width: 26px;
 
       background: inherit;
     }
@@ -239,9 +241,9 @@
 
       background: linear-gradient(
         to top,
-        rgb(25 17 13 / 94%) 0%,
-        rgb(25 17 13 / 55%) 45%,
-        transparent 76%
+        rgb(25 17 13 / 70%) 0%,
+        rgb(25 17 13 / 30%) 42%,
+        transparent 68%
       );
     }
 

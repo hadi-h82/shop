@@ -103,8 +103,6 @@
   }
 }
 
-/* Shared image styles */
-
 .home-slide__media,
 .category-card__media {
   position: absolute;
@@ -334,7 +332,6 @@
   background: var(--color-surface);
   text-decoration: none;
 
-  box-shadow: var(--shadow-sm);
   isolation: isolate;
   transform: translateZ(0);
 
@@ -357,9 +354,9 @@
 
     background: linear-gradient(
       to top,
-      rgb(25 17 12 / 90%) 0%,
-      rgb(25 17 12 / 54%) 46%,
-      rgb(25 17 12 / 10%) 100%
+      rgb(25 17 12 / 68%) 0%,
+      rgb(25 17 12 / 30%) 42%,
+      transparent 76%
     );
   }
 
