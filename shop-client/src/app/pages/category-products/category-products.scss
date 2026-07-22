@@ -13,9 +13,16 @@
      Breadcrumb
   ========================= */
 
-  &__breadcrumb {
+  &__topbar {
     margin-bottom: var(--space-lg);
 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  &__breadcrumb {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -35,6 +42,31 @@
       &:hover {
         color: var(--color-primary-hover);
       }
+    }
+  }
+
+  &__back {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    color: var(--color-primary);
+
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-decoration: none;
+
+    mat-icon {
+      width: 19px;
+      height: 19px;
+
+      font-size: 19px;
+    }
+
+    &:hover {
+      color: var(--color-primary-hover);
     }
   }
 
@@ -271,11 +303,22 @@
   .category-page {
     padding: 0.9rem 0.75rem 3rem;
 
-    &__breadcrumb {
+    &__topbar {
       margin-bottom: 0.8rem;
+
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    &__breadcrumb {
       gap: 0.35rem;
 
       font-size: 0.72rem;
+    }
+
+    &__back {
+      font-size: 0.75rem;
     }
 
     &__grid {

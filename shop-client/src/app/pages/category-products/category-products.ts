@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatIconModule } from '@angular/material/icon';
 
 import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
@@ -112,6 +113,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
   selector: 'app-category-products',
   imports: [
     RouterLink,
+    MatIconModule,
     ProductCard
   ],
   templateUrl: './category-products.html',

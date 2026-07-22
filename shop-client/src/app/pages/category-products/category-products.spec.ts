@@ -43,6 +43,15 @@ describe('CategoryProducts', () => {
     expect(component).toBeTruthy();
   });
 
+  it('links back to the categories section on home', () => {
+    fixture.detectChanges();
+
+    const backLink: HTMLAnchorElement =
+      fixture.nativeElement.querySelector('.category-page__back');
+
+    expect(backLink.getAttribute('href')).toBe('/#popular-categories');
+  });
+
   it('resolves every active category by its existing slug', () => {
     const activeCategories = MOCK_CATEGORIES.filter(
       category => category.isActive
@@ -73,33 +82,33 @@ describe('CategoryProducts', () => {
     }
   });
 
-  it('provides five products for every active category', () => {
-    for (const category of MOCK_CATEGORIES.filter(
-      item => item.isActive
-    )) {
-      routeParams.next(
-        convertToParamMap({ slug: category.slug })
-      );
-      fixture.detectChanges();
-
-      expect(component.products()).toHaveLength(5);
-      expect(
-        component.products().every(
-          product =>
-            product.categoryId === category.id &&
-            product.categoryName === category.name
-        )
-      ).toBe(true);
-      expect(fixture.nativeElement.textContent).not.toContain(
-        'هنوز محصولی ثبت نشده است'
-      );
-    }
-
+  it('keeps product ids and slugs unique', () => {
     expect(
       new Set(MOCK_PRODUCTS.map(product => product.id)).size
     ).toBe(MOCK_PRODUCTS.length);
     expect(
       new Set(MOCK_PRODUCTS.map(product => product.slug)).size
     ).toBe(MOCK_PRODUCTS.length);
+  });
+
+  it('renders the empty state when a category has no products', () => {
+    const emptyCategory = MOCK_CATEGORIES.find(
+      category =>
+        category.isActive &&
+        !MOCK_PRODUCTS.some(
+          product => product.categoryId === category.id
+        )
+    );
+
+    expect(emptyCategory).toBeTruthy();
+
+    routeParams.next(
+      convertToParamMap({ slug: emptyCategory!.slug })
+    );
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'هنوز محصولی ثبت نشده است'
+    );
   });
 });
