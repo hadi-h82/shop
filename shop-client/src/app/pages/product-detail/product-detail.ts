@@ -42,6 +42,20 @@ export class ProductDetail {
   this.cart.add(product);
 }
 
+onImageError(event: Event): void {
+  const image = event.target;
+
+  if (
+    !(image instanceof HTMLImageElement) ||
+    image.dataset['fallbackApplied'] === 'true'
+  ) {
+    return;
+  }
+
+  image.dataset['fallbackApplied'] = 'true';
+  image.src = '/images/home/default-product-image.webp';
+}
+
 constructor() {
   const product = this.product();
 

@@ -1,15 +1,37 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ActivatedRoute,
+  convertToParamMap,
+  provideRouter
+} from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+
+import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
+import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { CategoryProducts } from './category-products';
-import { provideRouter } from '@angular/router';
 
 describe('CategoryProducts', () => {
   let component: CategoryProducts;
   let fixture: ComponentFixture<CategoryProducts>;
+  const routeParams = new BehaviorSubject(
+    convertToParamMap({ slug: 'cake-trays' })
+  );
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CategoryProducts],
-      providers: [provideRouter([])]
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: routeParams.asObservable(),
+            snapshot: {
+              paramMap: routeParams.value
+            }
+          }
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CategoryProducts);
@@ -19,5 +41,65 @@ describe('CategoryProducts', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('resolves every active category by its existing slug', () => {
+    const activeCategories = MOCK_CATEGORIES.filter(
+      category => category.isActive
+    );
+
+    for (const category of activeCategories) {
+      routeParams.next(
+        convertToParamMap({ slug: category.slug })
+      );
+
+      expect(component.category()?.id).toBe(category.id);
+      expect(component.category()?.slug).toBe(category.slug);
+      expect(component.guide()?.title).toContain(category.name);
+    }
+  });
+
+  it('filters products using the resolved category id', () => {
+    for (const category of MOCK_CATEGORIES) {
+      routeParams.next(
+        convertToParamMap({ slug: category.slug })
+      );
+
+      const expectedProducts = MOCK_PRODUCTS.filter(
+        product => product.categoryId === category.id
+      );
+
+      expect(component.products()).toEqual(expectedProducts);
+    }
+  });
+
+  it('provides five products for every active category', () => {
+    for (const category of MOCK_CATEGORIES.filter(
+      item => item.isActive
+    )) {
+      routeParams.next(
+        convertToParamMap({ slug: category.slug })
+      );
+      fixture.detectChanges();
+
+      expect(component.products()).toHaveLength(5);
+      expect(
+        component.products().every(
+          product =>
+            product.categoryId === category.id &&
+            product.categoryName === category.name
+        )
+      ).toBe(true);
+      expect(fixture.nativeElement.textContent).not.toContain(
+        'هنوز محصولی ثبت نشده است'
+      );
+    }
+
+    expect(
+      new Set(MOCK_PRODUCTS.map(product => product.id)).size
+    ).toBe(MOCK_PRODUCTS.length);
+    expect(
+      new Set(MOCK_PRODUCTS.map(product => product.slug)).size
+    ).toBe(MOCK_PRODUCTS.length);
   });
 });

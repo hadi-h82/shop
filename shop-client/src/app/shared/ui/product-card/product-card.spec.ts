@@ -25,4 +25,16 @@ describe('ProductCard', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('uses the default product image when loading fails', () => {
+    const image: HTMLImageElement =
+      fixture.nativeElement.querySelector('.product-card__image');
+
+    image.dispatchEvent(new Event('error'));
+
+    expect(image.src).toContain(
+      '/images/home/default-product-image.webp'
+    );
+    expect(image.dataset['fallbackApplied']).toBe('true');
+  });
 });

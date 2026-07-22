@@ -6,7 +6,11 @@
       </div>
 
       <div class="product-detail__image">
-        <img [src]="item.imageUrl" [alt]="item.title" />
+        <img
+          [src]="item.imageUrl"
+          [alt]="item.title"
+          (error)="onImageError($event)"
+        />
       </div>
     } @else {
       <div class="product-not-found">
