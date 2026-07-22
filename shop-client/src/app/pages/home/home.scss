@@ -299,8 +299,17 @@
   scroll-margin-top: 130px;
 
   &__eyebrow {
+    padding: 0.35rem 0.8rem;
+
+    border-radius: 999px;
+
     color: var(--color-primary);
-    font-size: 0.9rem;
+    background: color-mix(
+      in srgb,
+      var(--color-primary) 11%,
+      transparent
+    );
+
     font-weight: 800;
   }
 
