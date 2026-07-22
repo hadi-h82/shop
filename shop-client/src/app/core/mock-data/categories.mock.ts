@@ -6,7 +6,7 @@ export const MOCK_CATEGORIES: Category[] = [
     name: 'سینی کیک',
     slug: 'cake-trays',
     description: 'انواع سینی مناسب کیک و شیرینی',
-    imageUrl: '/images/home/category-baking-tools.webp',
+    imageUrl: '/images/home/category-cake-trays.webp',
     displayOrder: 1,
     isActive: true
   },
@@ -15,7 +15,7 @@ export const MOCK_CATEGORIES: Category[] = [
     name: 'سینی فینگر فود',
     slug: 'finger-food-trays',
     description: 'سینی‌های مناسب سرو فینگر فود',
-    imageUrl: '/images/home/category-decoration.webp',
+    imageUrl: '/images/home/category-finger-food-trays.webp',
     displayOrder: 2,
     isActive: true
   },
@@ -24,7 +24,7 @@ export const MOCK_CATEGORIES: Category[] = [
     name: 'پلکسی',
     slug: 'plexiglass',
     description: 'انواع محصولات پلکسی طرح‌دار و ساده',
-    imageUrl: '/images/home/category-ingredients.webp',
+    imageUrl: '/images/home/category-plexiglass.webp',
     displayOrder: 3,
     isActive: true
   },
@@ -33,7 +33,7 @@ export const MOCK_CATEGORIES: Category[] = [
     name: 'باکس',
     slug: 'boxes',
     description: 'باکس‌های متنوع برای چیدمان و ارائه',
-    imageUrl: '/images/home/category-colors.webp',
+    imageUrl: '/images/home/category-boxes.webp',
     displayOrder: 4,
     isActive: true
   },
@@ -42,7 +42,7 @@ export const MOCK_CATEGORIES: Category[] = [
     name: 'استنسیل',
     slug: 'stencils',
     description: 'طرح‌های متنوع استنسیل برای تزئین',
-    imageUrl: '/images/home/category-decoration.webp',
+    imageUrl: '/images/home/category-stencils.webp',
     displayOrder: 5,
     isActive: true
   },
@@ -60,7 +60,7 @@ export const MOCK_CATEGORIES: Category[] = [
     name: 'ابزار و لوازم قنادی',
     slug: 'pastry-tools',
     description: 'ابزارهای کاربردی برای پخت و تزئین',
-    imageUrl: '/images/home/category-equipment.webp',
+    imageUrl: '/images/home/category-pastry-tools.webp',
     displayOrder: 7,
     isActive: true
   }
