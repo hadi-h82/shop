@@ -2,12 +2,14 @@
   class="product-card"
   [class.product-card--unavailable]="!product().isAvailable"
 >
-  <img
-    class="product-card__image"
-    [src]="product().imageUrl"
-    [alt]="product().title"
-    loading="lazy"
-  />
+  <div class="product-card__media">
+    <img
+      class="product-card__image"
+      [src]="product().imageUrl"
+      [alt]="product().title"
+      loading="lazy"
+    />
+  </div>
 
   @if (!product().isAvailable) {
     <span class="product-card__availability">

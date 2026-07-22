@@ -19,7 +19,6 @@
     border-radius: var(--radius-xl);
 
     background: #241f1b;
-    box-shadow: var(--shadow-md);
 
     // Prevent Chrome from showing a one-pixel seam around transformed images.
     transform: translateZ(0);
@@ -109,7 +108,7 @@
 .home-slide__media,
 .category-card__media {
   position: absolute;
-  inset: -2px;
+  inset: -4px;
   overflow: hidden;
 }
 
@@ -167,12 +166,13 @@
 
   &__overlay {
     position: absolute;
-    inset: 0;
+    inset-block: -4px;
+    inset-inline: -24px;
     z-index: 1;
 
     background: linear-gradient(
       90deg,
-      rgb(0 0 0 / 8%) 0%,
+      rgb(0 0 0 / 34%) 0%,
       rgb(0 0 0 / 34%) 45%,
       rgb(0 0 0 / 78%) 100%
     );
@@ -343,7 +343,7 @@
 
   &__overlay {
     position: absolute;
-    inset: 0;
+    inset: -1px;
     z-index: -1;
 
     background: linear-gradient(
@@ -391,11 +391,6 @@
       font-size: 18px;
       transition: transform 180ms ease;
     }
-  }
-
-  &:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-6px) translateZ(0);
   }
 
   &:hover &__image {
