@@ -145,6 +145,11 @@
       &::placeholder {
         color: var(--color-muted);
       }
+
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration {
+        appearance: none;
+      }
     }
   }
 
