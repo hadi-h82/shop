@@ -1,4 +1,5 @@
 import { ProductOption } from './product-option.model';
+
 export interface Product {
   id: number;
   categoryId?: number;

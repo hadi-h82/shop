@@ -1,8 +1,151 @@
 <section class="product-detail">
-  <div class="product-detail__container">
-    @if (product(); as item) {
+  @if (product(); as item) {
+    <div class="product-detail__container">
+      <a
+        class="product-detail__breadcrumb"
+        routerLink="/products"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+
+        <span>بازگشت به محصولات</span>
+      </a>
+
       <div class="product-detail__content">
-        <!-- محتوای فعلی محصول -->
+        <span class="product-detail__category">
+          {{ item.categoryName }}
+        </span>
+
+        <h1>{{ item.title }}</h1>
+
+        @if (sortedOptions().length > 0) {
+          <div class="product-options">
+            @for (
+              option of sortedOptions();
+              track option.id
+            ) {
+              <div class="product-option">
+                <div class="product-option__header">
+                  <strong>{{ option.name }}</strong>
+
+                  @if (option.isRequired) {
+                    <small>انتخاب الزامی</small>
+                  } @else {
+                    <small>اختیاری</small>
+                  }
+                </div>
+                @if (option.inputType === 'select') {
+                  <div class="product-option__select-wrapper">
+                    <mat-select
+                      class="product-option__select"
+                      [value]="
+                        selectedOptions()[option.id]?.id ?? null
+                      "
+                      [panelClass]="'product-option-select-panel'"
+                      (selectionChange)="
+                        selectFromDropdown(option, $event.value)
+                      "
+                    >
+                      <mat-option [value]="null">
+                        یک گزینه انتخاب کنید
+                      </mat-option>
+
+                      @for (
+                        optionValue of sortedOptionValues(option);
+                        track optionValue.id
+                      ) {
+                        <mat-option
+                          [value]="optionValue.id"
+                          [disabled]="!optionValue.isActive"
+                        >
+                          {{ optionValue.label }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </div>
+                } @else {
+                  <div class="product-option__values">
+                    @for (
+                      optionValue of sortedOptionValues(option);
+                      track optionValue.id
+                    ) {
+                      <button
+                        type="button"
+                        class="product-option__value"
+                        [class.product-option__value--selected]="
+                          isOptionSelected(
+                            option.id,
+                            optionValue.id
+                          )
+                        "
+                        [class.product-option__value--color]="
+                          option.inputType === 'color'
+                        "
+                        [disabled]="!optionValue.isActive"
+                        (click)="
+                          selectOption(
+                            option.id,
+                            optionValue
+                          )
+                        "
+                      >
+                        @if (
+                          option.inputType === 'color' &&
+                          optionValue.colorCode
+                        ) {
+                          <span
+                            class="product-option__color"
+                            [style.background-color]="
+                              optionValue.colorCode
+                            "
+                          ></span>
+                        }
+
+                        <span>
+                          {{ optionValue.label }}
+                        </span>
+
+                        @if (!optionValue.isActive) {
+                          <small class="product-option__unavailable">
+                            ناموجود
+                          </small>
+                        }
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <div class="product-detail__final-price">
+          <span>قیمت نهایی</span>
+
+          <strong>
+            {{ finalPrice() | number }} تومان
+          </strong>
+        </div>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="product-detail__add-button"
+          [disabled]="
+            !item.isAvailable ||
+            !requiredOptionsSelected()
+          "
+          (click)="addToCart()"
+        >
+          <mat-icon>shopping_cart</mat-icon>
+
+          @if (!item.isAvailable) {
+            ناموجود
+          } @else if (!requiredOptionsSelected()) {
+            ویژگی‌های الزامی را انتخاب کنید
+          } @else {
+            افزودن به سبد خرید
+          }
+        </button>
       </div>
 
       <div class="product-detail__image">
@@ -12,26 +155,37 @@
           (error)="onImageError($event)"
         />
       </div>
-    } @else {
+    </div>
+  } @else {
+    <div class="product-detail__container">
       <div class="product-not-found">
-        <span class="product-not-found__code">404</span>
+        <span class="product-not-found__code">
+          404
+        </span>
 
         <h1>محصول پیدا نشد</h1>
 
         <p>
-          محصولی که دنبالش هستید وجود ندارد یا از فروشگاه حذف شده است.
+          محصولی که دنبالش هستید وجود ندارد یا از فروشگاه
+          حذف شده است.
         </p>
 
         <div class="product-not-found__actions">
-          <a mat-flat-button routerLink="/products">
+          <a
+            mat-flat-button
+            routerLink="/products"
+          >
             مشاهده محصولات
           </a>
 
-          <a mat-button routerLink="/">
+          <a
+            mat-button
+            routerLink="/"
+          >
             بازگشت به صفحه اصلی
           </a>
         </div>
       </div>
-    }
-  </div>
+    </div>
+  }
 </section>

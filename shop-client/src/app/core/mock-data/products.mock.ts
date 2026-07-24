@@ -1,15 +1,105 @@
 import { Product } from '../models/product.model';
 const CAKE_TRAY_PRODUCTS: Product[] = [
+
   {
     id: 1,
     categoryId: 1,
     title: 'سینی کیک MDF یک‌رو با ضخامت ۳ میلی‌متر',
     slug: 'single-sided-mdf-cake-board-3mm',
-    price: 0,
+    price: 120000,
     imageUrl: '/images/home/mdf-cake-board-one-side.webp',
-    categoryName: 'سینی کیک',
+    categoryName: 'سینی و زیرکیکی',
     isAvailable: true,
-    options: []
+
+    options: [
+      {
+        id: 1,
+        name: 'اندازه',
+        inputType: 'radio',
+        isRequired: true,
+        displayOrder: 1,
+
+        values: [
+          {
+            id: 1,
+            label: '۲۰ سانتی‌متر',
+            value: '20',
+            priceAdjustment: 0,
+            isActive: true,
+            displayOrder: 1
+          },
+          {
+            id: 2,
+            label: '۲۵ سانتی‌متر',
+            value: '25',
+            priceAdjustment: 30000,
+            isActive: true,
+            displayOrder: 2
+          },
+          {
+            id: 3,
+            label: '۳۰ سانتی‌متر',
+            value: '30',
+            priceAdjustment: 60000,
+            isActive: true,
+            displayOrder: 3
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: 'رنگ',
+        inputType: 'color',
+        isRequired: true,
+        displayOrder: 2,
+
+        values: [
+          {
+            id: 4,
+            label: 'سفید',
+            value: 'white',
+            colorCode: '#ffffff',
+            priceAdjustment: 0,
+            isActive: true,
+            displayOrder: 1
+          },
+          {
+            id: 5,
+            label: 'طلایی',
+            value: 'gold',
+            colorCode: '#d4af37',
+            priceAdjustment: 15000,
+            isActive: true,
+            displayOrder: 2
+          }
+        ]
+      },
+      {
+        id: 3,
+        name: 'مدل لبه',
+        inputType: 'select',
+        isRequired: false,
+        displayOrder: 3,
+
+        values: [
+          { id: 6, label: 'لبه ساده', value: 'simple', priceAdjustment: 0, isActive: true, displayOrder: 1 },
+          { id: 7, label: 'لبه گرد', value: 'rounded', priceAdjustment: 10000, isActive: true, displayOrder: 2 },
+          { id: 8, label: 'لبه طلایی', value: 'gold', priceAdjustment: 15000, isActive: true, displayOrder: 3 },
+          { id: 9, label: 'لبه نقره‌ای', value: 'silver', priceAdjustment: 15000, isActive: true, displayOrder: 4 },
+          { id: 10, label: 'لبه رزگلد', value: 'rose-gold', priceAdjustment: 20000, isActive: true, displayOrder: 5 },
+          { id: 11, label: 'لبه مشکی', value: 'black', priceAdjustment: 20000, isActive: true, displayOrder: 6 },
+          { id: 12, label: 'لبه سفید', value: 'white', priceAdjustment: 20000, isActive: true, displayOrder: 7 },
+          { id: 13, label: 'لبه آینه‌ای', value: 'mirror', priceAdjustment: 25000, isActive: true, displayOrder: 8 },
+          { id: 14, label: 'لبه اکلیلی طلایی', value: 'gold-glitter', priceAdjustment: 30000, isActive: true, displayOrder: 9 },
+          { id: 15, label: 'لبه اکلیلی نقره‌ای', value: 'silver-glitter', priceAdjustment: 30000, isActive: true, displayOrder: 10 },
+          { id: 16, label: 'لبه مخملی', value: 'velvet', priceAdjustment: 35000, isActive: true, displayOrder: 11 },
+          { id: 17, label: 'لبه طرح‌دار', value: 'patterned', priceAdjustment: 40000, isActive: true, displayOrder: 12 },
+          { id: 18, label: 'لبه طرح سنگ', value: 'marble', priceAdjustment: 45000, isActive: true, displayOrder: 13 },
+          { id: 19, label: 'لبه برجسته', value: 'raised', priceAdjustment: 50000, isActive: true, displayOrder: 14 },
+          { id: 20, label: 'لبه لوکس طلایی', value: 'luxury-gold', priceAdjustment: 60000, isActive: true, displayOrder: 15 }
+        ]
+      }
+    ]
   },
   {
     id: 2,
@@ -91,7 +181,7 @@ const FINGER_FOOD_TRAY_PRODUCTS: Product[] = [
     isAvailable: true,
     options: []
   },
-    {
+  {
     id: 204,
     categoryId: 2,
     title: 'سینی فینگر فود - دوبل',
@@ -102,7 +192,7 @@ const FINGER_FOOD_TRAY_PRODUCTS: Product[] = [
     isAvailable: true,
     options: []
   },
-  ];
+];
 
 const PLEXIGLASS_PRODUCTS: Product[] = [
   {
