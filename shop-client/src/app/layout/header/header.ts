@@ -52,9 +52,9 @@ export class Header {
       });
   }
 
-  search(): void {
+  search(event?: SubmitEvent): void {
+    event?.preventDefault();
     const query = this.searchControl.value.trim();
-
     this.router.navigate(['/products'], {
       queryParams: query ? { q: query } : {}
     });
