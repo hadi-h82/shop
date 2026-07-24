@@ -168,6 +168,39 @@
     color: var(--color-primary);
     background: rgba(201, 162, 39, 0.12);
   }
+
+  &__show-all {
+  min-height: 44px;
+  margin-top: 1.25rem;
+  padding: 0.7rem 1.25rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-md);
+
+  color: #fff;
+  background: var(--color-primary);
+
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgb(166 106 63 / 20%);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
 }
 
 @media (max-width: 1100px) {

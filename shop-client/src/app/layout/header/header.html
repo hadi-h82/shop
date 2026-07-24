@@ -14,14 +14,37 @@
     </a>
 
     <!-- Search -->
-    <div class="site-header__search">
-      <mat-icon>search</mat-icon>
+<form
+  class="site-header__search"
+  role="search"
+  (ngSubmit)="search()"
+>
+  <button
+    type="submit"
+    class="site-header__search-submit"
+    aria-label="جست‌وجوی محصول"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
 
-      <input
-        type="text"
-        placeholder="دنبال چه محصولی می‌گردی؟"
-      />
-    </div>
+  <input
+    type="search"
+    [formControl]="searchControl"
+    placeholder="دنبال چه محصولی می‌گردی؟"
+    aria-label="جست‌وجوی محصولات"
+  />
+
+  @if (searchControl.value) {
+    <button
+      type="button"
+      class="site-header__search-clear"
+      aria-label="پاک‌کردن جست‌وجو"
+      (click)="clearSearch()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</form>
 
     <!-- Navigation -->
     <nav class="site-header__nav">
