@@ -8,7 +8,10 @@ import {
   signal
 } from '@angular/core';
 
-import { CartItem } from '../models/cart-item.model';
+import {
+  CartItem,
+  SelectedCartOption
+} from '../models/cart-item.model';
 import { Product } from '../models/product.model';
 
 @Injectable({
@@ -32,12 +35,11 @@ export class CartService {
   );
 
   readonly totalPrice = computed(() =>
-    this.itemsState().reduce((total, item) => {
-      const unitPrice =
-        item.product.discountPrice ?? item.product.price;
-
-      return total + unitPrice * item.quantity;
-    }, 0)
+    this.itemsState().reduce(
+      (total, item) =>
+        total + item.finalPrice * item.quantity,
+      0
+    )
   );
 
   constructor() {
@@ -53,19 +55,42 @@ export class CartService {
     });
   }
 
-  add(product: Product): void {
-    if (!product.isAvailable || product.price <= 0) {
+  add(
+    product: Product,
+    selectedOptions: SelectedCartOption[] = [],
+    finalPrice?: number,
+    quantity = 1
+  ): void {
+    const calculatedFinalPrice =
+      finalPrice ??
+      product.discountPrice ??
+      product.price;
+
+    if (
+      !product.isAvailable ||
+      calculatedFinalPrice <= 0 ||
+      quantity <= 0
+    ) {
       return;
     }
+
+    const cartItemId = this.createCartItemId(
+      product.id,
+      selectedOptions
+    );
+
     const existingItem = this.itemsState().find(
-      item => item.product.id === product.id
+      item => item.cartItemId === cartItemId
     );
 
     if (existingItem) {
       this.itemsState.update(items =>
         items.map(item =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+          item.cartItemId === cartItemId
+            ? {
+                ...item,
+                quantity: item.quantity + quantity
+              }
             : item
         )
       );
@@ -76,42 +101,74 @@ export class CartService {
     this.itemsState.update(items => [
       ...items,
       {
+        cartItemId,
         product,
-        quantity: 1
+        quantity,
+        selectedOptions,
+        finalPrice: calculatedFinalPrice
       }
     ]);
   }
 
-  increase(productId: number): void {
+  increase(cartItemId: string): void {
     this.itemsState.update(items =>
       items.map(item =>
-        item.product.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
+        item.cartItemId === cartItemId
+          ? {
+              ...item,
+              quantity: item.quantity + 1
+            }
           : item
       )
     );
   }
 
-  decrease(productId: number): void {
+  decrease(cartItemId: string): void {
     this.itemsState.update(items =>
       items
         .map(item =>
-          item.product.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
+          item.cartItemId === cartItemId
+            ? {
+                ...item,
+                quantity: item.quantity - 1
+              }
             : item
         )
         .filter(item => item.quantity > 0)
     );
   }
 
-  remove(productId: number): void {
+  remove(cartItemId: string): void {
     this.itemsState.update(items =>
-      items.filter(item => item.product.id !== productId)
+      items.filter(
+        item => item.cartItemId !== cartItemId
+      )
     );
   }
 
   clear(): void {
     this.itemsState.set([]);
+  }
+
+  private createCartItemId(
+    productId: number,
+    selectedOptions: SelectedCartOption[]
+  ): string {
+    const optionsKey = [...selectedOptions]
+      .sort((firstOption, secondOption) =>
+        firstOption.optionId.localeCompare(
+          secondOption.optionId
+        )
+      )
+      .map(
+        option =>
+          `${option.optionId}:${option.valueId}`
+      )
+      .join('|');
+
+    return optionsKey
+      ? `product-${productId}_${optionsKey}`
+      : `product-${productId}`;
   }
 
   private loadInitialCart(): CartItem[] {
@@ -120,17 +177,79 @@ export class CartService {
     }
 
     try {
-      const storedCart = localStorage.getItem(this.storageKey);
+      const storedCart = localStorage.getItem(
+        this.storageKey
+      );
 
       if (!storedCart) {
         return [];
       }
 
-      const parsedCart = JSON.parse(storedCart);
+      const parsedCart: unknown = JSON.parse(storedCart);
 
-      return Array.isArray(parsedCart) ? parsedCart : [];
+      if (!Array.isArray(parsedCart)) {
+        return [];
+      }
+
+      return parsedCart
+        .filter(this.isStoredCartItem)
+        .map(item => this.normalizeCartItem(item));
     } catch {
       return [];
     }
+  }
+
+  private isStoredCartItem(
+    value: unknown
+  ): value is Partial<CartItem> & {
+    product: Product;
+    quantity: number;
+  } {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+
+    const item = value as Partial<CartItem>;
+
+    return (
+      !!item.product &&
+      typeof item.product === 'object' &&
+      typeof item.product.id === 'number' &&
+      typeof item.quantity === 'number' &&
+      item.quantity > 0
+    );
+  }
+
+  private normalizeCartItem(
+    item: Partial<CartItem> & {
+      product: Product;
+      quantity: number;
+    }
+  ): CartItem {
+    const selectedOptions = Array.isArray(
+      item.selectedOptions
+    )
+      ? item.selectedOptions
+      : [];
+
+    const finalPrice =
+      typeof item.finalPrice === 'number' &&
+      item.finalPrice > 0
+        ? item.finalPrice
+        : item.product.discountPrice ??
+          item.product.price;
+
+    return {
+      cartItemId:
+        item.cartItemId ??
+        this.createCartItemId(
+          item.product.id,
+          selectedOptions
+        ),
+      product: item.product,
+      quantity: item.quantity,
+      selectedOptions,
+      finalPrice
+    };
   }
 }

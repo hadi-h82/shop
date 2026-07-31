@@ -10,12 +10,15 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import {
   ProductOption,
   ProductOptionValue
 } from '../../core/models/product-option.model';
+import { SelectedCartOption } from '../../core/models/cart-item.model';
+import { CartService } from '../../core/services/cart';
 import { Seo } from '../../core/services/seo';
 
 const SITE_URL = 'https://sevart.ir';
@@ -35,6 +38,8 @@ const SITE_URL = 'https://sevart.ir';
 export class ProductDetail {
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(Seo);
+  private readonly cartService = inject(CartService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly slug = this.route.snapshot.paramMap.get('id');
 
@@ -169,19 +174,42 @@ export class ProductDetail {
   addToCart(): void {
     const product = this.product();
 
-    if (
-      !product ||
-      !product.isAvailable ||
-      !this.requiredOptionsSelected()
-    ) {
+    if (!product || !product.isAvailable) {
       return;
     }
 
-    console.log({
+    if (!this.requiredOptionsSelected()) {
+      this.snackBar.open(
+        'لطفاً گزینه‌های ضروری محصول را انتخاب کنید.',
+        'باشه',
+        {
+          duration: 3500,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        }
+      );
+
+      return;
+    }
+
+    const selectedCartOptions =
+      this.createSelectedCartOptions();
+
+    this.cartService.add(
       product,
-      selectedOptions: this.selectedOptions(),
-      finalPrice: this.finalPrice()
-    });
+      selectedCartOptions,
+      this.finalPrice()
+    );
+
+    this.snackBar.open(
+      'محصول با موفقیت به سبد خرید اضافه شد.',
+      'بستن',
+      {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom'
+      }
+    );
   }
 
   onImageError(event: Event): void {
@@ -196,5 +224,23 @@ export class ProductDetail {
 
     image.dataset['fallbackApplied'] = 'true';
     image.src = '/images/home/default-product-image.webp';
+  }
+
+  private createSelectedCartOptions(): SelectedCartOption[] {
+    const selectedOptions = this.selectedOptions();
+
+    return this.sortedOptions()
+      .filter(option => Boolean(selectedOptions[option.id]))
+      .map(option => {
+        const selectedValue = selectedOptions[option.id];
+
+        return {
+          optionId: String(option.id),
+          optionTitle: option.name,
+          valueId: String(selectedValue.id),
+          valueTitle: selectedValue.label,
+          priceModifier: selectedValue.priceAdjustment
+        };
+      });
   }
 }
