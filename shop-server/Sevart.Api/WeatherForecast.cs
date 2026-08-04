@@ -1,4 +1,4 @@
-namespace Shop.Api
+namespace Sevart.Api
 {
     public class WeatherForecast
     {
