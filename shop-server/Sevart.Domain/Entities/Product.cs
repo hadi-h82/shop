@@ -19,6 +19,7 @@ public class Product : BaseAuditableEntity
         decimal price,
         int displayOrder)
     {
+
         if (categoryId <= 0)
         {
             throw new ArgumentOutOfRangeException(
@@ -81,6 +82,228 @@ public class Product : BaseAuditableEntity
 
     public int DisplayOrder { get; private set; }
 
+    private readonly List<ProductImage> _images = new();
+
+    public IReadOnlyCollection<ProductImage> Images
+        => _images.AsReadOnly();
+
+    private readonly List<ProductOption> _options = new();
+
+    public IReadOnlyCollection<ProductOption> Options
+        => _options.AsReadOnly();
+
+    public void AddImage(
+        string url,
+        int displayOrder,
+        bool isPrimary = false)
+    {
+        var image = new ProductImage(
+            this,
+            url,
+            displayOrder);
+
+        if (isPrimary || _images.Count == 0)
+        {
+            foreach (var productImage in _images)
+            {
+                productImage.RemoveAsPrimary();
+            }
+
+            image.SetAsPrimary();
+        }
+
+        _images.Add(image);
+    }
+
+    public void SetPrimaryImage(int imageId)
+    {
+        var image = _images.FirstOrDefault(x => x.Id == imageId);
+
+        if (image is null)
+        {
+            throw new InvalidOperationException(
+                "Product image was not found.");
+        }
+
+        foreach (var productImage in _images)
+        {
+            productImage.RemoveAsPrimary();
+        }
+
+        image.SetAsPrimary();
+    }
+
+    public void RemoveImage(int imageId)
+    {
+        var image = _images.FirstOrDefault(x => x.Id == imageId);
+
+        if (image is null)
+        {
+            throw new InvalidOperationException(
+                "Product image was not found.");
+        }
+
+        var wasPrimary = image.IsPrimary;
+
+        _images.Remove(image);
+
+        if (wasPrimary && _images.Count > 0)
+        {
+            var newPrimaryImage = _images
+                .OrderBy(x => x.DisplayOrder)
+                .First();
+
+            newPrimaryImage.SetAsPrimary();
+        }
+    }
+
+    public void AddOption(
+    string name,
+    ProductOptionInputType inputType,
+    bool isRequired,
+    int displayOrder)
+    {
+        var option = new ProductOption(
+            this,
+            name,
+            inputType,
+            isRequired,
+            displayOrder);
+
+        _options.Add(option);
+    }
+
+
+    public void AddOptionValue(
+    int optionId,
+    string label,
+    string value,
+    decimal priceAdjustment,
+    string? colorCode,
+    int displayOrder)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.AddValue(
+            label,
+            value,
+            priceAdjustment,
+            colorCode,
+            displayOrder);
+    }
+
+
+    public void DeactivateOption(int optionId)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.Deactivate();
+    }
+
+    public void ActivateOption(int optionId)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.Activate();
+    }
+
+
+    public void UpdateOption(
+    int optionId,
+    string name,
+    ProductOptionInputType inputType,
+    bool isRequired,
+    int displayOrder)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.Update(
+            name,
+            inputType,
+            isRequired,
+            displayOrder);
+    }
+
+    public void DeactivateOptionValue(
+    int optionId,
+    int valueId)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.DeactivateValue(valueId);
+    }
+
+
+    public void ActivateOptionValue(
+    int optionId,
+    int valueId)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.ActivateValue(valueId);
+    }
+
+    public void UpdateOptionValue(
+    int optionId,
+    int valueId,
+    string label,
+    string value,
+    decimal priceAdjustment,
+    string? colorCode,
+    int displayOrder)
+    {
+        var option = _options.FirstOrDefault(x => x.Id == optionId);
+
+        if (option is null)
+        {
+            throw new InvalidOperationException(
+                "Product option was not found.");
+        }
+
+        option.UpdateValue(
+            valueId,
+            label,
+            value,
+            priceAdjustment,
+            colorCode,
+            displayOrder);
+    }
 
     public void Publish()
     {
