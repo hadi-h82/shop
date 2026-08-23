@@ -26,4 +26,8 @@ public interface ICategoryRepository
     Task DeleteAsync(
     Category category,
     CancellationToken cancellationToken = default);
+
+    Task<Category?> GetBySlugAsync(
+    string slug,
+    CancellationToken cancellationToken = default);
 }

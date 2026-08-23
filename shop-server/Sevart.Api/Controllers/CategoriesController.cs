@@ -49,6 +49,23 @@ public class CategoriesController : ControllerBase
         return Ok(ToResponse(category));
     }
 
+    [HttpGet("slug/{slug}")]
+    public async Task<IActionResult> GetBySlug(
+    string slug,
+    CancellationToken cancellationToken)
+    {
+        var category = await _categoryRepository.GetBySlugAsync(
+            slug,
+            cancellationToken);
+
+        if (category is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(ToResponse(category));
+    }
+
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(

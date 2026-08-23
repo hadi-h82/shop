@@ -74,4 +74,15 @@ public class CategoryRepository : ICategoryRepository
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<Category?> GetBySlugAsync(
+    string slug,
+    CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                x => x.Slug == slug && x.IsActive,
+                cancellationToken);
+    }
 }
