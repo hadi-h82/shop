@@ -4,7 +4,7 @@ import { Meta, Title } from '@angular/platform-browser';
 
 export interface SeoData {
   title: string;
-  description: string;
+  description: string | null;
   canonicalUrl?: string;
   imageUrl?: string;
   type?: 'website' | 'product';
@@ -21,19 +21,24 @@ export class Seo {
   update(data: SeoData): void {
     this.title.setTitle(data.title);
 
-    this.meta.updateTag({
-      name: 'description',
-      content: data.description
-    });
+    if (data.description !== null) {
+      this.meta.updateTag({
+        name: 'description',
+        content: data.description
+      });
+
+      this.meta.updateTag({
+        property: 'og:description',
+        content: data.description
+      });
+    } else {
+      this.meta.removeTag('name="description"');
+      this.meta.removeTag('property="og:description"');
+    }
 
     this.meta.updateTag({
       property: 'og:title',
       content: data.title
-    });
-
-    this.meta.updateTag({
-      property: 'og:description',
-      content: data.description
     });
 
     this.meta.updateTag({

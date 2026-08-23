@@ -7,12 +7,10 @@ import {
   PLATFORM_ID,
   signal
 } from '@angular/core';
+import { CartItem, SelectedCartOption } from '../../models/cart-item.model';
+import { Product } from '../../models/product.model';
 
-import {
-  CartItem,
-  SelectedCartOption
-} from '../models/cart-item.model';
-import { Product } from '../models/product.model';
+
 
 @Injectable({
   providedIn: 'root'
