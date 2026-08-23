@@ -18,8 +18,9 @@ import {
   ProductOptionValue
 } from '../../core/models/product-option.model';
 import { SelectedCartOption } from '../../core/models/cart-item.model';
-import { CartService } from '../../core/services/cart';
-import { Seo } from '../../core/services/seo';
+import { Seo } from '../../core/services/seo/seo';
+import { CartService } from '../../core/services/cart/cart';
+
 
 const SITE_URL = 'https://sevart.ir';
 

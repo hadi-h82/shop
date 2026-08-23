@@ -7,8 +7,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
-import { Seo } from '../../core/services/seo';
 import { ProductCard } from '../../shared/ui/product-card/product-card';
+import { Seo } from '../../core/services/seo/seo';
 
 const SITE_URL = 'https://sevart.ir';
 

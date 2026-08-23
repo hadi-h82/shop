@@ -10,8 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../core/services/cart/cart';
 
-import { CartService } from '../../core/services/cart';
 
 @Component({
   selector: 'app-checkout',

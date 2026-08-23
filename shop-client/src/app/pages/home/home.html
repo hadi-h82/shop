@@ -63,11 +63,13 @@
       </div>
 
       <div class="home-categories__grid">
-        @for (category of categories; track category.id; let index = $index) {
+        @for (category of categories(); track category.id; let index = $index) {
         <a class="category-card" [routerLink]="['/categories', category.slug]">
           <div class="category-card__media">
-            <img class="category-card__image" [ngSrc]="category.imageUrl" [alt]="category.name" [priority]="index < 3"
+            @if (category.imageUrl; as imageUrl) {
+            <img class="category-card__image" [ngSrc]="imageUrl" [alt]="category.name" [priority]="index < 3"
               sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw" fill />
+            }
           </div>
 
           <div class="category-card__overlay"></div>

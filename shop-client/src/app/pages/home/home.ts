@@ -3,9 +3,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 
-import { Seo } from '../../core/services/seo';
+
 import {
   Component,
+  computed,
   DestroyRef,
   inject,
   OnInit,
@@ -16,7 +17,9 @@ import {
   isPlatformBrowser,
   NgOptimizedImage
 } from '@angular/common';
-import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
+import { CategoryService } from '../../core/services/category/category.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Seo } from '../../core/services/seo/seo';
 
 
 const SITE_URL = 'https://sevart.ir';
@@ -42,6 +45,7 @@ interface HeroSlide {
 })
 export class Home implements OnInit {
   private readonly seo = inject(Seo);
+  private readonly categoryService = inject(CategoryService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -74,9 +78,20 @@ export class Home implements OnInit {
   ];
 
 
-readonly categories = MOCK_CATEGORIES
-  .filter(category => category.isActive)
-  .sort((first, second) => first.displayOrder - second.displayOrder);
+readonly categoriesResponse = toSignal(
+  this.categoryService.getAll(),
+  {
+    initialValue: []
+  }
+);
+
+readonly categories = computed(() =>
+  this.categoriesResponse()
+    .filter(category => category.isActive)
+    .sort((first, second) =>
+      first.displayOrder - second.displayOrder
+    )
+);
 
   readonly featuredProducts = MOCK_PRODUCTS;
 

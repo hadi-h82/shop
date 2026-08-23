@@ -14,9 +14,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../core/services/cart/cart';
+import { ThemeService } from '../../core/services/theme/theme';
 
-import { CartService } from '../../core/services/cart';
-import { ThemeService } from '../../core/services/theme';
+
 
 @Component({
   selector: 'app-header',

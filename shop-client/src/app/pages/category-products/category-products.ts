@@ -4,14 +4,15 @@ import {
   effect,
   inject
 } from '@angular/core';
+import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map, of, switchMap, catchError } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-
-import { MOCK_CATEGORIES } from '../../core/mock-data/categories.mock';
-import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
-import { Seo } from '../../core/services/seo';
 import { ProductCard } from '../../shared/ui/product-card/product-card';
+import { CategoryService } from '../../core/services/category/category.service';
+import { Seo } from '../../core/services/seo/seo';
+import { Product } from '../../core/models/product.model';
 
 const SITE_URL = 'https://sevart.ir';
 
@@ -122,39 +123,52 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
 export class CategoryProducts {
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(Seo);
+  private readonly categoryService = inject(CategoryService);
+  private readonly category$ = this.route.paramMap.pipe(
+  map(params => params.get('slug')),
 
-  private readonly routeParams = toSignal(
-    this.route.paramMap,
-    {
-      initialValue: this.route.snapshot.paramMap
-    }
-  );
-
-  readonly slug = computed(() =>
-    this.routeParams().get('slug')
-  );
-
-  readonly category = computed(() => {
-    const slug = this.slug();
-
-    return MOCK_CATEGORIES.find(
-      category =>
-        category.slug === slug &&
-        category.isActive
-    );
-  });
-
-  readonly products = computed(() => {
-    const category = this.category();
-
-    if (!category) {
-      return [];
+  switchMap(slug => {
+    if (!slug) {
+      return of(null);
     }
 
-    return MOCK_PRODUCTS.filter(
-      product => product.categoryId === category.id
+    return this.categoryService.getBySlug(slug).pipe(
+      catchError(() => of(null))
     );
-  });
+  })
+);
+
+readonly slug = toSignal(
+  this.route.paramMap.pipe(
+    map(params => params.get('slug'))
+  ),
+  {
+    initialValue: this.route.snapshot.paramMap.get('slug')
+  }
+);
+
+readonly category = toSignal(
+  this.category$,
+  {
+    initialValue: undefined
+  }
+);
+
+// readonly products = computed(() => {
+//   const category = this.category();
+
+//   if (!category) {
+//     return [];
+//   }
+
+//   return MOCK_PRODUCTS.filter(
+//     product => product.categoryId === category.id
+//   );
+// });
+
+readonly products = computed<Product[]>(() => []);
+
+
 
   readonly guide = computed<CategoryGuide | undefined>(() => {
     const category = this.category();

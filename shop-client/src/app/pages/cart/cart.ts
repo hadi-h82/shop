@@ -7,8 +7,9 @@ import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../core/services/cart/cart';
 
-import { CartService } from '../../core/services/cart';
+
 
 @Component({
   selector: 'app-cart',
