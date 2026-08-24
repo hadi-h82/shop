@@ -4,17 +4,34 @@ import {
   effect,
   inject
 } from '@angular/core';
-import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map, of, switchMap, catchError } from 'rxjs';
+
+import {
+  ActivatedRoute,
+  RouterLink
+} from '@angular/router';
+
+import {
+  toSignal
+} from '@angular/core/rxjs-interop';
+
+import {
+  catchError,
+  map,
+  of,
+  switchMap
+} from 'rxjs';
+
 import { MatIconModule } from '@angular/material/icon';
-import { ProductCard } from '../../shared/ui/product-card/product-card';
+
 import { CategoryService } from '../../core/services/category/category.service';
 import { Seo } from '../../core/services/seo/seo';
+
 import { Product } from '../../core/models/product.model';
 
-const SITE_URL = 'https://sevart.ir';
+import { ProductCard } from '../../shared/ui/product-card/product-card';
+
+import { environment } from '../../../environments/environment';
+
 
 interface CategoryGuide {
   title: string;
@@ -22,6 +39,7 @@ interface CategoryGuide {
   tips: string[];
   note: string;
 }
+
 
 const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
   'cake-trays': {
@@ -36,6 +54,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
     note:
       'اندازه و ویژگی‌های محصول را در صفحه هر مدل انتخاب کنید تا قیمت نهایی نمایش داده شود.'
   },
+
   'finger-food-trays': {
     title: 'راهنمای انتخاب سینی فینگر فود',
     intro:
@@ -48,6 +67,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
     note:
       'اندازه و ویژگی‌های هر مدل را در صفحه محصول بررسی کنید تا انتخاب دقیق‌تری داشته باشید.'
   },
+
   plexiglass: {
     title: 'راهنمای انتخاب محصولات پلکسی',
     intro:
@@ -60,6 +80,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
     note:
       'تصویر، ابعاد و ویژگی‌های ثبت‌شده در صفحه هر محصول را پیش از انتخاب بررسی کنید.'
   },
+
   boxes: {
     title: 'راهنمای انتخاب باکس',
     intro:
@@ -72,6 +93,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
     note:
       'پیش از انتخاب، ابعاد و مشخصات درج‌شده برای هر باکس را بررسی کنید.'
   },
+
   stencils: {
     title: 'راهنمای انتخاب استنسیل',
     intro:
@@ -84,6 +106,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
     note:
       'پیش از خرید، تصویر طرح و ابعاد درج‌شده در صفحه محصول را بررسی کنید.'
   },
+
   'packaging-boxes': {
     title: 'راهنمای انتخاب جعبه',
     intro:
@@ -96,6 +119,7 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
     note:
       'ابعاد داخلی و ویژگی‌های هر جعبه را در صفحه محصول با نیازتان تطبیق دهید.'
   },
+
   'pastry-tools': {
     title: 'راهنمای انتخاب ابزار و لوازم قنادی',
     intro:
@@ -110,113 +134,218 @@ const CATEGORY_GUIDES: Record<string, CategoryGuide> = {
   }
 };
 
+
 @Component({
   selector: 'app-category-products',
+
   imports: [
     RouterLink,
     MatIconModule,
     ProductCard
   ],
+
   templateUrl: './category-products.html',
   styleUrl: './category-products.scss'
 })
 export class CategoryProducts {
-  private readonly route = inject(ActivatedRoute);
-  private readonly seo = inject(Seo);
-  private readonly categoryService = inject(CategoryService);
-  private readonly category$ = this.route.paramMap.pipe(
-  map(params => params.get('slug')),
 
-  switchMap(slug => {
-    if (!slug) {
-      return of(null);
+  private readonly route =
+    inject(ActivatedRoute);
+
+  private readonly seo =
+    inject(Seo);
+
+  private readonly categoryService =
+    inject(CategoryService);
+
+
+  readonly slug = toSignal(
+    this.route.paramMap.pipe(
+      map(params =>
+        params.get('slug')
+      )
+    ),
+    {
+      initialValue:
+        this.route.snapshot.paramMap.get('slug')
     }
+  );
 
-    return this.categoryService.getBySlug(slug).pipe(
-      catchError(() => of(null))
+
+  private readonly data$ =
+    this.route.paramMap.pipe(
+
+      map(params =>
+        params.get('slug')
+      ),
+
+      switchMap(slug => {
+
+        if (!slug) {
+          return of(null);
+        }
+
+        return this.categoryService
+          .getWithProducts(slug)
+          .pipe(
+
+            map(response => ({
+              category: response.category,
+
+              products: response.products.map(product => ({
+                id: product.id,
+
+                categoryId:
+                  product.categoryId,
+
+                title:
+                  product.name,
+
+                slug:
+                  product.slug,
+
+                price:
+                  product.price,
+
+                imageUrl:
+                  product.imageUrl ?? '',
+
+                categoryName:
+                  response.category.name,
+
+                isAvailable: true
+              } satisfies Product))
+            })),
+
+            catchError(() =>
+              of(null)
+            )
+          );
+      })
     );
-  })
-);
-
-readonly slug = toSignal(
-  this.route.paramMap.pipe(
-    map(params => params.get('slug'))
-  ),
-  {
-    initialValue: this.route.snapshot.paramMap.get('slug')
-  }
-);
-
-readonly category = toSignal(
-  this.category$,
-  {
-    initialValue: undefined
-  }
-);
-
-// readonly products = computed(() => {
-//   const category = this.category();
-
-//   if (!category) {
-//     return [];
-//   }
-
-//   return MOCK_PRODUCTS.filter(
-//     product => product.categoryId === category.id
-//   );
-// });
-
-readonly products = computed<Product[]>(() => []);
 
 
+  private readonly data = toSignal(
+    this.data$,
+    {
+      initialValue: undefined
+    }
+  );
 
-  readonly guide = computed<CategoryGuide | undefined>(() => {
-    const category = this.category();
 
-    if (!category) {
+  readonly category = computed(() => {
+
+    const data =
+      this.data();
+
+    if (data === undefined) {
       return undefined;
     }
 
-    return (
-      CATEGORY_GUIDES[category.slug] ?? {
-        title: `راهنمای خرید ${category.name}`,
-        intro: category.description,
-        tips: [
-          'قبل از خرید، اندازه و جنس موردنیازتان را بررسی کنید.',
-          'توضیحات و ویژگی‌های هر محصول را با مدل‌های دیگر مقایسه کنید.'
-        ],
-        note:
-          'با انتخاب ویژگی‌های هر محصول، قیمت نهایی آن نمایش داده می‌شود.'
-      }
-    );
+    if (data === null) {
+      return null;
+    }
+
+    return data.category;
   });
 
-  constructor() {
-    effect(() => {
-      const category = this.category();
 
-      if (category) {
+  readonly products = computed<Product[]>(() => {
+
+    const data =
+      this.data();
+
+    if (!data) {
+      return [];
+    }
+
+    return data.products;
+  });
+
+
+  readonly guide =
+    computed<CategoryGuide | undefined>(() => {
+
+      const category =
+        this.category();
+
+      if (!category) {
+        return undefined;
+      }
+
+      return (
+        CATEGORY_GUIDES[category.slug] ??
+        {
+          title:
+            `راهنمای خرید ${category.name}`,
+
+          intro:
+            category.description ?? '',
+
+          tips: [
+            'قبل از خرید، اندازه و جنس موردنیازتان را بررسی کنید.',
+            'توضیحات و ویژگی‌های هر محصول را با مدل‌های دیگر مقایسه کنید.'
+          ],
+
+          note:
+            'با انتخاب ویژگی‌های هر محصول، قیمت نهایی آن نمایش داده می‌شود.'
+        }
+      );
+    });
+
+
+  constructor() {
+
+    effect(() => {
+
+      const category =
+        this.category();
+
+      // درخواست هنوز پاسخ نداده
+      if (category === undefined) {
+        return;
+      }
+
+      // دسته‌بندی واقعاً وجود ندارد
+      if (category === null) {
+
         this.seo.update({
-          title: `${category.name} | فروشگاه لوازم قنادی`,
-          description: category.description,
+          title:
+            'دسته‌بندی پیدا نشد | فروشگاه لوازم قنادی',
+
+          description:
+            'دسته‌بندی موردنظر در فروشگاه پیدا نشد.',
+
           canonicalUrl:
-            `${SITE_URL}/categories/${category.slug}`,
-          imageUrl:
-            `${SITE_URL}${category.imageUrl}`,
-          type: 'website'
+            `${environment.siteUrl}/categories/${this.slug() ?? ''}`,
+
+          type:
+            'website'
         });
 
         return;
       }
 
+
+      // دسته‌بندی پیدا شده
       this.seo.update({
+
         title:
-          'دسته‌بندی پیدا نشد | فروشگاه لوازم قنادی',
+          `${category.name} | فروشگاه لوازم قنادی`,
+
         description:
-          'دسته‌بندی موردنظر در فروشگاه پیدا نشد.',
+          category.description ?? '',
+
         canonicalUrl:
-          `${SITE_URL}/categories/${this.slug() ?? ''}`,
-        type: 'website'
+          `${environment.siteUrl}/categories/${category.slug}`,
+
+        imageUrl:
+          category.imageUrl
+            ? `${environment.siteUrl}${category.imageUrl}`
+            : undefined,
+
+        type:
+          'website'
       });
     });
   }
