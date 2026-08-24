@@ -1,0 +1,117 @@
+<div class="admin-shell">
+
+  <aside
+    class="admin-sidebar"
+    [class.admin-sidebar--closed]="!sidebarOpen()"
+  >
+    <div class="admin-sidebar__header">
+      <div class="admin-sidebar__brand">
+        <span class="admin-sidebar__brand-title">
+          سوارت
+        </span>
+
+        <span class="admin-sidebar__brand-subtitle">
+          پنل مدیریت
+        </span>
+      </div>
+    </div>
+
+    <nav
+      class="admin-sidebar__nav"
+      aria-label="منوی مدیریت"
+    >
+      <a
+        routerLink="/admin"
+        routerLinkActive="admin-sidebar__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="admin-sidebar__link"
+      >
+        <mat-icon>dashboard</mat-icon>
+        <span>داشبورد</span>
+      </a>
+
+      <a
+        routerLink="/admin/products"
+        routerLinkActive="admin-sidebar__link--active"
+        class="admin-sidebar__link"
+      >
+        <mat-icon>inventory_2</mat-icon>
+        <span>محصولات</span>
+      </a>
+
+      <a
+        routerLink="/admin/categories"
+        routerLinkActive="admin-sidebar__link--active"
+        class="admin-sidebar__link"
+      >
+        <mat-icon>category</mat-icon>
+        <span>دسته‌بندی‌ها</span>
+      </a>
+
+      <a
+        routerLink="/admin/orders"
+        routerLinkActive="admin-sidebar__link--active"
+        class="admin-sidebar__link"
+      >
+        <mat-icon>receipt_long</mat-icon>
+        <span>سفارش‌ها</span>
+      </a>
+
+      <a
+        routerLink="/admin/users"
+        routerLinkActive="admin-sidebar__link--active"
+        class="admin-sidebar__link"
+      >
+        <mat-icon>group</mat-icon>
+        <span>کاربران</span>
+      </a>
+
+      <a
+        routerLink="/admin/settings"
+        routerLinkActive="admin-sidebar__link--active"
+        class="admin-sidebar__link"
+      >
+        <mat-icon>settings</mat-icon>
+        <span>تنظیمات</span>
+      </a>
+    </nav>
+  </aside>
+
+
+  <section class="admin-main">
+
+    <header class="admin-topbar">
+
+      <button
+        type="button"
+        class="admin-topbar__menu"
+        (click)="toggleSidebar()"
+        aria-label="باز و بسته کردن منو"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="admin-topbar__title">
+        پنل مدیریت فروشگاه
+      </div>
+
+      <div class="admin-topbar__actions">
+        <a
+          routerLink="/"
+          class="admin-topbar__store-link"
+        >
+          <mat-icon>storefront</mat-icon>
+          مشاهده فروشگاه
+        </a>
+      </div>
+
+    </header>
+
+
+    <main class="admin-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </section>
+
+</div>
