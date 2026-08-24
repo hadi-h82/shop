@@ -10,6 +10,7 @@ builder.Services.AddDbContext<SevartDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -23,7 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AngularClient", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins("http://localhost:4200", "http://localhost:4500")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sevart.Api.Contracts.Categories;
+using Sevart.Api.Contracts.Products;
 using Sevart.Application.Abstractions.Persistence;
 using Sevart.Domain.Entities;
 
@@ -10,11 +11,13 @@ namespace Sevart.Api.Controllers;
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IProductRepository _productRepository;
 
     public CategoriesController(
-        ICategoryRepository categoryRepository)
+        ICategoryRepository categoryRepository, IProductRepository productRepository)
     {
         _categoryRepository = categoryRepository;
+        _productRepository = productRepository;
     }
 
 
@@ -165,6 +168,59 @@ public class CategoriesController : ControllerBase
             DisplayOrder = category.DisplayOrder,
             IsActive = category.IsActive
         };
+    }
+
+    private static ProductResponse ToProductResponse(Product product)
+    {
+        var primaryImage = product.Images
+            .OrderByDescending(x => x.IsPrimary)
+            .ThenBy(x => x.DisplayOrder)
+            .FirstOrDefault();
+
+        return new ProductResponse
+        {
+            Id = product.Id,
+            CategoryId = product.CategoryId,
+            Name = product.Name,
+            Slug = product.Slug,
+            Description = product.Description,
+            Price = product.Price,
+            ImageUrl = primaryImage?.Url,
+            DisplayOrder = product.DisplayOrder
+        };
+    }
+
+
+
+    [HttpGet("{slug}/products")]
+    public async Task<IActionResult> GetWithProducts(
+        string slug,
+        CancellationToken cancellationToken)
+    {
+        var category = await _categoryRepository.GetBySlugAsync(
+            slug,
+            cancellationToken);
+
+        if (category is null || !category.IsActive)
+        {
+            return NotFound();
+        }
+
+        var products =
+            await _productRepository.GetPublishedByCategorySlugAsync(
+                slug,
+                cancellationToken);
+
+        var response = new CategoryDetailsResponse
+        {
+            Category = ToResponse(category),
+
+            Products = products
+                .Select(ToProductResponse)
+                .ToList()
+        };
+
+        return Ok(response);
     }
 
 
