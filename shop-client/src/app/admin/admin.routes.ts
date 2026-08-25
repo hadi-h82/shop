@@ -10,10 +10,13 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: '',
+        loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.AdminDashboard),
+      },
+      {
+        path: 'products',
         loadComponent: () =>
-          import('./pages/dashboard/dashboard')
-            .then(m => m.AdminDashboard)
-      }
-    ]
-  }
+          import('./pages/products/product-list/product-list').then((m) => m.AdminProductList),
+      },
+    ],
+  },
 ];
