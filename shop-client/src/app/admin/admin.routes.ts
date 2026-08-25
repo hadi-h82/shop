@@ -10,12 +10,23 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.AdminDashboard),
+        loadComponent: () =>
+          import('./pages/dashboard/dashboard')
+            .then((m) => m.AdminDashboard),
       },
+
       {
         path: 'products',
         loadComponent: () =>
-          import('./pages/products/product-list/product-list').then((m) => m.AdminProductList),
+          import('./pages/products/product-list/product-list')
+            .then((m) => m.AdminProductList),
+      },
+
+      {
+        path: 'products/create',
+        loadComponent: () =>
+          import('./pages/products/product-create/product-create')
+            .then((m) => m.AdminProductCreate),
       },
     ],
   },

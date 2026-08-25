@@ -1,10 +1,20 @@
 <div class="admin-shell">
 
+  @if (sidebarOpen()) {
+    <button
+      type="button"
+      class="admin-sidebar-backdrop"
+      (click)="closeSidebar()"
+      aria-label="بستن منوی مدیریت"
+    ></button>
+  }
+
   <aside
     class="admin-sidebar"
     [class.admin-sidebar--closed]="!sidebarOpen()"
   >
     <div class="admin-sidebar__header">
+
       <div class="admin-sidebar__brand">
         <span class="admin-sidebar__brand-title">
           سوارت
@@ -14,6 +24,16 @@
           پنل مدیریت
         </span>
       </div>
+
+      <button
+        type="button"
+        class="admin-sidebar__close"
+        (click)="closeSidebar()"
+        aria-label="بستن منو"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+
     </div>
 
     <nav
@@ -25,6 +45,7 @@
         routerLinkActive="admin-sidebar__link--active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
       >
         <mat-icon>dashboard</mat-icon>
         <span>داشبورد</span>
@@ -34,6 +55,7 @@
         routerLink="/admin/products"
         routerLinkActive="admin-sidebar__link--active"
         class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
       >
         <mat-icon>inventory_2</mat-icon>
         <span>محصولات</span>
@@ -43,6 +65,7 @@
         routerLink="/admin/categories"
         routerLinkActive="admin-sidebar__link--active"
         class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
       >
         <mat-icon>category</mat-icon>
         <span>دسته‌بندی‌ها</span>
@@ -52,6 +75,7 @@
         routerLink="/admin/orders"
         routerLinkActive="admin-sidebar__link--active"
         class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
       >
         <mat-icon>receipt_long</mat-icon>
         <span>سفارش‌ها</span>
@@ -61,6 +85,7 @@
         routerLink="/admin/users"
         routerLinkActive="admin-sidebar__link--active"
         class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
       >
         <mat-icon>group</mat-icon>
         <span>کاربران</span>
@@ -70,13 +95,13 @@
         routerLink="/admin/settings"
         routerLinkActive="admin-sidebar__link--active"
         class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
       >
         <mat-icon>settings</mat-icon>
         <span>تنظیمات</span>
       </a>
     </nav>
   </aside>
-
 
   <section class="admin-main">
 
@@ -101,12 +126,11 @@
           class="admin-topbar__store-link"
         >
           <mat-icon>storefront</mat-icon>
-          مشاهده فروشگاه
+          <span>مشاهده فروشگاه</span>
         </a>
       </div>
 
     </header>
-
 
     <main class="admin-content">
       <router-outlet></router-outlet>
