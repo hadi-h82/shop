@@ -1,35 +1,36 @@
 ﻿using Sevart.Domain.Common;
-using Sevart.Domain.Enums;
 
 namespace Sevart.Domain.Entities;
 
 public class ProductOption : BaseEntity
 {
+    private readonly List<ProductOptionValue> _values = new();
 
-    // برای Entity Framework
+    // EF Core
     private ProductOption()
     {
     }
 
-    // برای ساخت ProductOption جدید
     public ProductOption(
         Product product,
-        string name,
-        ProductOptionInputType inputType,
+        ProductOptionDefinition definition,
         bool isRequired,
         int displayOrder)
     {
-
         if (product is null)
         {
             throw new ArgumentNullException(nameof(product));
         }
 
-        if (string.IsNullOrWhiteSpace(name))
+        if (definition is null)
         {
-            throw new ArgumentException(
-                "Product option name cannot be empty.",
-                nameof(name));
+            throw new ArgumentNullException(nameof(definition));
+        }
+
+        if (!definition.IsActive)
+        {
+            throw new InvalidOperationException(
+                "Inactive product option definition cannot be used.");
         }
 
         if (displayOrder < 0)
@@ -40,8 +41,8 @@ public class ProductOption : BaseEntity
         }
 
         Product = product;
-        Name = name;
-        InputType = inputType;
+        ProductOptionDefinition = definition;
+
         IsRequired = isRequired;
         DisplayOrder = displayOrder;
         IsActive = true;
@@ -51,9 +52,11 @@ public class ProductOption : BaseEntity
 
     public Product Product { get; private set; } = null!;
 
-    public string Name { get; private set; } = string.Empty;
 
-    public ProductOptionInputType InputType { get; private set; }
+    public int ProductOptionDefinitionId { get; private set; }
+
+    public ProductOptionDefinition ProductOptionDefinition { get; private set; } = null!;
+
 
     public bool IsRequired { get; private set; }
 
@@ -61,19 +64,39 @@ public class ProductOption : BaseEntity
 
     public bool IsActive { get; private set; } = true;
 
-    private readonly List<ProductOptionValue> _values = new();
 
     public IReadOnlyCollection<ProductOptionValue> Values
         => _values.AsReadOnly();
 
 
     public void AddValue(
-    string label,
-    string value,
-    decimal priceAdjustment,
-    string? colorCode,
-    int displayOrder)
+        string label,
+        string value,
+        decimal priceAdjustment,
+        string? colorCode,
+        int displayOrder)
     {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            throw new ArgumentException(
+                "Product option value label cannot be empty.",
+                nameof(label));
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new ArgumentException(
+                "Product option value cannot be empty.",
+                nameof(value));
+        }
+
+        if (displayOrder < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(displayOrder),
+                "Display order cannot be negative.");
+        }
+
         var optionValue = new ProductOptionValue(
             this,
             label,
@@ -88,7 +111,8 @@ public class ProductOption : BaseEntity
 
     public void DeactivateValue(int valueId)
     {
-        var value = _values.FirstOrDefault(x => x.Id == valueId);
+        var value = _values.FirstOrDefault(
+            x => x.Id == valueId);
 
         if (value is null)
         {
@@ -102,7 +126,8 @@ public class ProductOption : BaseEntity
 
     public void ActivateValue(int valueId)
     {
-        var value = _values.FirstOrDefault(x => x.Id == valueId);
+        var value = _values.FirstOrDefault(
+            x => x.Id == valueId);
 
         if (value is null)
         {
@@ -113,15 +138,17 @@ public class ProductOption : BaseEntity
         value.Activate();
     }
 
+
     public void UpdateValue(
-    int valueId,
-    string label,
-    string value,
-    decimal priceAdjustment,
-    string? colorCode,
-    int displayOrder)
+        int valueId,
+        string label,
+        string value,
+        decimal priceAdjustment,
+        string? colorCode,
+        int displayOrder)
     {
-        var optionValue = _values.FirstOrDefault(x => x.Id == valueId);
+        var optionValue = _values.FirstOrDefault(
+            x => x.Id == valueId);
 
         if (optionValue is null)
         {
@@ -139,18 +166,9 @@ public class ProductOption : BaseEntity
 
 
     public void Update(
-    string name,
-    ProductOptionInputType inputType,
-    bool isRequired,
-    int displayOrder)
+        bool isRequired,
+        int displayOrder)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException(
-                "Product option name cannot be empty.",
-                nameof(name));
-        }
-
         if (displayOrder < 0)
         {
             throw new ArgumentOutOfRangeException(
@@ -158,8 +176,6 @@ public class ProductOption : BaseEntity
                 "Display order cannot be negative.");
         }
 
-        Name = name;
-        InputType = inputType;
         IsRequired = isRequired;
         DisplayOrder = displayOrder;
     }
@@ -169,6 +185,7 @@ public class ProductOption : BaseEntity
     {
         IsActive = true;
     }
+
 
     public void Deactivate()
     {

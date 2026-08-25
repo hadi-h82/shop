@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sevart.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Sevart.Infrastructure.Persistence;
 namespace Sevart.Infrastructure.Migrations
 {
     [DbContext(typeof(SevartDbContext))]
-    partial class SevartDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260825055428_AddProductOptionDefinitions")]
+    partial class AddProductOptionDefinitions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,23 +156,26 @@ namespace Sevart.Infrastructure.Migrations
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
+                    b.Property<int>("InputType")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsRequired")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("ProductOptionDefinitionId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductOptionDefinitionId");
 
                     b.ToTable("ProductOptions", (string)null);
                 });
@@ -287,15 +293,7 @@ namespace Sevart.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sevart.Domain.Entities.ProductOptionDefinition", "ProductOptionDefinition")
-                        .WithMany()
-                        .HasForeignKey("ProductOptionDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Product");
-
-                    b.Navigation("ProductOptionDefinition");
                 });
 
             modelBuilder.Entity("Sevart.Domain.Entities.ProductOptionValue", b =>

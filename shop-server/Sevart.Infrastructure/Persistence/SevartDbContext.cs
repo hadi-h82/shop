@@ -23,6 +23,9 @@ public class SevartDbContext : DbContext
     public DbSet<ProductOptionValue> ProductOptionValues
         => Set<ProductOptionValue>();
 
+    public DbSet<ProductOptionDefinition> ProductOptionDefinitions
+    => Set<ProductOptionDefinition>();
+
     public override async Task<int> SaveChangesAsync(
     CancellationToken cancellationToken = default)
     {

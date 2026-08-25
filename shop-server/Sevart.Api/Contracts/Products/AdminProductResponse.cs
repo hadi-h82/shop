@@ -2,7 +2,7 @@
 
 namespace Sevart.Api.Contracts.Products;
 
-public class ProductResponse
+public class AdminProductResponse
 {
     public int Id { get; set; }
 
@@ -16,15 +16,27 @@ public class ProductResponse
 
     public decimal Price { get; set; }
 
-    public string? ImageUrl { get; set; }
+    public ProductStatus Status { get; set; }
 
     public int DisplayOrder { get; set; }
 
-    public List<ProductOptionResponse> Options { get; set; } = [];
+    public List<AdminProductImageResponse> Images { get; set; } = [];
+
+    public List<AdminProductOptionResponse> Options { get; set; } = [];
 }
 
+public class AdminProductImageResponse
+{
+    public int Id { get; set; }
 
-public class ProductOptionResponse
+    public string Url { get; set; } = string.Empty;
+
+    public bool IsPrimary { get; set; }
+
+    public int DisplayOrder { get; set; }
+}
+
+public class AdminProductOptionResponse
 {
     public int Id { get; set; }
 
@@ -38,11 +50,12 @@ public class ProductOptionResponse
 
     public int DisplayOrder { get; set; }
 
-    public List<ProductOptionValueResponse> Values { get; set; } = [];
+    public bool IsActive { get; set; }
+
+    public List<AdminProductOptionValueResponse> Values { get; set; } = [];
 }
 
-
-public class ProductOptionValueResponse
+public class AdminProductOptionValueResponse
 {
     public int Id { get; set; }
 

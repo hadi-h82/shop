@@ -157,20 +157,35 @@ public class Product : BaseAuditableEntity
         }
     }
 
-    public void AddOption(
-    string name,
-    ProductOptionInputType inputType,
+    public ProductOption AddOption(
+    ProductOptionDefinition definition,
     bool isRequired,
     int displayOrder)
     {
+        if (definition is null)
+        {
+            throw new ArgumentNullException(
+                nameof(definition));
+        }
+
+        var alreadyExists = _options.Any(
+            x => x.ProductOptionDefinitionId == definition.Id);
+
+        if (alreadyExists)
+        {
+            throw new InvalidOperationException(
+                "This product option definition has already been added to the product.");
+        }
+
         var option = new ProductOption(
             this,
-            name,
-            inputType,
+            definition,
             isRequired,
             displayOrder);
 
         _options.Add(option);
+
+        return option;
     }
 
 
@@ -228,12 +243,11 @@ public class Product : BaseAuditableEntity
 
     public void UpdateOption(
     int optionId,
-    string name,
-    ProductOptionInputType inputType,
     bool isRequired,
     int displayOrder)
     {
-        var option = _options.FirstOrDefault(x => x.Id == optionId);
+        var option = _options.FirstOrDefault(
+            x => x.Id == optionId);
 
         if (option is null)
         {
@@ -242,8 +256,6 @@ public class Product : BaseAuditableEntity
         }
 
         option.Update(
-            name,
-            inputType,
             isRequired,
             displayOrder);
     }

@@ -11,6 +11,9 @@ builder.Services.AddDbContext<SevartDbContext>(options =>
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<
+    IProductOptionDefinitionRepository,
+    ProductOptionDefinitionRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();
