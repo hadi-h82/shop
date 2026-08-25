@@ -1,57 +1,61 @@
 <section class="space-y-6">
 
-  <div
-    class="
-      flex
-      flex-col
-      gap-4
-      sm:flex-row
-      sm:items-center
-      sm:justify-between
-    "
-  >
+  <!-- Header -->
+  <div class="flex items-start justify-between gap-3">
 
-    <div>
+    <div class="min-w-0">
       <h1 class="text-xl font-bold sm:text-2xl">
-        افزودن محصول
+        افزودن دسته‌بندی
       </h1>
 
-      <p class="mt-1 text-sm text-neutral-500">
-        اطلاعات پایه محصول را وارد کنید
+      <p class="mt-1 text-xs text-neutral-500 sm:text-sm">
+        اطلاعات دسته‌بندی جدید را وارد کنید
       </p>
     </div>
 
-
     <a
-      routerLink="/admin/products"
+      routerLink="/admin/categories"
       class="
         inline-flex
-        w-fit
+        size-11
+        shrink-0
         items-center
+        justify-center
         gap-2
         rounded-xl
         border
         border-neutral-200
         bg-white
-        px-4
-        py-2.5
-        text-sm
-        font-medium
+        text-neutral-700
+        transition
+        hover:bg-neutral-50
+
+        sm:h-auto
+        sm:w-auto
+        sm:px-4
+        sm:py-2.5
+        sm:text-sm
+        sm:font-medium
       "
     >
       <mat-icon>arrow_forward</mat-icon>
-      بازگشت
+
+      <span class="hidden sm:inline">
+        بازگشت
+      </span>
     </a>
 
   </div>
 
 
+  <!-- Form -->
   <form
     [formGroup]="form"
     (ngSubmit)="submit()"
     class="space-y-6"
   >
 
+    <!-- Main information -->
     <div
       class="
         rounded-2xl
@@ -62,6 +66,17 @@
         sm:p-6
       "
     >
+
+      <div class="mb-5">
+        <h2 class="font-bold text-neutral-900">
+          اطلاعات دسته‌بندی
+        </h2>
+
+        <p class="mt-1 text-xs text-neutral-500">
+          مشخصات اصلی دسته‌بندی را وارد کنید.
+        </p>
+      </div>
+
 
       <div
         class="
@@ -74,18 +89,20 @@
 
         <!-- Name -->
         <div class="space-y-2">
+
           <label
             for="name"
             class="text-sm font-semibold"
           >
-            نام محصول
-             <span class="text-red-500">*</span>
+            نام دسته‌بندی
+            <span class="text-red-500">*</span>
           </label>
 
           <input
             id="name"
             type="text"
             formControlName="name"
+            placeholder="مثلاً سینی و زیرکیکی"
             class="
               w-full
               rounded-xl
@@ -96,6 +113,7 @@
               py-3
               outline-none
               transition
+              placeholder:text-neutral-300
               focus:border-amber-700
             "
           />
@@ -105,20 +123,22 @@
             form.controls.name.invalid
           ) {
             <p class="text-xs text-red-600">
-              نام محصول الزامی است.
+              نام دسته‌بندی الزامی است.
             </p>
           }
+
         </div>
 
 
         <!-- Slug -->
         <div class="space-y-2">
+
           <label
             for="slug"
             class="text-sm font-semibold"
           >
             Slug
-             <span class="text-red-500">*</span>
+            <span class="text-red-500">*</span>
           </label>
 
           <input
@@ -126,6 +146,7 @@
             type="text"
             formControlName="slug"
             dir="ltr"
+            placeholder="cake-boards"
             class="
               w-full
               rounded-xl
@@ -137,6 +158,7 @@
               text-left
               outline-none
               transition
+              placeholder:text-neutral-300
               focus:border-amber-700
             "
           />
@@ -146,96 +168,16 @@
             form.controls.slug.invalid
           ) {
             <p class="text-xs text-red-600">
-              Slug الزامی است.
+              Slug دسته‌بندی الزامی است.
             </p>
           }
+
         </div>
 
-
-        <!-- Category -->
-        <div class="space-y-2">
-          <label
-            for="categoryId"
-            class="text-sm font-semibold"
-          >
-            دسته‌بندی
-             <span class="text-red-500">*</span>
-          </label>
-
-          <select
-            id="categoryId"
-            formControlName="categoryId"
-            class="
-              w-full
-              rounded-xl
-              border
-              border-neutral-200
-              bg-white
-              px-4
-              py-3
-              outline-none
-              transition
-              focus:border-amber-700
-            "
-          >
-            <option [ngValue]="0">
-              انتخاب دسته‌بندی
-            </option>
-
-            @for (
-              category of categories();
-              track category.id
-            ) {
-              <option [ngValue]="category.id">
-                {{ category.name }}
-              </option>
-            }
-          </select>
-
-          @if (
-            form.controls.categoryId.touched &&
-            form.controls.categoryId.invalid
-          ) {
-            <p class="text-xs text-red-600">
-              انتخاب دسته‌بندی الزامی است.
-            </p>
-          }
-        </div>
-
-
-        <!-- Price -->
- <div class="space-y-2">
-  <label
-    for="price"
-    class="text-sm font-semibold"
-  >
-    قیمت پایه (ریال)
-  </label>
-
-  <input
-    id="price"
-    type="text"
-    inputmode="numeric"
-    [value]="formatPrice(form.controls.price.value)"
-    (input)="onPriceInput($event)"
-    placeholder="مثلاً 2,000,000"
-    class="
-      w-full
-      rounded-xl
-      border
-      border-neutral-200
-      bg-white
-      px-4
-      py-3
-      outline-none
-      transition
-      focus:border-amber-700
-    "
-  />
-</div>
 
         <!-- Display Order -->
         <div class="space-y-2">
+
           <label
             for="displayOrder"
             class="text-sm font-semibold"
@@ -246,8 +188,8 @@
           <input
             id="displayOrder"
             type="number"
-            formControlName="displayOrder"
             min="0"
+            formControlName="displayOrder"
             class="
               w-full
               rounded-xl
@@ -261,11 +203,56 @@
               focus:border-amber-700
             "
           />
+
+          <p class="text-xs text-neutral-400">
+            عدد کوچک‌تر، دسته‌بندی را زودتر نمایش می‌دهد.
+          </p>
+
+        </div>
+
+
+        <!-- Image URL -->
+        <div class="space-y-2">
+
+          <label
+            for="imageUrl"
+            class="text-sm font-semibold"
+          >
+            تصویر دسته‌بندی
+          </label>
+
+          <input
+            id="imageUrl"
+            type="text"
+            formControlName="imageUrl"
+            dir="ltr"
+            placeholder="/images/categories/cake-board.webp"
+            class="
+              w-full
+              rounded-xl
+              border
+              border-neutral-200
+              bg-white
+              px-4
+              py-3
+              text-left
+              outline-none
+              transition
+              placeholder:text-neutral-300
+              focus:border-amber-700
+            "
+          />
+
+          <p class="text-xs text-neutral-400">
+            فعلاً آدرس تصویر را وارد کنید؛ آپلود فایل را بعداً اضافه می‌کنیم.
+          </p>
+
         </div>
 
 
         <!-- Description -->
         <div class="space-y-2 md:col-span-2">
+
           <label
             for="description"
             class="text-sm font-semibold"
@@ -277,6 +264,7 @@
             id="description"
             rows="5"
             formControlName="description"
+            placeholder="توضیح کوتاهی درباره این دسته‌بندی..."
             class="
               w-full
               resize-y
@@ -288,9 +276,11 @@
               py-3
               outline-none
               transition
+              placeholder:text-neutral-300
               focus:border-amber-700
             "
           ></textarea>
+
         </div>
 
       </div>
@@ -298,6 +288,9 @@
     </div>
 
 
+
+
+    <!-- Actions -->
     <div
       class="
         flex
@@ -309,7 +302,7 @@
     >
 
       <a
-        routerLink="/admin/products"
+        routerLink="/admin/categories"
         class="
           inline-flex
           items-center
@@ -322,34 +315,42 @@
           py-3
           text-sm
           font-semibold
+          text-neutral-700
+          transition
+          hover:bg-neutral-50
         "
       >
         انصراف
       </a>
 
-<button
-  type="submit"
-  [disabled]="form.invalid"
-  class="
-    inline-flex
-    items-center
-    gap-2
-    rounded-xl
-    bg-amber-700
-    px-5
-    py-3
-    font-semibold
-    text-white
-    transition
-    hover:bg-amber-800
-    disabled:cursor-not-allowed
-    disabled:opacity-50
-    disabled:hover:bg-amber-700
-  "
->
-  <mat-icon>save</mat-icon>
-  ذخیره محصول
-</button>
+
+      <button
+        type="submit"
+        [disabled]="form.invalid"
+        class="
+          inline-flex
+          items-center
+          justify-center
+          gap-2
+          rounded-xl
+          bg-amber-700
+          px-5
+          py-3
+          text-sm
+          font-semibold
+          text-white
+          transition
+          hover:bg-amber-800
+
+          disabled:cursor-not-allowed
+          disabled:opacity-50
+          disabled:hover:bg-amber-700
+        "
+      >
+        <mat-icon>save</mat-icon>
+
+        ذخیره دسته‌بندی
+      </button>
 
     </div>
 
