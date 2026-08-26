@@ -88,4 +88,27 @@ public class ProductRepository : IProductRepository
 
             .ToListAsync(cancellationToken);
     }
+
+
+
+    public async Task UpdateAsync(
+    Product product,
+    CancellationToken cancellationToken = default)
+    {
+        _dbContext.Products.Update(product);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+    }
+
+
+    public async Task DeleteAsync(
+    Product product,
+    CancellationToken cancellationToken = default)
+    {
+        _dbContext.Products.Remove(product);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+    }
 }

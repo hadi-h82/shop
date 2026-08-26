@@ -17,4 +17,12 @@ public interface IProductRepository
 
     Task<IReadOnlyList<Product>> GetAllAsync(
     CancellationToken cancellationToken = default);
+
+    Task UpdateAsync(
+    Product product,
+    CancellationToken cancellationToken = default);
+
+    Task DeleteAsync(
+    Product product,
+    CancellationToken cancellationToken = default);
 }

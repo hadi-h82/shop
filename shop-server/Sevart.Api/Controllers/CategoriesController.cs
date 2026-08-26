@@ -101,8 +101,8 @@ public class CategoriesController : ControllerBase
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(
-    int id,
-    CancellationToken cancellationToken)
+     int id,
+     CancellationToken cancellationToken)
     {
         var category = await _categoryRepository.GetByIdAsync(
             id,
@@ -110,22 +110,24 @@ public class CategoriesController : ControllerBase
 
         if (category is null)
         {
-            return NotFound();
+            return NotFound(new
+            {
+                message = "دسته‌بندی پیدا نشد."
+            });
         }
 
-        var hasProducts = await _categoryRepository.HasProductsAsync(
-            id,
-            cancellationToken);
+        var hasProducts =
+            await _categoryRepository.HasProductsAsync(
+                id,
+                cancellationToken);
 
         if (hasProducts)
         {
-            category.Deactivate();
-
-            await _categoryRepository.UpdateAsync(
-                category,
-                cancellationToken);
-
-            return NoContent();
+            return Conflict(new
+            {
+                message =
+                    "این دسته‌بندی دارای محصول می‌باشد و امکان حذف آن وجود ندارد."
+            });
         }
 
         await _categoryRepository.DeleteAsync(
@@ -135,6 +137,58 @@ public class CategoriesController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{id:int}/activate")]
+    public async Task<IActionResult> Activate(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        var category = await _categoryRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (category is null)
+        {
+            return NotFound(new
+            {
+                message = "دسته‌بندی پیدا نشد."
+            });
+        }
+
+        category.Activate();
+
+        await _categoryRepository.UpdateAsync(
+            category,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+
+    [HttpPatch("{id:int}/deactivate")]
+    public async Task<IActionResult> Deactivate(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        var category = await _categoryRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (category is null)
+        {
+            return NotFound(new
+            {
+                message = "دسته‌بندی پیدا نشد."
+            });
+        }
+
+        category.Deactivate();
+
+        await _categoryRepository.UpdateAsync(
+            category,
+            cancellationToken);
+
+        return NoContent();
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(

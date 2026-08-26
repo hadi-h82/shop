@@ -133,6 +133,123 @@ public class ProductsController : ControllerBase
         return Ok(ToAdminResponse(product));
     }
 
+    [HttpPatch("{id:int}/activate")]
+    public async Task<IActionResult> Activate(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        product.Publish();
+
+        await _productRepository.UpdateAsync(
+            product,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+
+    [HttpPatch("{id:int}/deactivate")]
+    public async Task<IActionResult> Deactivate(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        product.Archive();
+
+        await _productRepository.UpdateAsync(
+            product,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(
+    int id,
+    UpdateProductRequest request,
+    CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "Product was not found."
+            });
+        }
+
+        var category = await _categoryRepository.GetByIdAsync(
+            request.CategoryId,
+            cancellationToken);
+
+        if (category is null || !category.IsActive)
+        {
+            return BadRequest(new
+            {
+                message = "Category was not found or is inactive."
+            });
+        }
+
+        product.Update(
+            request.CategoryId,
+            request.Name,
+            request.Slug,
+            request.Description,
+            request.Price,
+            request.DisplayOrder);
+
+        await _productRepository.UpdateAsync(
+            product,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(
+    int id,
+    CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "Product was not found."
+            });
+        }
+
+        await _productRepository.DeleteAsync(
+            product,
+            cancellationToken);
+
+        return NoContent();
+    }
 
 
     [HttpGet]
