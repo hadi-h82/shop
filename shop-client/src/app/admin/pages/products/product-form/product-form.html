@@ -12,10 +12,9 @@
   >
 
     <div>
-      <h1 class="text-xl font-bold sm:text-2xl">
-        افزودن محصول
-      </h1>
-
+<h1 class="text-xl font-bold sm:text-2xl">
+  {{ isEditMode ? 'ویرایش محصول' : 'افزودن محصول' }}
+</h1>
       <p class="mt-1 text-sm text-neutral-500">
         اطلاعات پایه محصول را وارد کنید
       </p>
@@ -348,7 +347,7 @@
   "
 >
   <mat-icon>save</mat-icon>
-  ذخیره محصول
+{{ isEditMode ? 'ذخیره تغییرات' : 'ذخیره محصول' }}
 </button>
 
     </div>

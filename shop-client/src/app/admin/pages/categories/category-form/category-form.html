@@ -4,9 +4,9 @@
   <div class="flex items-start justify-between gap-3">
 
     <div class="min-w-0">
-      <h1 class="text-xl font-bold sm:text-2xl">
-        افزودن دسته‌بندی
-      </h1>
+<h1 class="text-xl font-bold sm:text-2xl">
+  {{ isEditMode ? 'ویرایش دسته‌بندی' : 'افزودن دسته‌بندی' }}
+</h1>
 
       <p class="mt-1 text-xs text-neutral-500 sm:text-sm">
         اطلاعات دسته‌بندی جدید را وارد کنید
@@ -349,7 +349,7 @@
       >
         <mat-icon>save</mat-icon>
 
-        ذخیره دسته‌بندی
+       {{ isEditMode ? 'ذخیره تغییرات' : 'ذخیره دسته‌بندی' }}
       </button>
 
     </div>

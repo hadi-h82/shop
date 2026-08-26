@@ -37,13 +37,71 @@ export interface AdminProductListItem {
   name: string;
   slug: string;
   price: number;
-  status: number;
+  status: ProductStatus;
 
   categoryId: number;
   categoryName: string;
 
   imageUrl: string | null;
   displayOrder: number;
+}
+
+
+export interface AdminProductResponse {
+  id: number;
+  categoryId: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  status: ProductStatus;
+  displayOrder: number;
+
+  images: AdminProductImageResponse[];
+  options: AdminProductOptionResponse[];
+}
+
+export interface AdminProductImageResponse {
+  id: number;
+  url: string;
+  isPrimary: boolean;
+  displayOrder: number;
+}
+
+export interface AdminProductOptionResponse {
+  id: number;
+  productOptionDefinitionId: number;
+  name: string;
+  inputType: number;
+  isRequired: boolean;
+  displayOrder: number;
+  isActive: boolean;
+  values: AdminProductOptionValueResponse[];
+}
+
+export interface AdminProductOptionValueResponse {
+  id: number;
+  label: string;
+  value: string;
+  priceAdjustment: number;
+  colorCode: string | null;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+export interface UpdateAdminProductRequest {
+  categoryId: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  displayOrder: number;
+}
+
+export enum ProductStatus {
+  Draft = 1,
+  Published = 2,
+  Archived = 3
 }
 
 @Injectable({
@@ -69,4 +127,42 @@ create(request: CreateAdminProductRequest) {
   );
 
 }
+
+getById(
+  id: number
+): Observable<AdminProductResponse> {
+  return this.http.get<AdminProductResponse>(
+    `${this.apiUrl}/${id}`
+  );
+}
+update(
+  id: number,
+  request: UpdateAdminProductRequest
+): Observable<void> {
+  return this.http.put<void>(
+    `${this.apiUrl}/${id}`,
+    request
+  );
+}
+
+activate(id: number): Observable<void> {
+  return this.http.patch<void>(
+    `${this.apiUrl}/${id}/activate`,
+    {}
+  );
+}
+
+deactivate(id: number): Observable<void> {
+  return this.http.patch<void>(
+    `${this.apiUrl}/${id}/deactivate`,
+    {}
+  );
+}
+
+delete(id: number): Observable<void> {
+  return this.http.delete<void>(
+    `${this.apiUrl}/${id}`
+  );
+}
+
 }
