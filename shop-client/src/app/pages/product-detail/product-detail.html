@@ -165,6 +165,38 @@
 
 
         <!-- =========================
+             Quantity
+        ========================== -->
+
+        <div class="product-detail__quantity">
+          <span>تعداد</span>
+
+          <div class="product-detail__quantity-controls">
+            <button
+              type="button"
+              aria-label="افزایش تعداد"
+              (click)="increaseQuantity()"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+
+            <strong aria-live="polite">
+              {{ quantity() }}
+            </strong>
+
+            <button
+              type="button"
+              aria-label="کاهش تعداد"
+              [disabled]="quantity() <= 1"
+              (click)="decreaseQuantity()"
+            >
+              <mat-icon>remove</mat-icon>
+            </button>
+          </div>
+        </div>
+
+
+        <!-- =========================
              Final Price
         ========================== -->
 

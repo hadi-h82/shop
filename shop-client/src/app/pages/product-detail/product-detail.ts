@@ -80,6 +80,8 @@ export class ProductDetail {
   readonly selectedOptions =
     signal<Record<number, ProductOptionValue>>({});
 
+  readonly quantity = signal(1);
+
 readonly sortedOptions = computed(() =>
   [...(this.product()?.options ?? [])]
     .sort(
@@ -382,6 +384,7 @@ readonly sortedOptions = computed(() =>
       product,
       selectedCartOptions,
       this.finalPrice(),
+      this.quantity(),
     );
 
     this.snackBar.open(
@@ -395,6 +398,14 @@ readonly sortedOptions = computed(() =>
           'bottom',
       },
     );
+  }
+
+  increaseQuantity(): void {
+    this.quantity.update(quantity => quantity + 1);
+  }
+
+  decreaseQuantity(): void {
+    this.quantity.update(quantity => Math.max(1, quantity - 1));
   }
 
   onImageError(
