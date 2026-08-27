@@ -1,6 +1,18 @@
 .product-detail {
   padding: var(--space-lg) var(--space-md);
 
+  &__loading {
+    min-height: 420px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--color-muted);
+    font-weight: 700;
+    text-align: center;
+  }
+
   &__container {
     max-width: var(--container-width);
     margin: 0 auto;

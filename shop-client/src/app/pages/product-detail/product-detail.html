@@ -1,5 +1,15 @@
 <section class="product-detail">
-  @if (product(); as item) {
+  @if (loading()) {
+    <div
+      class="product-detail__loading"
+      role="status"
+      aria-live="polite"
+    >
+      در حال بارگذاری محصول...
+    </div>
+  }
+
+  @else if (product(); as item) {
     <div class="product-detail__container">
       <a
         class="product-detail__breadcrumb"

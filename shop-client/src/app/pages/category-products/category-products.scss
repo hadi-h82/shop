@@ -201,6 +201,7 @@
   ========================= */
 
   &__empty,
+  &__loading,
   &__not-found {
     padding: 4rem var(--space-lg);
 
@@ -250,6 +251,14 @@
         transform: translateY(-2px);
       }
     }
+  }
+
+  &__loading {
+    min-height: 420px;
+    justify-content: center;
+
+    color: var(--color-muted);
+    font-weight: 700;
   }
 
   &__empty-icon {

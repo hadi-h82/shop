@@ -1,6 +1,16 @@
 <section class="category-page">
   <div class="category-page__container">
-    @if (category(); as currentCategory) {
+    @if (category() === undefined) {
+      <div
+        class="category-page__loading"
+        role="status"
+        aria-live="polite"
+      >
+        در حال بارگذاری دسته‌بندی...
+      </div>
+    }
+
+    @else if (category(); as currentCategory) {
       <div class="category-page__topbar">
         <nav
           class="category-page__breadcrumb"

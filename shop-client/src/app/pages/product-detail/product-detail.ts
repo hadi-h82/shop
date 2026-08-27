@@ -173,9 +173,7 @@ readonly sortedOptions = computed(() =>
             error,
           );
 
-          this.product.set(
-            undefined,
-          );
+          this.product.set(undefined);
 
           this.loading.set(false);
 
