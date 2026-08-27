@@ -13,4 +13,6 @@ public class UpdateProductRequest
     public decimal Price { get; set; }
 
     public int DisplayOrder { get; set; }
+
+    public List<UpdateProductOptionRequest> Options { get; set; } = [];
 }

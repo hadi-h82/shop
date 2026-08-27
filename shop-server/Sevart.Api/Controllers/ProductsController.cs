@@ -183,11 +183,15 @@ public class ProductsController : ControllerBase
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-    int id,
-    UpdateProductRequest request,
-    CancellationToken cancellationToken)
+     int id,
+     UpdateProductRequest request,
+     CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetByIdAsync(
+        // =========================
+        // Load Product
+        // =========================
+
+        var product = await _productRepository.GetByIdForUpdateAsync(
             id,
             cancellationToken);
 
@@ -198,6 +202,10 @@ public class ProductsController : ControllerBase
                 message = "Product was not found."
             });
         }
+
+        // =========================
+        // Validate Category
+        // =========================
 
         var category = await _categoryRepository.GetByIdAsync(
             request.CategoryId,
@@ -211,6 +219,217 @@ public class ProductsController : ControllerBase
             });
         }
 
+        // =========================
+        // Validate Option Definitions
+        // =========================
+
+        var definitions =
+            new Dictionary<int, ProductOptionDefinition>();
+
+        foreach (
+            var definitionId in request.Options
+                .Select(x => x.ProductOptionDefinitionId)
+                .Distinct()
+        )
+        {
+            var definition =
+                await _optionDefinitionRepository.GetByIdAsync(
+                    definitionId,
+                    cancellationToken);
+
+            if (definition is null || !definition.IsActive)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        $"Product option definition with id {definitionId} was not found or is inactive."
+                });
+            }
+
+            definitions.Add(
+                definitionId,
+                definition);
+        }
+
+        // =========================
+        // Deactivate Removed Options
+        // =========================
+
+        var requestedExistingOptionIds = request.Options
+            .Where(x => x.Id.HasValue)
+            .Select(x => x.Id!.Value)
+            .ToHashSet();
+
+        foreach (var existingOption in product.Options)
+        {
+            if (
+                !requestedExistingOptionIds.Contains(
+                    existingOption.Id)
+            )
+            {
+                product.DeactivateOption(
+                    existingOption.Id);
+            }
+        }
+
+        // =========================
+        // Add / Update Options
+        // =========================
+
+        foreach (var optionRequest in request.Options)
+        {
+            // =========================
+            // Existing Option
+            // =========================
+
+            if (optionRequest.Id.HasValue)
+            {
+                var existingOption = product.Options
+                    .FirstOrDefault(
+                        x => x.Id == optionRequest.Id.Value);
+
+                if (existingOption is null)
+                {
+                    return BadRequest(new
+                    {
+                        message =
+                            $"Product option with id {optionRequest.Id.Value} does not belong to this product."
+                    });
+                }
+
+                // Definition یک Option موجود نباید عوض شود.
+                if (
+                    existingOption.ProductOptionDefinitionId !=
+                    optionRequest.ProductOptionDefinitionId
+                )
+                {
+                    return BadRequest(new
+                    {
+                        message =
+                            "Product option definition cannot be changed for an existing product option."
+                    });
+                }
+
+                product.UpdateOption(
+                    existingOption.Id,
+                    optionRequest.IsRequired,
+                    optionRequest.DisplayOrder);
+
+                product.ActivateOption(
+                    existingOption.Id);
+
+                // =========================
+                // Deactivate Removed Values
+                // =========================
+
+                var requestedExistingValueIds =
+                    optionRequest.Values
+                        .Where(x => x.Id.HasValue)
+                        .Select(x => x.Id!.Value)
+                        .ToHashSet();
+
+                foreach (
+                    var existingValue in existingOption.Values
+                )
+                {
+                    if (
+                        !requestedExistingValueIds.Contains(
+                            existingValue.Id)
+                    )
+                    {
+                        product.DeactivateOptionValue(
+                            existingOption.Id,
+                            existingValue.Id);
+                    }
+                }
+
+                // =========================
+                // Add / Update Values
+                // =========================
+
+                foreach (
+                    var valueRequest in optionRequest.Values
+                )
+                {
+                    // Existing Value
+                    if (valueRequest.Id.HasValue)
+                    {
+                        var existingValue =
+                            existingOption.Values
+                                .FirstOrDefault(
+                                    x =>
+                                        x.Id ==
+                                        valueRequest.Id.Value);
+
+                        if (existingValue is null)
+                        {
+                            return BadRequest(new
+                            {
+                                message =
+                                    $"Product option value with id {valueRequest.Id.Value} does not belong to product option {existingOption.Id}."
+                            });
+                        }
+
+                        product.UpdateOptionValue(
+                            existingOption.Id,
+                            existingValue.Id,
+                            valueRequest.Label,
+                            valueRequest.Value,
+                            valueRequest.PriceAdjustment,
+                            valueRequest.ColorCode,
+                            valueRequest.DisplayOrder);
+
+                        product.ActivateOptionValue(
+                            existingOption.Id,
+                            existingValue.Id);
+
+                        continue;
+                    }
+
+                    // New Value
+                    existingOption.AddValue(
+                        valueRequest.Label,
+                        valueRequest.Value,
+                        valueRequest.PriceAdjustment,
+                        valueRequest.ColorCode,
+                        valueRequest.DisplayOrder);
+                }
+
+                continue;
+            }
+
+            // =========================
+            // New Option
+            // =========================
+
+            var definition =
+                definitions[
+                    optionRequest.ProductOptionDefinitionId
+                ];
+
+            var newOption = product.AddOption(
+                definition,
+                optionRequest.IsRequired,
+                optionRequest.DisplayOrder);
+
+            // Valueهای Option جدید
+            foreach (
+                var valueRequest in optionRequest.Values
+            )
+            {
+                newOption.AddValue(
+                    valueRequest.Label,
+                    valueRequest.Value,
+                    valueRequest.PriceAdjustment,
+                    valueRequest.ColorCode,
+                    valueRequest.DisplayOrder);
+            }
+        }
+
+        // =========================
+        // Update Product Base Info
+        // =========================
+
         product.Update(
             request.CategoryId,
             request.Name,
@@ -218,6 +437,10 @@ public class ProductsController : ControllerBase
             request.Description,
             request.Price,
             request.DisplayOrder);
+
+        // =========================
+        // Save
+        // =========================
 
         await _productRepository.UpdateAsync(
             product,
@@ -249,6 +472,27 @@ public class ProductsController : ControllerBase
             cancellationToken);
 
         return NoContent();
+    }
+
+
+    [HttpGet("slug/{slug}")]
+    public async Task<IActionResult> GetBySlug(
+    string slug,
+    CancellationToken cancellationToken)
+    {
+        var product = await _productRepository.GetBySlugAsync(
+            slug,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "Product was not found."
+            });
+        }
+
+        return Ok(ToResponse(product));
     }
 
 

@@ -111,4 +111,51 @@ public class ProductRepository : IProductRepository
         await _dbContext.SaveChangesAsync(
             cancellationToken);
     }
+
+
+    public async Task<Product?> GetByIdForUpdateAsync(
+    int id,
+    CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Products
+
+            .Include(x => x.Images)
+
+            .Include(x => x.Options)
+                .ThenInclude(x => x.ProductOptionDefinition)
+
+            .Include(x => x.Options)
+                .ThenInclude(x => x.Values)
+
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
+
+
+
+    public async Task<Product?> GetBySlugAsync(
+    string slug,
+    CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Products
+            .AsNoTracking()
+
+            .Include(x => x.Category)
+
+            .Include(x => x.Images)
+
+            .Include(x => x.Options)
+                .ThenInclude(x => x.ProductOptionDefinition)
+
+            .Include(x => x.Options)
+                .ThenInclude(x => x.Values)
+
+            .FirstOrDefaultAsync(
+                x =>
+                    x.Slug == slug &&
+                    x.Status == ProductStatus.Published &&
+                    x.Category.IsActive,
+                cancellationToken);
+    }
 }
