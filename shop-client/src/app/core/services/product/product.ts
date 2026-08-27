@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
+import { ProductOption } from '../../models/product-option.model';
 
 export interface ProductResponse {
   id: number;
@@ -13,10 +14,11 @@ export interface ProductResponse {
   price: number;
   imageUrl: string | null;
   displayOrder: number;
+  options: ProductOption[];
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
   private readonly http = inject(HttpClient);
@@ -25,10 +27,18 @@ export class ProductService {
     `${environment.apiUrl}/Products`;
 
   getByCategory(
-    categorySlug: string
+    categorySlug: string,
   ): Observable<ProductResponse[]> {
     return this.http.get<ProductResponse[]>(
-      `${this.apiUrl}/category/${encodeURIComponent(categorySlug)}`
+      `${this.apiUrl}/category/${encodeURIComponent(categorySlug)}`,
+    );
+  }
+
+  getBySlug(
+    slug: string,
+  ): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(
+      `${this.apiUrl}/slug/${encodeURIComponent(slug)}`,
     );
   }
 }

@@ -11,19 +11,23 @@
       </a>
 
       <div class="product-detail__content">
-        <span class="product-detail__category">
-          {{ item.categoryName }}
-        </span>
+        @if (item.categoryName) {
+          <span class="product-detail__category">
+            {{ item.categoryName }}
+          </span>
+        }
 
         <h1>{{ item.title }}</h1>
 
         @if (sortedOptions().length > 0) {
           <div class="product-options">
+
             @for (
               option of sortedOptions();
               track option.id
             ) {
               <div class="product-option">
+
                 <div class="product-option__header">
                   <strong>{{ option.name }}</strong>
 
@@ -33,8 +37,18 @@
                     <small>اختیاری</small>
                   }
                 </div>
-                @if (option.inputType === 'select') {
+
+
+                <!-- =========================
+                     Select
+                ========================== -->
+
+                @if (
+                  option.inputType ===
+                  ProductOptionInputType.Select
+                ) {
                   <div class="product-option__select-wrapper">
+
                     <mat-select
                       class="product-option__select"
                       [value]="
@@ -42,9 +56,13 @@
                       "
                       [panelClass]="'product-option-select-panel'"
                       (selectionChange)="
-                        selectFromDropdown(option, $event.value)
+                        selectFromDropdown(
+                          option,
+                          $event.value
+                        )
                       "
                     >
+
                       <mat-option [value]="null">
                         یک گزینه انتخاب کنید
                       </mat-option>
@@ -60,10 +78,20 @@
                           {{ optionValue.label }}
                         </mat-option>
                       }
+
                     </mat-select>
+
                   </div>
-                } @else {
+                }
+
+
+                <!-- =========================
+                     Radio / Color
+                ========================== -->
+
+                @else {
                   <div class="product-option__values">
+
                     @for (
                       optionValue of sortedOptionValues(option);
                       track optionValue.id
@@ -78,7 +106,8 @@
                           )
                         "
                         [class.product-option__value--color]="
-                          option.inputType === 'color'
+                          option.inputType ===
+                          ProductOptionInputType.Color
                         "
                         [disabled]="!optionValue.isActive"
                         (click)="
@@ -88,8 +117,10 @@
                           )
                         "
                       >
+
                         @if (
-                          option.inputType === 'color' &&
+                          option.inputType ===
+                            ProductOptionInputType.Color &&
                           optionValue.colorCode
                         ) {
                           <span
@@ -109,14 +140,23 @@
                             ناموجود
                           </small>
                         }
+
                       </button>
                     }
+
                   </div>
                 }
+
               </div>
             }
+
           </div>
         }
+
+
+        <!-- =========================
+             Final Price
+        ========================== -->
 
         <div class="product-detail__final-price">
           <span>قیمت نهایی</span>
@@ -125,6 +165,11 @@
             {{ finalPrice() | number }} تومان
           </strong>
         </div>
+
+
+        <!-- =========================
+             Add To Cart
+        ========================== -->
 
         <button
           mat-flat-button
@@ -146,7 +191,13 @@
             افزودن به سبد خرید
           }
         </button>
+
       </div>
+
+
+      <!-- =========================
+           Product Image
+      ========================== -->
 
       <div class="product-detail__image">
         <img
@@ -155,15 +206,27 @@
           (error)="onImageError($event)"
         />
       </div>
+
     </div>
-  } @else {
+  }
+
+
+  <!-- =========================
+       Not Found
+  ========================== -->
+
+  @else {
     <div class="product-detail__container">
+
       <div class="product-not-found">
+
         <span class="product-not-found__code">
           404
         </span>
 
-        <h1>محصول پیدا نشد</h1>
+        <h1>
+          محصول پیدا نشد
+        </h1>
 
         <p>
           محصولی که دنبالش هستید وجود ندارد یا از فروشگاه
@@ -171,6 +234,7 @@
         </p>
 
         <div class="product-not-found__actions">
+
           <a
             mat-flat-button
             routerLink="/products"
@@ -184,8 +248,11 @@
           >
             بازگشت به صفحه اصلی
           </a>
+
         </div>
+
       </div>
+
     </div>
   }
 </section>

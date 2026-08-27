@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
-
-
 export interface CreateAdminProductRequest {
   categoryId: number;
   name: string;
@@ -31,6 +29,32 @@ export interface CreateAdminProductOptionValueRequest {
   displayOrder: number;
 }
 
+export interface UpdateAdminProductRequest {
+  categoryId: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  displayOrder: number;
+  options: UpdateAdminProductOptionRequest[];
+}
+
+export interface UpdateAdminProductOptionRequest {
+  id: number | null;
+  productOptionDefinitionId: number;
+  isRequired: boolean;
+  displayOrder: number;
+  values: UpdateAdminProductOptionValueRequest[];
+}
+
+export interface UpdateAdminProductOptionValueRequest {
+  id: number | null;
+  label: string;
+  value: string;
+  priceAdjustment: number;
+  colorCode: string | null;
+  displayOrder: number;
+}
 
 export interface AdminProductListItem {
   id: number;
@@ -45,7 +69,6 @@ export interface AdminProductListItem {
   imageUrl: string | null;
   displayOrder: number;
 }
-
 
 export interface AdminProductResponse {
   id: number;
@@ -89,26 +112,16 @@ export interface AdminProductOptionValueResponse {
   displayOrder: number;
 }
 
-export interface UpdateAdminProductRequest {
-  categoryId: number;
-  name: string;
-  slug: string;
-  description: string | null;
-  price: number;
-  displayOrder: number;
-}
-
 export enum ProductStatus {
   Draft = 1,
   Published = 2,
-  Archived = 3
+  Archived = 3,
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminProductService {
-
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl =
@@ -116,53 +129,60 @@ export class AdminProductService {
 
   getAll(): Observable<AdminProductListItem[]> {
     return this.http.get<AdminProductListItem[]>(
-      this.apiUrl
+      this.apiUrl,
     );
   }
 
-create(request: CreateAdminProductRequest) {
-  return this.http.post<{ id: number }>(
-    this.apiUrl,
-    request
-  );
+  create(
+    request: CreateAdminProductRequest,
+  ): Observable<{ id: number }> {
+    return this.http.post<{ id: number }>(
+      this.apiUrl,
+      request,
+    );
+  }
 
-}
+  getById(
+    id: number,
+  ): Observable<AdminProductResponse> {
+    return this.http.get<AdminProductResponse>(
+      `${this.apiUrl}/${id}`,
+    );
+  }
 
-getById(
-  id: number
-): Observable<AdminProductResponse> {
-  return this.http.get<AdminProductResponse>(
-    `${this.apiUrl}/${id}`
-  );
-}
-update(
-  id: number,
-  request: UpdateAdminProductRequest
-): Observable<void> {
-  return this.http.put<void>(
-    `${this.apiUrl}/${id}`,
-    request
-  );
-}
+  update(
+    id: number,
+    request: UpdateAdminProductRequest,
+  ): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/${id}`,
+      request,
+    );
+  }
 
-activate(id: number): Observable<void> {
-  return this.http.patch<void>(
-    `${this.apiUrl}/${id}/activate`,
-    {}
-  );
-}
+  activate(
+    id: number,
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${id}/activate`,
+      {},
+    );
+  }
 
-deactivate(id: number): Observable<void> {
-  return this.http.patch<void>(
-    `${this.apiUrl}/${id}/deactivate`,
-    {}
-  );
-}
+  deactivate(
+    id: number,
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/${id}/deactivate`,
+      {},
+    );
+  }
 
-delete(id: number): Observable<void> {
-  return this.http.delete<void>(
-    `${this.apiUrl}/${id}`
-  );
-}
-
+  delete(
+    id: number,
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${id}`,
+    );
+  }
 }
