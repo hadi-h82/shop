@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Sevart.Api/Sevart.Api.csproj" Id="f2ad0733-f1d8-4a5b-9ff6-2bce41cb4c72" />
+  <Project Path="Sevart.Application/Sevart.Application.csproj" Id="0a25125b-431d-459b-bbd6-11fb03915e34" />
+  <Project Path="Sevart.Domain/Sevart.Domain.csproj" Id="242591f2-4a88-40fe-ac7d-81959724ec61" />
+  <Project Path="Sevart.Infrastructure/Sevart.Infrastructure.csproj" Id="bef96df5-f78b-4b38-826b-9f008158b564" />
+</Solution>

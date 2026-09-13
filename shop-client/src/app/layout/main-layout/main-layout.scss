@@ -1,4 +1,10 @@
+:host {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .main-layout {
-  min-height: calc(100vh - 160px);
+  flex: 1;
   padding: var(--space-lg) 0;
 }

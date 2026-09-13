@@ -1,0 +1,115 @@
+<section class="category-page">
+  <div class="category-page__container">
+    @if (category() === undefined) {
+      <div
+        class="category-page__loading"
+        role="status"
+        aria-live="polite"
+      >
+        در حال بارگذاری دسته‌بندی...
+      </div>
+    }
+
+    @else if (category(); as currentCategory) {
+      <div class="category-page__topbar">
+        <nav
+          class="category-page__breadcrumb"
+          aria-label="مسیر صفحه"
+        >
+          <a routerLink="/">خانه</a>
+          <span aria-hidden="true">/</span>
+
+          <a routerLink="/products">محصولات</a>
+          <span aria-hidden="true">/</span>
+
+          <span>{{ currentCategory.name }}</span>
+        </nav>
+
+        <a
+          class="category-page__back"
+          routerLink="/"
+        >
+          <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+          بازگشت به دسته‌بندی‌ها
+        </a>
+      </div>
+
+      @if (products().length > 0) {
+        <div class="category-page__grid">
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+
+        @if (guide(); as categoryGuide) {
+          <section
+            class="category-page__guide"
+            aria-labelledby="category-guide-title"
+          >
+            <div class="category-page__guide-main">
+              <span class="category-page__guide-label">
+                راهنمای انتخاب و خرید
+              </span>
+
+              <h1 id="category-guide-title">
+                {{ categoryGuide.title }}
+              </h1>
+
+              <p>
+                {{ categoryGuide.intro }}
+              </p>
+            </div>
+
+            <div class="category-page__guide-tips">
+              @for (tip of categoryGuide.tips; track tip) {
+                <div class="category-page__tip">
+                  <span aria-hidden="true">✓</span>
+
+                  <p>{{ tip }}</p>
+                </div>
+              }
+            </div>
+
+            <p class="category-page__guide-note">
+              <strong>نکته:</strong>
+              {{ categoryGuide.note }}
+            </p>
+          </section>
+        }
+      } @else {
+        <div class="category-page__empty">
+          <div
+            class="category-page__empty-icon"
+            aria-hidden="true"
+          >
+            !
+          </div>
+
+          <h1>هنوز محصولی ثبت نشده است</h1>
+
+          <p>
+            در حال حاضر محصول فعالی در این دسته‌بندی وجود ندارد.
+          </p>
+
+          <a routerLink="/products">
+            مشاهده همه محصولات
+          </a>
+        </div>
+      }
+    } @else {
+      <div class="category-page__not-found">
+        <span aria-hidden="true">404</span>
+
+        <h1>دسته‌بندی پیدا نشد</h1>
+
+        <p>
+          دسته‌بندی موردنظر وجود ندارد یا غیرفعال شده است.
+        </p>
+
+        <a routerLink="/">
+          بازگشت به صفحه اصلی
+        </a>
+      </div>
+    }
+  </div>
+</section>

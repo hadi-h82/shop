@@ -1,26 +1,118 @@
 <header class="site-header">
   <div class="site-header__container">
-    <a routerLink="/" class="site-header__logo">فروشگاه</a>
 
-    <div class="site-header__search">
-      <mat-icon>search</mat-icon>
-      <input type="text" placeholder="جستجوی محصول..." />
-    </div>
+    <!-- Logo -->
+    <a routerLink="/" class="site-header__logo">
+      <span class="site-header__logo-icon">
+        <mat-icon>cake</mat-icon>
+      </span>
 
+      <span class="site-header__logo-content">
+        <strong>شیرین‌مارکت</strong>
+        <small>لوازم تخصصی قنادی</small>
+      </span>
+    </a>
+
+    <!-- Search -->
+<form
+  class="site-header__search"
+  role="search"
+  (submit)="search($event)"
+>
+  <button
+    type="submit"
+    class="site-header__search-submit"
+    aria-label="جست‌وجوی محصول"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
+
+  <input
+    type="search"
+    [formControl]="searchControl"
+    placeholder="دنبال چه محصولی می‌گردی؟"
+    aria-label="جست‌وجوی محصولات"
+  />
+
+  @if (searchControl.value) {
+    <button
+      type="button"
+      class="site-header__search-clear"
+      aria-label="پاک‌کردن جست‌وجو"
+      (click)="clearSearch()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</form>
+
+    <!-- Navigation -->
     <nav class="site-header__nav">
-      <a routerLink="/">خانه</a>
-      <a routerLink="/products">محصولات</a>
-    </nav>
-
-    <div class="site-header__actions">
-      <a routerLink="/cart" class="site-header__cart">
-        <mat-icon>shopping_cart</mat-icon>
-        <span>سبد خرید</span>
+      <a
+        routerLink="/"
+        routerLinkActive="site-header__nav-link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="site-header__nav-link"
+      >
+        خانه
       </a>
 
-      <button mat-flat-button color="primary">
+      <a
+        routerLink="/products"
+        routerLinkActive="site-header__nav-link--active"
+        class="site-header__nav-link"
+      >
+        محصولات
+      </a>
+    </nav>
+
+    <!-- Actions -->
+    <div class="site-header__actions">
+
+      <button
+  type="button"
+  class="site-header__theme-toggle"
+  aria-label="تغییر حالت روشن و تاریک"
+  title="تغییر حالت نمایش"
+  (click)="themeService.toggle()"
+>
+  <mat-icon class="site-header__theme-icon--light">
+    light_mode
+  </mat-icon>
+
+  <mat-icon class="site-header__theme-icon--dark">
+    dark_mode
+  </mat-icon>
+</button>
+      <a
+        routerLink="/cart"
+        class="site-header__cart"
+        aria-label="سبد خرید"
+      >
+        <span class="site-header__cart-icon">
+          <mat-icon>shopping_bag</mat-icon>
+
+          @if (cart.totalItems() > 0) {
+            <span class="site-header__cart-badge">
+              {{ cart.totalItems() }}
+            </span>
+          }
+        </span>
+
+        <span class="site-header__cart-text">
+          سبد خرید
+        </span>
+      </a>
+
+      <a
+        mat-flat-button
+        routerLink="/login"
+        class="site-header__login"
+      >
         ورود / ثبت‌نام
-      </button>
+      </a>
+
     </div>
+
   </div>
 </header>

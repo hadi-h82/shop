@@ -1,0 +1,81 @@
+<div dir="rtl" class="w-full p-6">
+
+    <div class="flex items-start gap-4">
+
+        <!-- Icon -->
+        <div class="
+        flex
+        size-11
+        shrink-0
+        items-center
+        justify-center
+        rounded-xl
+        bg-amber-50
+        text-amber-700
+      ">
+            <mat-icon>delete_outline</mat-icon>
+        </div>
+
+        <!-- Content -->
+        <div class="min-w-0 flex-1">
+
+            <h2 class="text-lg font-bold text-neutral-900">
+                {{ data.title }}
+            </h2>
+
+            <p class="mt-2 text-sm leading-7 text-neutral-500">
+                {{ data.message }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="
+      mt-6
+      flex
+      items-center
+      justify-end
+      gap-2
+    ">
+
+        <button type="button" (click)="cancel()" class="
+        inline-flex
+        items-center
+        justify-center
+        rounded-xl
+        border
+        border-neutral-200
+        bg-white
+        px-4
+        py-2.5
+        text-sm
+        font-semibold
+        text-neutral-700
+        transition
+        hover:bg-neutral-50
+      ">
+            {{ data.cancelText || 'انصراف' }}
+        </button>
+
+        <button type="button" (click)="confirm()" class="
+        inline-flex
+        items-center
+        justify-center
+        rounded-xl
+        bg-amber-700
+        px-4
+        py-2.5
+        text-sm
+        font-semibold
+        text-white
+        transition
+        hover:bg-amber-800
+      ">
+            {{ data.confirmText || 'حذف' }}
+        </button>
+
+    </div>
+
+</div>

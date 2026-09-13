@@ -1,0 +1,51 @@
+<article
+  class="product-card"
+  [class.product-card--unavailable]="!product().isAvailable"
+>
+  <div class="product-card__media">
+    <img
+      class="product-card__image"
+      [src]="product().imageUrl"
+      [alt]="product().title"
+      loading="lazy"
+      (error)="onImageError($event)"
+    />
+  </div>
+
+  @if (!product().isAvailable) {
+    <span class="product-card__availability">
+      ناموجود
+    </span>
+  }
+
+  <span class="product-card__preview-title">
+    {{ product().title }}
+  </span>
+
+  <div class="product-card__overlay">
+    <div class="product-card__information">
+      <span class="product-card__category">
+        {{ product().categoryName }}
+      </span>
+
+      <a
+        class="product-card__title-link"
+        [routerLink]="['/products', product().slug]"
+      >
+        <h2 class="product-card__title">
+          {{ product().title }}
+        </h2>
+      </a>
+    </div>
+
+    <div class="product-card__actions">
+      <a
+        class="product-card__details-button"
+        [routerLink]="['/products', product().slug]"
+      >
+        <mat-icon>visibility</mat-icon>
+        <span>مشاهده جزئیات</span>
+      </a>
+    </div>
+  </div>
+</article>

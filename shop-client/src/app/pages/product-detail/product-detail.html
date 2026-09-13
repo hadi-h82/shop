@@ -1,1 +1,300 @@
-<p>product-detail works!</p>
+<section class="product-detail">
+  @if (loading()) {
+    <div
+      class="product-detail__loading"
+      role="status"
+      aria-live="polite"
+    >
+      در حال بارگذاری محصول...
+    </div>
+  }
+
+  @else if (product(); as item) {
+    <div class="product-detail__container">
+      <a
+        class="product-detail__breadcrumb"
+        routerLink="/products"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+
+        <span>بازگشت به محصولات</span>
+      </a>
+
+      <div class="product-detail__content">
+        @if (item.categoryName) {
+          <span class="product-detail__category">
+            {{ item.categoryName }}
+          </span>
+        }
+
+        <h1>{{ item.title }}</h1>
+
+        @if (sortedOptions().length > 0) {
+          <div class="product-options">
+
+            @for (
+              option of sortedOptions();
+              track option.id
+            ) {
+              <div class="product-option">
+
+                <div class="product-option__header">
+                  <strong>{{ option.name }}</strong>
+
+                  @if (option.isRequired) {
+                    <small>انتخاب الزامی</small>
+                  } @else {
+                    <small>اختیاری</small>
+                  }
+                </div>
+
+
+                <!-- =========================
+                     Select
+                ========================== -->
+
+                @if (
+                  option.inputType ===
+                  ProductOptionInputType.Select
+                ) {
+                  <div class="product-option__select-wrapper">
+
+                    <mat-select
+                      class="product-option__select"
+                      [value]="
+                        selectedOptions()[option.id]?.id ?? null
+                      "
+                      [panelClass]="'product-option-select-panel'"
+                      (selectionChange)="
+                        selectFromDropdown(
+                          option,
+                          $event.value
+                        )
+                      "
+                    >
+
+                      <mat-option [value]="null">
+                        یک گزینه انتخاب کنید
+                      </mat-option>
+
+                      @for (
+                        optionValue of sortedOptionValues(option);
+                        track optionValue.id
+                      ) {
+                        <mat-option
+                          [value]="optionValue.id"
+                          [disabled]="!optionValue.isActive"
+                        >
+                          {{ optionValue.label }}
+                        </mat-option>
+                      }
+
+                    </mat-select>
+
+                  </div>
+                }
+
+
+                <!-- =========================
+                     Radio / Color
+                ========================== -->
+
+                @else {
+                  <div class="product-option__values">
+
+                    @for (
+                      optionValue of sortedOptionValues(option);
+                      track optionValue.id
+                    ) {
+                      <button
+                        type="button"
+                        class="product-option__value"
+                        [class.product-option__value--selected]="
+                          isOptionSelected(
+                            option.id,
+                            optionValue.id
+                          )
+                        "
+                        [class.product-option__value--color]="
+                          option.inputType ===
+                          ProductOptionInputType.Color
+                        "
+                        [disabled]="!optionValue.isActive"
+                        (click)="
+                          selectOption(
+                            option.id,
+                            optionValue
+                          )
+                        "
+                      >
+
+                        @if (
+                          option.inputType ===
+                            ProductOptionInputType.Color &&
+                          optionValue.colorCode
+                        ) {
+                          <span
+                            class="product-option__color"
+                            [style.background-color]="
+                              optionValue.colorCode
+                            "
+                          ></span>
+                        }
+
+                        <span>
+                          {{ optionValue.label }}
+                        </span>
+
+                        @if (!optionValue.isActive) {
+                          <small class="product-option__unavailable">
+                            ناموجود
+                          </small>
+                        }
+
+                      </button>
+                    }
+
+                  </div>
+                }
+
+              </div>
+            }
+
+          </div>
+        }
+
+
+        <!-- =========================
+             Quantity
+        ========================== -->
+
+        <div class="product-detail__quantity">
+          <span>تعداد</span>
+
+          <div class="product-detail__quantity-controls">
+            <button
+              type="button"
+              aria-label="افزایش تعداد"
+              (click)="increaseQuantity()"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+
+            <strong aria-live="polite">
+              {{ quantity() }}
+            </strong>
+
+            <button
+              type="button"
+              aria-label="کاهش تعداد"
+              [disabled]="quantity() <= 1"
+              (click)="decreaseQuantity()"
+            >
+              <mat-icon>remove</mat-icon>
+            </button>
+          </div>
+        </div>
+
+
+        <!-- =========================
+             Final Price
+        ========================== -->
+
+        <div class="product-detail__final-price">
+          <span>قیمت نهایی</span>
+
+          <strong>
+            {{ finalPrice() | number }} تومان
+          </strong>
+        </div>
+
+
+        <!-- =========================
+             Add To Cart
+        ========================== -->
+
+        <button
+          mat-flat-button
+          type="button"
+          class="product-detail__add-button"
+          [disabled]="
+            !item.isAvailable ||
+            !requiredOptionsSelected()
+          "
+          (click)="addToCart()"
+        >
+          <mat-icon>shopping_cart</mat-icon>
+
+          @if (!item.isAvailable) {
+            ناموجود
+          } @else if (!requiredOptionsSelected()) {
+            ویژگی‌های الزامی را انتخاب کنید
+          } @else {
+            افزودن به سبد خرید
+          }
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           Product Image
+      ========================== -->
+
+      <div class="product-detail__image">
+        <img
+          [src]="item.imageUrl"
+          [alt]="item.title"
+          (error)="onImageError($event)"
+        />
+      </div>
+
+    </div>
+  }
+
+
+  <!-- =========================
+       Not Found
+  ========================== -->
+
+  @else {
+    <div class="product-detail__container">
+
+      <div class="product-not-found">
+
+        <span class="product-not-found__code">
+          404
+        </span>
+
+        <h1>
+          محصول پیدا نشد
+        </h1>
+
+        <p>
+          محصولی که دنبالش هستید وجود ندارد یا از فروشگاه
+          حذف شده است.
+        </p>
+
+        <div class="product-not-found__actions">
+
+          <a
+            mat-flat-button
+            routerLink="/products"
+          >
+            مشاهده محصولات
+          </a>
+
+          <a
+            mat-button
+            routerLink="/"
+          >
+            بازگشت به صفحه اصلی
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+  }
+</section>

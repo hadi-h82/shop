@@ -1,0 +1,6 @@
+@Sevart.Api_HostAddress = http://localhost:5090
+
+GET {{Sevart.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
