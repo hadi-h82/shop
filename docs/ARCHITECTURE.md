@@ -1,164 +1,452 @@
-# معماری فنی فعلی
+# معماری فنی پروژه Sevart
 
-این سند تنها بر پایهٔ کد موجود در `shop-client/` تهیه شده است.
+## هدف سند
 
-## ساختار مخزن
+این سند معماری موجود در Snapshot فعلی مخزن را توصیف می‌کند. موارد پیاده‌سازی‌شده از جهت‌گیری هدف و بدهی‌های فنی جدا شده‌اند تا مستندات، وضعیتی جلوتر از کد را نمایش ندهند.
 
-- ریشهٔ مخزن: پوشه‌ای که `AGENTS.md`، `docs/` و `shop-client/` در آن قرار دارند.
-- برنامهٔ Angular: `shop-client/`
-- پیکربندی Angular و Build: `shop-client/angular.json`
-- نقطهٔ ورود مرورگر: `shop-client/src/main.ts`
-- نقطهٔ ورود SSR: `shop-client/src/main.server.ts`
-- سرور Node/Express: `shop-client/src/server.ts`
-- کد برنامه: `shop-client/src/app/`
-- فایل‌های استایل سراسری: `shop-client/src/styles.scss` و `shop-client/src/styles/`
-- دارایی‌های استاتیک، طبق `angular.json`: `shop-client/public/`
+## نمای کلی مخزن
 
-## ساختار `src/app`
+| مسیر | مسئولیت |
+| --- | --- |
+| `shop-client/` | برنامهٔ Angular شامل Storefront، پنل مدیریت و SSR |
+| `shop-server/` | Backend مبتنی بر ASP.NET Core Web API، EF Core و SQL Server |
+| `docs/` | مستندات پروژه، معماری، UI و Roadmap |
+| `AGENTS.md` | قواعد مشارکت و توسعه در مخزن |
+
+Frontend و Backend در یک مخزن قرار دارند، اما Build و اجرای مستقلی دارند. قرارداد اتصال آن‌ها HTTP/JSON و مسیر پایهٔ `/api` است.
+
+## معماری سطح بالا
+
+جریان اصلی Storefront:
+
+```mermaid
+flowchart TD
+    U["مرورگر کاربر"] --> A["Angular Storefront"]
+    A --> S["Angular SSR / Express"]
+    A --> API["ASP.NET Core API"]
+    S --> API
+    API --> R["Repositoryها"]
+    R --> EF["EF Core"]
+    EF --> DB["SQL Server"]
+    A --> LS["localStorage: cart/theme"]
+```
+
+در وضعیت فعلی همهٔ صفحات از یک منبع داده استفاده نمی‌کنند. بخشی از Storefront و Admin به API متصل شده‌اند و برخی صفحات هنوز از Mock Data استفاده می‌کنند.
+
+## Frontend
+
+### فناوری‌ها
+
+- Angular `22.0.x`
+- Standalone Components
+- Angular Signals و RxJS
+- Reactive Forms
+- Angular Material و CDK
+- Angular SSR با Express
+- SCSS و Tailwind CSS
+- Vitest برای تست واحد
+
+### نقاط ورود و پیکربندی
+
+| فایل | مسئولیت |
+| --- | --- |
+| `shop-client/src/main.ts` | Bootstrap مرورگر |
+| `shop-client/src/main.server.ts` | Bootstrap سمت سرور |
+| `shop-client/src/server.ts` | سرور Express و Angular Node App Engine |
+| `shop-client/src/app/app.config.ts` | Router، HttpClient، Hydration و Error Listenerها |
+| `shop-client/src/app/app.config.server.ts` | Server Rendering Providerها |
+| `shop-client/src/app/app.routes.ts` | Routeهای برنامه |
+| `shop-client/src/app/app.routes.server.ts` | Render Modeها و پارامترهای Prerender |
+| `shop-client/src/environments/` | URL سرویس‌ها برای Development و Production |
+
+`provideHttpClient()` در پیکربندی اصلی ثبت شده و `provideClientHydration()` برای Hydration خروجی SSR فعال است.
+
+### ساختار `src/app`
 
 | مسیر | مسئولیت فعلی |
 | --- | --- |
-| `src/app/app.ts`، `app.html` و `app.scss` | کامپوننت ریشهٔ `App` و `router-outlet` اصلی |
-| `src/app/app.config.ts` | providerهای مرورگر: Router، client hydration و global error listeners |
-| `src/app/app.config.server.ts` | ادغام providerهای مرورگر با providerهای Server Rendering |
-| `src/app/app.routes.ts` | تعریف Routeهای کلاینت |
-| `src/app/app.routes.server.ts` | تعریف Routeهای رندر سمت‌سرور و prerender |
-| `src/app/core/models/` | قراردادهای دادهٔ محصول، دسته‌بندی، گزینه‌های محصول و آیتم سبد |
-| `src/app/core/mock-data/` | داده‌های ثابت محصولات و دسته‌بندی‌ها |
-| `src/app/core/services/` | سرویس‌های سبد خرید، تم، SEO و یک کلاس `Product` |
-| `src/app/layout/` | اجزای مشترک `Header`، `Footer` و `MainLayout` |
-| `src/app/pages/` | صفحات خانه، محصولات، دسته‌بندی، جزئیات، سبد، تسویه‌حساب و احراز هویت |
-| `src/app/shared/ui/` | جزء UI قابل‌استفادهٔ مجدد `ProductCard` |
+| `admin/` | Layout، Routeها، صفحات و سرویس‌های پنل مدیریت |
+| `core/models/` | مدل‌های Category، Product، Product Option و Cart Item |
+| `core/mock-data/` | داده‌های Mock باقی‌مانده برای محصولات و Prerender |
+| `core/services/` | سرویس‌های Category، Product، Cart، SEO و Theme |
+| `layout/` | Header، Footer و Main Layout فروشگاه |
+| `pages/` | صفحات Storefront، Checkout و Auth |
+| `shared/components/` | اجزای مشترک عمومی مانند Confirm Dialog |
+| `shared/ui/` | اجزای UI قابل‌استفادهٔ مجدد مانند Product Card |
 
-## معماری کامپوننت‌ها
+### الگوی کامپوننت‌ها و State
 
-تمام کامپوننت‌های فعلی با `@Component` و فهرست `imports` محلی تعریف شده‌اند؛ از جمله `src/app/app.ts`، `src/app/layout/main-layout/main-layout.ts` و `src/app/shared/ui/product-card/product-card.ts`. این ساختار، الگوی standalone components Angular را به‌کار می‌گیرد و هیچ `NgModule` کاربردی در `src/app/` وجود ندارد.
+- کامپوننت‌ها Standalone هستند و dependencyهای قالب را در `imports` خود تعریف می‌کنند.
+- سرویس‌ها و dependencyها عمدتاً با `inject()` دریافت می‌شوند.
+- State محلی و مشتق‌شده با `signal()` و `computed()` نگهداری می‌شود.
+- Observableهای HTTP در برخی صفحات با `toSignal()` به Signal تبدیل می‌شوند و در برخی نقاط با `subscribe()` مصرف می‌شوند.
+- قالب‌ها از Control Flow جدید Angular مانند `@if` و `@for` استفاده می‌کنند.
+- صفحات Auth و Checkout از Reactive Forms استفاده می‌کنند.
 
-- state در چند بخش با Signals پیاده‌سازی شده است: `signal()` در `src/app/app.ts` و `src/app/core/services/theme.ts`، و `signal()`، `computed()` و `effect()` در `src/app/core/services/cart.ts`.
-- `src/app/pages/category-products/category-products.ts` برای پارامتر Route از `toSignal()` استفاده می‌کند.
-- `src/app/shared/ui/product-card/product-card.ts` ورودی محصول را با `input.required<Product>()` دریافت می‌کند.
-- قالب‌های فعلی از کنترل‌فلو جدید Angular مانند `@if` استفاده می‌کنند؛ نمونه: `src/app/layout/header/header.html` و `src/app/shared/ui/product-card/product-card.html`.
+### Routing فروشگاه
 
-## Routing
+Storefront زیر `MainLayout` اجرا می‌شود:
 
-Routeهای کلاینت در `src/app/app.routes.ts` تعریف شده‌اند. تمام مسیرهای زیر فرزند Route ریشه با کامپوننت `MainLayout` هستند:
+| مسیر | صفحه | وضعیت داده |
+| --- | --- | --- |
+| `/` | Home | دسته‌بندی از API، محصولات منتخب از Mock |
+| `/products` | Products | محصولات و جست‌وجوی محلی از Mock |
+| `/categories/:slug` | CategoryProducts | API |
+| `/products/:id` | ProductDetail | مقدار `id` عملاً Slug است و محصول از API دریافت می‌شود |
+| `/cart` | Cart | Local State و `localStorage` |
+| `/checkout` | Checkout | فرم محلی و غیرمتصل به Order API |
+| `/login` | Login | Lazy-loaded و نمایشی |
+| `/register` | Register | Lazy-loaded و نمایشی |
+| `/forgot-password` | ForgotPassword | Lazy-loaded و نمایشی |
+| `/reset-password` | ResetPassword | Lazy-loaded و نمایشی |
 
-| مسیر | کامپوننت / رفتار |
+Route ناشناخته به صفحهٔ خانه Redirect می‌شود. صفحهٔ 404 مستقل در وضعیت فعلی وجود ندارد.
+
+### Routing پنل مدیریت
+
+مسیر `/admin` با `loadChildren` بارگذاری می‌شود و `AdminLayout` را به‌عنوان پوستهٔ مشترک دارد.
+
+| مسیر | مسئولیت |
 | --- | --- |
-| `/` | `Home` در `src/app/pages/home/home.ts` |
-| `/products` | `Products` در `src/app/pages/products/products.ts` |
-| `/categories/:slug` | `CategoryProducts` در `src/app/pages/category-products/category-products.ts` |
-| `/products/:id` | `ProductDetail` در `src/app/pages/product-detail/product-detail.ts`؛ مقدار `id` با slug محصول تطبیق داده می‌شود |
-| `/cart` | `Cart` در `src/app/pages/cart/cart.ts` |
-| `/checkout` | `Checkout` در `src/app/pages/checkout/checkout.ts` |
-| `/login` | کامپوننت lazy-loaded `Login` |
-| `/register` | کامپوننت lazy-loaded `Register` |
-| `/forgot-password` | کامپوننت lazy-loaded `ForgotPassword` |
-| `/reset-password` | کامپوننت lazy-loaded `ResetPassword` |
-| هر مسیر دیگر | redirect به `/` |
+| `/admin` | Dashboard اولیه |
+| `/admin/categories` | فهرست دسته‌بندی‌ها |
+| `/admin/categories/create` | ایجاد دسته‌بندی |
+| `/admin/categories/:id` | ویرایش دسته‌بندی |
+| `/admin/products` | فهرست محصولات |
+| `/admin/products/create` | ایجاد محصول |
+| `/admin/products/:id` | ویرایش محصول |
 
-### مسیرهای lazy-loaded
+صفحات فرزند Admin با `loadComponent` بارگذاری می‌شوند. Guard، Authentication و Role-based Authorization هنوز پیاده‌سازی نشده‌اند.
 
-چهار مسیر زیر با `loadComponent` در `src/app/app.routes.ts` بارگذاری می‌شوند:
+### لایهٔ دسترسی به API
 
-- `/login` ← `src/app/pages/auth/login/login.ts`
-- `/register` ← `src/app/pages/auth/register/register.ts`
-- `/forgot-password` ← `src/app/pages/auth/forgot-password/forgot-password.ts`
-- `/reset-password` ← `src/app/pages/auth/reset-password/reset-password.ts`
+سرویس‌های عمومی:
 
-## Layout
-
-`src/app/layout/main-layout/main-layout.ts`، `Header` و `Footer` را همراه با `RouterOutlet` import می‌کند. قالب `src/app/layout/main-layout/main-layout.html` به‌ترتیب `<app-header>`، `<main><router-outlet></router-outlet></main>` و `<app-footer>` را رندر می‌کند.
-
-- **Header:** `src/app/layout/header/header.ts` و `header.html` شامل لوگو، ورودی جست‌وجو، پیوندهای خانه و محصولات، کنترل تغییر تم، پیوند سبد خرید با شمارندهٔ `cart.totalItems()` و پیوند ورود/ثبت‌نام است. ورودی جست‌وجو فقط در UI وجود دارد و منطق جست‌وجو ندارد.
-- **Footer:** `src/app/layout/footer/footer.ts` و `footer.html` یک فوتر استاتیک با متن فروشگاه و Angular SSR هستند.
-- **MainLayout:** `src/app/layout/main-layout/` پوستهٔ مشترک همهٔ صفحات Route شده است.
-
-## مدل‌ها
-
-مدل‌ها در `src/app/core/models/` تعریف شده‌اند:
-
-- `product.model.ts`: رابط `Product` با `id`، `categoryId?`، `title`، `slug`، `price`، `discountPrice?`، `imageUrl`، `categoryName`، `isAvailable` و `options?`.
-- `category.model.ts`: رابط `Category` با شناسه، نام، slug، توضیح، تصویر، ترتیب نمایش و وضعیت فعال بودن.
-- `cart-item.model.ts`: رابط `CartItem` شامل `product: Product` و `quantity: number`.
-- `product-option.model.ts`: نوع `ProductOptionInputType` با مقادیر `select`، `radio` و `color`؛ رابط‌های `ProductOption` و `ProductOptionValue` برای گزینه‌ها، مقادیر، تعدیل قیمت و ترتیب نمایش.
-
-## داده‌های Mock
-
-- محصولات در `src/app/core/mock-data/products.mock.ts` با ثابت `MOCK_PRODUCTS` قرار دارند.
-- دسته‌بندی‌ها در `src/app/core/mock-data/categories.mock.ts` با ثابت `MOCK_CATEGORIES` قرار دارند.
-- `Home` در `src/app/pages/home/home.ts`، `Products` در `src/app/pages/products/products.ts`، `CategoryProducts` در `src/app/pages/category-products/category-products.ts` و `ProductDetail` در `src/app/pages/product-detail/product-detail.ts` مستقیماً این ثابت‌ها را import می‌کنند.
-- `src/app/app.routes.server.ts` نیز همین ثابت‌ها را برای ساخت پارامترهای prerender به‌کار می‌برد.
-- در `src/app/core/services/product.ts` کلاسی به نام `Product` وجود دارد، اما خالی است و در این معماری برای دریافت یا مدیریت داده‌های Mock استفاده نمی‌شود.
-
-## سرویس‌ها
-
-| فایل | مسئولیت فعلی |
+| سرویس | مسئولیت |
 | --- | --- |
-| `src/app/core/services/cart.ts` | نگهداری state سبد خرید، محاسبهٔ تعداد/مبلغ کل، تغییر تعداد و persistence در `localStorage` |
-| `src/app/core/services/theme.ts` | نگهداری تم light/dark، تغییر `data-theme` سند و ذخیرهٔ انتخاب در `localStorage` |
-| `src/app/core/services/seo.ts` | به‌روزرسانی title، description، تگ‌های Open Graph و canonical link |
-| `src/app/core/services/product.ts` | کلاس خالی `Product` با decorator `@Service()`؛ در کد فعلی هیچ مصرف یا قابلیت داده‌ای ندارد |
+| `CategoryService` | دریافت دسته‌بندی‌ها، دسته‌بندی بر اساس Slug و دسته‌بندی همراه محصولات |
+| `ProductService` | دریافت محصول بر اساس Slug و محصولات منتشرشدهٔ یک دسته‌بندی |
 
-برای `CartService`، `ThemeService` و `Seo` فایل تست متناظر در همان پوشه با پسوند `.spec.ts` وجود دارد. همچنین برای `Product` یک فایل `product.spec.ts` هست.
+سرویس‌های Admin:
 
-## جریان سبد خرید
+| سرویس | مسئولیت |
+| --- | --- |
+| `AdminCategoryService` | CRUD و فعال/غیرفعال‌سازی Category |
+| `AdminProductService` | CRUD و انتشار/آرشیو Product |
+| `AdminProductOptionDefinitionService` | دریافت و مدیریت Definitionهای گزینه |
 
-1. `ProductCard` در `src/app/shared/ui/product-card/product-card.ts` و `ProductDetail` در `src/app/pages/product-detail/product-detail.ts` متد `CartService.add(product)` را فراخوانی می‌کنند.
-2. `CartService.add()` در `src/app/core/services/cart.ts` محصول ناموجود یا محصول با قیمت `<= 0` را نمی‌افزاید. برای محصول موجود، `quantity` افزایش می‌یابد؛ وگرنه یک `CartItem` جدید با تعداد ۱ ایجاد می‌شود.
-3. state داخلی با `signal<CartItem[]>` نگهداری می‌شود؛ `items` به‌صورت readonly در دسترس است و `totalItems` و `totalPrice` با `computed()` محاسبه می‌شوند.
-4. یک `effect()` هر تغییر state را با کلید `shop-cart` در `localStorage` ذخیره می‌کند. state اولیه نیز از همین کلید خوانده می‌شود.
-5. دسترسی به `localStorage` با `isPlatformBrowser(PLATFORM_ID)` محافظت شده است تا هنگام SSR استفاده نشود.
-6. صفحهٔ `src/app/pages/cart/cart.ts` سرویس را به قالب `cart.html` می‌دهد؛ این قالب عملیات increase، decrease، remove و clear را فراخوانی می‌کند و به `/checkout` پیوند دارد.
+URL پایه از Environment خوانده می‌شود:
 
-## جریان تم Light/Dark
+| محیط | URL فعلی |
+| --- | --- |
+| Development | `http://localhost:5090/api` |
+| Production | `https://sevart.ir/api` |
 
-- `src/index.html` دارای `lang="fa"` و `dir="rtl"` است و پیش از bootstrap، کلید `shop-theme` را از `localStorage` می‌خواند. در صورت نبود انتخاب ذخیره‌شده، از `window.matchMedia('(prefers-color-scheme: dark)')` استفاده می‌کند و مقدار `data-theme` عنصر `<html>` را تنظیم می‌کند.
-- `src/app/core/services/theme.ts` حالت `ThemeMode` را در Signal نگه می‌دارد. `toggle()` مقدار `data-theme` را بین `light` و `dark` تغییر می‌دهد و در همان کلید `shop-theme` ذخیره می‌کند.
-- `src/app/layout/header/header.html` کنترل تغییر تم را به `themeService.toggle()` متصل می‌کند.
-- متغیرهای رنگ تم روشن و تیره در `src/styles/abstracts/_tokens.scss`، به‌ترتیب در `:root` و `html[data-theme='dark']` تعریف شده‌اند. `src/styles.scss` توکن‌ها، Angular Material، Tailwind و Vazirmatn را وارد می‌کند.
+### مدل‌های Frontend و Mapping
 
-## SSR و Server Rendering
+Frontend یک مدل داخلی `Product` دارد که برای UI و Cart استفاده می‌شود. پاسخ عمومی API با `ProductResponse` دریافت و در صفحهٔ جزئیات به مدل داخلی Map می‌شود.
 
-- در `shop-client/angular.json`، builder برنامه `@angular/build:application` با `outputMode: "server"` تنظیم شده است. نقطه‌های ورود سرور `src/main.server.ts` و `src/server.ts` هستند.
-- `src/main.server.ts` تابع bootstrap سرور را با `bootstrapApplication(App, config, context)` صادر می‌کند.
-- `src/app/app.config.server.ts` پیکربندی مرورگر (`appConfig`) را با `provideServerRendering(withRoutes(serverRoutes))` ادغام می‌کند.
-- `src/server.ts` یک Express app و `AngularNodeAppEngine` می‌سازد، فایل‌های استاتیک browser build را سرو می‌کند و سایر درخواست‌ها را برای رندر Angular به `angularApp.handle(req)` می‌فرستد. پورت از `PORT` یا مقدار پیش‌فرض `4000` خوانده می‌شود.
-- `src/app/app.config.ts` در مرورگر Router و `provideClientHydration()` را فراهم می‌کند.
+این جداسازی مفید است، اما Mapping فعلی کامل نیست:
 
-## Prerender
+- API عمومی `CategoryName` برنمی‌گرداند و مقدار آن در مدل UI خالی قرار می‌گیرد.
+- وضعیت `isAvailable` برای پاسخ عمومی به‌صورت `true` در نظر گرفته می‌شود.
+- Route با نام پارامتر `id` تعریف شده، اما مقدار واقعی آن Slug محصول است.
 
-Routeهای سرور در `src/app/app.routes.server.ts` تعریف شده‌اند:
+این موارد قرارداد فعلی هستند و هنگام یکپارچه‌سازی نهایی API و Frontend باید بازبینی شوند.
 
-- `products/:id` با `RenderMode.Prerender`: `getPrerenderParams()` برای هر عضو `MOCK_PRODUCTS` یک پارامتر `{ id: product.slug }` تولید می‌کند.
-- `categories/:slug` با `RenderMode.Prerender`: `getPrerenderParams()` دسته‌بندی‌های فعال `MOCK_CATEGORIES` را فیلتر می‌کند و برای هرکدام `{ slug: category.slug }` می‌سازد.
-- `**` نیز با `RenderMode.Prerender` تعریف شده است.
+### جریان Product Option
 
-بنابراین مسیرهای prerender داینامیک فعلاً از داده‌های Mock ایجاد می‌شوند، نه دادهٔ API.
+1. API گزینه‌های فعال محصول و مقادیر فعال آن‌ها را برمی‌گرداند.
+2. صفحهٔ Product Detail گزینه‌ها را بر اساس `DisplayOrder` مرتب می‌کند.
+3. UI بر اساس `ProductOptionInputType` کنترل Select، Radio یا Color نمایش می‌دهد.
+4. گزینه‌های Required پیش از افزودن به Cart اعتبارسنجی می‌شوند.
+5. قیمت نهایی از قیمت پایه و مجموع `PriceAdjustment` انتخاب‌ها ساخته می‌شود.
+6. انتخاب‌ها به مدل `SelectedCartOption` تبدیل و همراه Cart Item ذخیره می‌شوند.
 
-## SEO
+### جریان سبد خرید
 
-- سرویس `src/app/core/services/seo.ts` با `Title`، `Meta` و `DOCUMENT` کار می‌کند.
-- متد `Seo.update()` عنوان سند، متای `description`، `og:title`، `og:description`، `og:type`، و در صورت وجود تصویر `og:image` را به‌روز می‌کند.
-- برای `canonicalUrl`، همان سرویس `og:url` را به‌روز می‌کند و یک `<link rel="canonical">` را ایجاد یا مقدار `href` آن را تغییر می‌دهد.
-- `Home`، `Products`، `CategoryProducts` و `ProductDetail` در فایل‌های TypeScript صفحات متناظر خود این سرویس را فراخوانی می‌کنند.
-- URL پایهٔ canonical در این صفحات به شکل ثابت `https://sevart.ir` تعریف شده است.
+`CartService` منبع State سبد در Frontend است:
 
-## محل‌های اتصال آینده به API
+- State با `signal<CartItem[]>` نگهداری می‌شود.
+- `totalItems` و `totalPrice` با `computed()` محاسبه می‌شوند.
+- Persistence با کلید `shop-cart` در `localStorage` انجام می‌شود.
+- دسترسی به Storage با `isPlatformBrowser()` محافظت می‌شود.
+- `cartItemId` از شناسهٔ محصول و ترکیب مرتب‌شدهٔ Option/Valueها ساخته می‌شود.
+- یک Product با ترکیب گزینه‌های متفاوت، ردیف‌های مستقل Cart ایجاد می‌کند.
+- دادهٔ قدیمی Storage هنگام بارگذاری تا حد اولیه اعتبارسنجی و Normalize می‌شود.
 
-در کد فعلی، هیچ فراخوانی HTTP یا اتصال API پیاده‌سازی نشده است. نقاطی که اکنون داده یا خروجی موقت دارند، عبارت‌اند از:
+قیمت ذخیره‌شده در مرورگر قابل‌اعتماد نیست. هنگام پیاده‌سازی Checkout واقعی، Backend باید قیمت محصول و گزینه‌ها را دوباره از Database محاسبه کند.
 
-- صفحات `home.ts`، `products.ts`، `category-products.ts` و `product-detail.ts` در `src/app/pages/` که مستقیماً Mockها را می‌خوانند.
-- `src/app/app.routes.server.ts` که پارامترهای prerender را از Mockها می‌سازد.
-- `src/app/pages/checkout/checkout.ts` که پس از اعتبارسنجی فرم فقط دادهٔ مشتری، اقلام و مبلغ را با `console.log` ثبت می‌کند.
-- فایل‌های `src/app/pages/auth/login/login.ts`، `register/register.ts`، `forgot-password/forgot-password.ts` و `reset-password/reset-password.ts` که submit معتبر را فقط با `console.log` ثبت می‌کنند.
+### Theme و SEO
 
-## محدودیت‌ها و بدهی‌های فنی قابل مشاهده
+- Theme روشن و تیره با `data-theme` روی عنصر `<html>` مدیریت می‌شود.
+- انتخاب Theme با کلید `shop-theme` در `localStorage` ذخیره می‌شود.
+- SEO Service عنوان، Description، Open Graph و Canonical Link را به‌روزرسانی می‌کند.
+- URL پایهٔ Canonical در صفحات فعلی به‌صورت ثابت `https://sevart.ir` تعریف شده است.
 
-- لایهٔ دریافت دادهٔ محصول/دسته‌بندی پیاده‌سازی نشده است؛ صفحات و prerender مستقیماً به Mockها وابسته‌اند.
-- `src/app/core/services/product.ts` خالی است و در کد وارد یا استفاده نمی‌شود؛ به‌علاوه نام `Product` آن با رابط `Product` در `src/app/core/models/product.model.ts` هم‌نام است.
-- جریان‌های ورود، ثبت‌نام، بازیابی رمز، بازنشانی رمز و تسویه‌حساب فقط اعتبارسنجی سمت کاربر و `console.log` دارند؛ هیچ درخواست شبکه، پاسخ خطا یا تغییر وضعیت موفقیت پیاده‌سازی نشده است.
-- سبد خرید فقط محلی است و اعتبارسنجی ساختار دادهٔ JSON خوانده‌شده از `localStorage` به بررسی `Array.isArray` محدود می‌شود.
-- `CartService.add()` افزودن محصول با قیمت `0` یا کمتر را رد می‌کند، در حالی که داده‌های Mock فعلی قیمت `0` دارند؛ در نتیجه این محصولات از راه `CartService` قابل افزودن نیستند.
-- جست‌وجوی Header در `src/app/layout/header/header.html` فقط یک input است و به داده یا Route وصل نیست.
-- URL پایهٔ SEO در صفحات به‌صورت ثابت و تکراری تعریف شده است.
+### SSR و Prerender
+
+Angular با `outputMode: "server"` ساخته می‌شود. سرور Express فایل‌های استاتیک Browser Build را سرو می‌کند و درخواست‌های دیگر را به Angular Node Engine می‌فرستد.
+
+Render Modeهای فعلی:
+
+| الگوی مسیر | Render Mode | منبع پارامتر |
+| --- | --- | --- |
+| `products/:id` | Prerender | `MOCK_PRODUCTS` |
+| `categories/:slug` | Prerender | `MOCK_CATEGORIES` فعال |
+| `admin/**` | Client | ندارد |
+| `**` | Prerender | Routeهای ثابت |
+
+صفحات Category و Product Detail هنگام اجرا به API درخواست می‌زنند، درحالی‌که پارامترهای مسیر Prerender از Mock تولید می‌شوند. بنابراین دو وابستگی جدا وجود دارد:
+
+- لیست Routeهای قابل‌ساخت از Mock Data می‌آید.
+- دادهٔ صفحه هنگام Prerender ممکن است از API دریافت شود.
+
+اگر API Development هنگام Build در دسترس نباشد، Prerender صفحات متصل به API می‌تواند شکست بخورد. این وضعیت نیازمند تصمیم معماری دربارهٔ Static Prerender، Runtime SSR یا Client Rendering است.
+
+## Backend
+
+### فناوری‌ها و Solution
+
+Backend با .NET `10.0` ساخته شده و Solution آن در `shop-server/Sevart.slnx` قرار دارد.
+
+پروژه‌ها:
+
+| پروژه | مسئولیت فعلی |
+| --- | --- |
+| `Sevart.Domain` | Entityها، Enumها، قواعد و رفتارهای Domain |
+| `Sevart.Application` | Repository Interfaceها |
+| `Sevart.Infrastructure` | EF Core، SQL Server، Repositoryها و Migrationها |
+| `Sevart.Api` | Controllerها، HTTP Contractها، DI، CORS و OpenAPI |
+
+### جهت وابستگی‌ها
+
+Project Referenceهای فعلی:
+
+```mermaid
+flowchart TD
+    API["Sevart.Api"] --> APP["Sevart.Application"]
+    API --> INF["Sevart.Infrastructure"]
+    INF --> APP
+    INF --> DOM["Sevart.Domain"]
+    APP --> DOM
+```
+
+`Sevart.Domain` هیچ Project Reference ندارد. بنابراین جهت وابستگی فنی لایه‌ها با اصول پایهٔ Clean Architecture سازگار است.
+
+### وضعیت واقعی Application Layer
+
+Application در وضعیت فعلی فقط Interfaceهای زیر را نگهداری می‌کند:
+
+- `ICategoryRepository`
+- `IProductRepository`
+- `IProductOptionDefinitionRepository`
+
+Use Case، Command/Query، Handler یا Application Service هنوز وجود ندارد. در نتیجه orchestration عملیات Create و Update، اعتبارسنجی وابستگی‌ها و Mapping پاسخ‌ها عمدتاً داخل API Controllerها انجام می‌شود.
+
+معماری هدف این است که:
+
+- قواعد و invariantهای کسب‌وکار در Domain باقی بمانند.
+- orchestration و Use Caseها به Application منتقل شوند.
+- Controllerها فقط HTTP concerns، فراخوانی Use Case و تبدیل نتیجه به Response را مدیریت کنند.
+
+این انتقال هنوز انجام نشده و باید به‌صورت مرحله‌ای و بدون abstraction زودهنگام انجام شود.
+
+### Domain Layer
+
+ساختار اصلی:
+
+| بخش | اعضای فعلی |
+| --- | --- |
+| Common | `BaseEntity`, `BaseAuditableEntity` |
+| Entities | `Category`, `Product`, `ProductImage`, `ProductOptionDefinition`, `ProductOption`, `ProductOptionValue` |
+| Enums | `ProductStatus`, `ProductOptionInputType` |
+
+رفتارهای مهم Domain:
+
+- اعتبارسنجی داده‌های پایه در Constructor و Updateها
+- انتشار و آرشیو Product
+- فعال و غیرفعال‌کردن Category و Option Definition
+- افزودن، حذف و انتخاب تصویر اصلی Product
+- افزودن Definition به Product به‌عنوان Product Option
+- مدیریت مقادیر Option و وضعیت فعال آن‌ها
+- جلوگیری از ثبت چندبارهٔ یک Option Definition روی یک Product
+
+Collectionهای Product به‌صورت داخلی mutable و در بیرون به شکل `IReadOnlyCollection` ارائه می‌شوند.
+
+### Persistence و EF Core
+
+`SevartDbContext` DbSetهای زیر را ثبت می‌کند:
+
+- Categories
+- Products
+- ProductImages
+- ProductOptionDefinitions
+- ProductOptions
+- ProductOptionValues
+
+Configurationها با `ApplyConfigurationsFromAssembly()` بارگذاری می‌شوند. `SaveChangesAsync()` مقادیر `CreatedAt` و `UpdatedAt` موجودیت‌های Auditable را بر اساس `DateTime.UtcNow` تنظیم می‌کند.
+
+Relationshipهای اصلی:
+
+| رابطه | Delete Behavior |
+| --- | --- |
+| Category → Products | Restrict |
+| Product → Images | Cascade |
+| Product → Options | Cascade |
+| ProductOptionDefinition → ProductOptions | Restrict |
+| ProductOption → Values | Cascade |
+
+Precision قیمت Product و `PriceAdjustment` برابر `(18, 2)` است. در وضعیت فعلی فقط Slug مربوط به `ProductOptionDefinition` دارای Unique Index صریح است؛ Unique بودن Slug دسته‌بندی و محصول در Configuration فعلی اعمال نشده است.
+
+Migrationهای موجود:
+
+- `InitialCreate`
+- `AddProductOptionDefinitions`
+- `LinkProductOptionToDefinition`
+
+### Repositoryها
+
+Infrastructure پیاده‌سازی Repositoryهای Category، Product و Product Option Definition را فراهم می‌کند. Repositoryها مسئول queryهای EF Core، بارگذاری graphهای لازم و ذخیرهٔ تغییرات هستند.
+
+Repositoryهای Infrastructure از Interfaceهای Application پیروی می‌کنند و در `Program.cs` با lifetime نوع Scoped ثبت شده‌اند.
+
+### API Layer
+
+API از Controller-based routing با الگوی `api/[controller]` استفاده می‌کند.
+
+Controllerهای فعلی:
+
+| Controller | مسئولیت |
+| --- | --- |
+| `CategoriesController` | CRUD، فعال/غیرفعال‌سازی و دریافت محصولات دسته |
+| `ProductsController` | API عمومی و مدیریتی Product، تصاویر و گزینه‌ها |
+| `ProductOptionDefinitionsController` | مدیریت Definitionهای گزینه |
+
+HTTP Contractها در `Sevart.Api/Contracts/` و به تفکیک Feature نگهداری می‌شوند. پاسخ عمومی Product از پاسخ Admin جداست تا فیلدهای مدیریتی به Storefront نشت نکنند.
+
+Mapping تصویر اصلی با اولویت زیر انجام می‌شود:
+
+1. `IsPrimary` نزولی
+2. `DisplayOrder` صعودی
+
+در پاسخ عمومی Product:
+
+- فقط Optionهای فعال برگردانده می‌شوند.
+- فقط Valueهای فعال برگردانده می‌شوند.
+- هر دو مجموعه با `DisplayOrder` مرتب می‌شوند.
+
+### Pipeline و پیکربندی اجرا
+
+`Program.cs` موارد زیر را پیکربندی می‌کند:
+
+- SQL Server DbContext
+- Repository Dependency Injection
+- Controllers
+- OpenAPI و Swagger در Development
+- CORS برای Originهای Development فعلی
+- HTTPS Redirection خارج از Development
+- Authorization Middleware بدون Authentication واقعی
+
+Connection String از `ConnectionStrings:DefaultConnection` خوانده می‌شود.
+
+در کد فعلی `UseCors("AngularClient")` دو بار پشت سر هم فراخوانی شده است. این مورد رفتار معماری مطلوب نیست و در مرحلهٔ اصلاح کد باید به یک فراخوانی کاهش یابد؛ این سند فقط وضعیت را ثبت می‌کند.
+
+## قراردادهای بین Frontend و Backend
+
+### Category
+
+Frontend انتظار فیلدهای زیر را دارد:
+
+- `id`
+- `name`
+- `slug`
+- `description`
+- `imageUrl`
+- `displayOrder`
+- `isActive`
+
+### Product عمومی
+
+پاسخ عمومی شامل موارد زیر است:
+
+- `id`
+- `categoryId`
+- `name`
+- `slug`
+- `description`
+- `price`
+- `imageUrl`
+- `displayOrder`
+- `options`
+
+Option شامل Definition، عنوان، Input Type، Required بودن، ترتیب و Valueهای قابل‌انتخاب است.
+
+### جداسازی عمومی و مدیریتی
+
+- Endpointهای عمومی باید فقط Category فعال، Product منتشرشده و Option/Value فعال را نمایش دهند.
+- Admin Response می‌تواند Status، همهٔ تصاویر و ساختار کامل گزینه‌ها را برای ویرایش برگرداند.
+- Frontend نباید Enumهای عددی Backend را بدون قرارداد مشترک مستقل تغییر دهد.
+
+## امنیت و مرز اعتماد
+
+موارد فعلی:
+
+- Authentication پیاده‌سازی نشده است.
+- Admin Route و Admin API محافظت نشده‌اند.
+- `UseAuthorization()` وجود دارد، اما بدون Authentication Scheme و Policy مؤثر نیست.
+- CORS فقط Originهای محلی مشخص را مجاز می‌کند.
+- Cart و قیمت نهایی در مرورگر نگهداری می‌شوند.
+
+الزامات پیش از Production:
+
+- Authentication و Role-based Authorization برای Admin و Customer
+- محافظت Server-side از عملیات مدیریتی
+- محاسبهٔ مجدد قیمت و گزینه‌ها در Backend هنگام Checkout
+- Validation یکپارچهٔ Requestها
+- Global Exception Handling و پاسخ خطای استاندارد
+- Secret Management و Connection String امن
+- CORS محیط‌محور
+- Logging، Rate Limiting و Security Headerهای لازم
+
+## محدودیت‌ها و بدهی‌های فنی فعلی
+
+### اولویت بالا
+
+- Application Layer فاقد Use Case است و Controllerها orchestration سنگین دارند.
+- Admin UI و API هیچ Authentication/Authorization واقعی ندارند.
+- SSR/Prerender به ترکیب Mock Route Params و API Runtime Data وابسته است.
+- Order، Checkout سمت سرور و اعتبارسنجی قیمت پیاده‌سازی نشده‌اند.
+- Slug محصول و دسته‌بندی Unique Constraint صریح ندارند.
+
+### اولویت متوسط
+
+- صفحهٔ همهٔ محصولات و محصولات منتخب Home هنوز Mock هستند.
+- نام پارامتر Route جزئیات `id` است، اما مقدار آن Slug است.
+- Mapping مدل API به مدل UI در صفحه انجام می‌شود و بعضی فیلدها مقدار جایگزین می‌گیرند.
+- API فاقد قرارداد یکپارچهٔ Validation و Error Response است.
+- CORS Middleware تکراری ثبت شده است.
+- URL Canonical در چند صفحه تکرار و Hard-code شده است.
+
+### قابلیت‌های هنوز مدل‌نشده
+
+- Customer و Address
+- Order و OrderItem Snapshot
+- Payment
+- Shipping
+- Discount و Coupon
+- مدیریت فایل و تصویر
+- Monitoring و Backup
+
+## اصول توسعهٔ معماری
+
+1. Business Ruleها در Domain باقی بمانند.
+2. Application مسئول Use Case و orchestration باشد.
+3. Infrastructure مسئول EF Core و دسترسی به داده باشد.
+4. API Controllerها نازک و محدود به HTTP concerns باشند.
+5. Response عمومی از مدل مدیریتی جدا بماند.
+6. Optionهای محصول generic باقی بمانند.
+7. موجودی در Storefront نمایش داده نشود.
+8. سفارش‌های آینده Snapshot غیرقابل‌تغییر از محصول و گزینه‌ها نگهداری کنند.
+9. دسترسی به Browser APIها در Frontend SSR-safe باشد.
+10. هر تغییر معماری در یک مرحلهٔ محدود پیاده‌سازی و Build/Test شود.
