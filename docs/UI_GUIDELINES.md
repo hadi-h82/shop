@@ -1,135 +1,325 @@
-# راهنمای UI فعلی
+<div dir="rtl" lang="fa" align="right">
 
-این سند فقط الگوها و محدودیت‌های قابل مشاهده در کد فعلی `shop-client/` را ثبت می‌کند.
+# راهنمای رابط کاربری Sevart
 
-## زبان و RTL
+## هدف سند
 
-- تگ ریشهٔ HTML در `shop-client/src/index.html` با `lang="fa"` و `dir="rtl"` تعریف شده است.
-- در `shop-client/src/styles.scss`، برای `body` مقدارهای `direction: rtl` و `text-align: right` تنظیم شده‌اند و فونت پیش‌فرض `Vazirmatn, sans-serif` است.
-- متن‌های رابط، پیام‌های فرم و `aria-label`های موجود در قالب‌ها فارسی‌اند؛ نمونه‌ها در `src/app/layout/header/header.html`، `src/app/pages/checkout/checkout.html` و قالب‌های `src/app/pages/auth/` قرار دارند.
+این سند الگوهای رابط کاربری موجود، قواعد لازم برای توسعه و محدودیت‌های فعلی `shop-client` را ثبت می‌کند. هر تغییر UI باید با ساختار موجود هماهنگ باشد و حالت‌های فارسی، RTL، Responsive، Dark Theme و SSR را حفظ کند.
 
-## جهت‌دهی منطقی CSS
+## زبان، جهت و فونت
 
-- جهت‌دهی منطقی در بعضی استایل‌ها به‌کار رفته است؛ از جمله `inset-inline-start` در `src/app/layout/header/header.scss` و `inset-inline` و `padding-inline` در `src/app/pages/home/home.scss` و `header.scss`.
-- `margin-inline-start: auto` در breakpoint تبلت Header به‌کار رفته است (`src/app/layout/header/header.scss`).
-- استفاده یکدست نیست: همان فایل Header برای underline لینک فعال از `right` و `left` و برای نشانِ عدم موجودی Product Card از `right` استفاده می‌کند. این ناهماهنگی در بخش محدودیت‌ها ثبت شده است.
+- زبان رابط فارسی است.
+- `shop-client/src/index.html` دارای `lang="fa"` و `dir="rtl"` است.
+- `body` در `src/styles.scss` با `direction: rtl` و `text-align: right` تنظیم شده است.
+- فونت اصلی `Vazirmatn` است و برای Angular Material نیز استفاده می‌شود.
+- متن‌ها، پیام‌های خطا و `aria-label`ها باید فارسی باشند.
+- مقدارهایی مانند Slug، URL و Color Code می‌توانند در همان کنترل با `dir="ltr"` نمایش داده شوند.
+- داخل کد کامنت فارسی جدید اضافه نشود.
 
-## Responsive و breakpointها
+## سبک بصری
 
-breakpointهای واقعی موجود، وابسته به کامپوننت هستند و یک فایل مرکزی breakpoint وجود ندارد:
+هویت UI باید این ویژگی‌ها را حفظ کند:
 
-| breakpoint / media query | فایل‌های استفاده‌کننده و رفتار قابل مشاهده |
+- Premium و مینیمال
+- تمیز و محصول‌محور
+- رنگ‌های کرم و قهوه‌ای با استفادهٔ محدود از طلایی
+- فضای سفید کافی
+- گوشه‌های نرم و Rounded
+- سایه‌های کنترل‌شده
+- انیمیشن‌های کوتاه و غیرمزاحم
+
+فروشگاه نباید شبیه Marketplaceهای شلوغ طراحی شود.
+
+## ساختار استایل‌ها
+
+- استایل سراسری در `src/styles.scss` قرار دارد.
+- توکن‌ها در `src/styles/abstracts/_tokens.scss` تعریف می‌شوند.
+- استایل مشترک Auth در `src/styles/components/_auth.scss` قرار دارد.
+- هر کامپوننت، SCSS مخصوص خود را نگهداری می‌کند.
+- نام‌گذاری کلاس‌ها عمدتاً از BEM پیروی می‌کند.
+- Tailwind فعال است، اما ساختار فعلی بیشتر بر SCSS کامپوننتی تکیه دارد.
+- Angular Material برای فرم‌ها، دکمه‌ها، آیکن‌ها، Select، Dialog و Snackbar استفاده می‌شود.
+
+## توکن‌های طراحی
+
+توکن‌های موجود شامل گروه‌های زیر هستند:
+
+- رنگ برند: `--color-primary`، `--color-primary-hover` و `--color-on-primary`
+- سطح‌ها: `--color-background`، `--color-surface` و `--color-surface-elevated`
+- متن و Border: `--color-text`، `--color-muted`، `--color-border` و `--color-border-strong`
+- فرم‌ها: توکن‌های `--color-input-*`
+- دکمه‌ها: توکن‌های `--color-button-*`
+- وضعیت‌ها: `--color-danger` و `--color-success`
+- Radius: `--radius-md`، `--radius-lg` و `--radius-xl`
+- فاصله‌گذاری: `--space-md`، `--space-lg` و `--space-xl`
+- سایه‌ها: `--shadow-sm` و `--shadow-md`
+- عرض محتوا: `--container-width`
+
+### محدودیت فعلی توکن‌ها
+
+`--space-sm` در چند فایل استفاده شده، اما در `_tokens.scss` تعریف نشده است. این متغیر باید پیش از گسترش استفاده، به مجموعهٔ توکن‌ها اضافه شود.
+
+بعضی رنگ‌ها همچنان به‌صورت Literal در SCSS نوشته شده‌اند. رنگ‌های تکرارشونده باید هنگام تغییر مرتبط به توکن تبدیل شوند؛ Refactor یک‌جای فایل‌های نامرتبط لازم نیست.
+
+## RTL و CSS منطقی
+
+- برای Layout از `margin-inline`، `padding-inline`، `inset-inline`، `border-inline` و `text-align: start/end` استفاده شود.
+- استفاده از `left` و `right` فقط زمانی مجاز است که جهت فیزیکی واقعاً بخشی از طراحی باشد.
+- کنترل‌هایی مانند Previous/Next باید در RTL از نظر معنا و جهت آیکن بررسی شوند.
+- ترتیب بصری نباید فقط با CSS معکوس شود اگر ترتیب DOM روی دسترس‌پذیری اثر منفی دارد.
+
+در کد فعلی ترکیبی از Propertyهای منطقی و فیزیکی وجود دارد؛ این موضوع بدهی فنی است و در فایل مرتبط به‌تدریج اصلاح می‌شود.
+
+## Responsive Design
+
+Breakpoint مرکزی وجود ندارد و Media Queryها در SCSS کامپوننت‌ها تعریف شده‌اند. Breakpointهای مهم فعلی:
+
+| محدوده | کاربرد فعلی |
 | --- | --- |
-| `max-width: 1100px` | `src/app/pages/home/home.scss` |
-| `max-width: 1000px` | Header در `layout/header/header.scss`، خانه در `pages/home/home.scss` و صفحهٔ دسته‌بندی در `pages/category-products/category-products.scss` |
-| `max-width: 900px` | Cart در `pages/cart/cart.scss` و Checkout در `pages/checkout/checkout.scss`؛ layoutهای چندستونه به تک‌ستونه تغییر می‌کنند |
-| `max-width: 800px` | `pages/product-detail/product-detail.scss` |
-| `max-width: 768px` | `pages/home/home.scss` |
-| `max-width: 760px` | `pages/products/products.scss` |
-| `max-width: 700px` | `pages/home/home.scss` |
-| `max-width: 600px` | Header، Footer، auth styles، Cart، Checkout، Products و Category Products؛ همچنین Product Card برای صفحه‌های کوچک |
-| `max-width: 480px` | `pages/home/home.scss` و `pages/products/products.scss` |
-| `max-width: 360px` | Header و Home برای موبایل‌های بسیار کوچک |
-| `(hover: none), (max-width: 600px)` | `shared/ui/product-card/product-card.scss`؛ نمایش overlay کارت برای touch و موبایل دائمی می‌شود |
-| `(prefers-reduced-motion: reduce)` | `shared/ui/product-card/product-card.scss` و `pages/home/home.scss`؛ transitionها حذف می‌شوند |
+| `1100px` و `1000px` | Home، Header و Category Page |
+| `900px` | Cart، Checkout و Admin Layout |
+| `800px` و `768px` | Product Detail، Home و Admin Layout |
+| `700px` و `600px` | صفحات فروشگاه، Auth، Header و Product Card |
+| `480px` و `360px` | موبایل‌های کوچک |
 
-## Header و رفتار موبایل
+قواعد توسعه:
 
-- Header در `src/app/layout/header/header.ts` و `header.html` شامل لوگو، جست‌وجو، ناوبری خانه/محصولات، کنترل تم، سبد خرید و پیوند ورود/ثبت‌نام است.
-- استایل آن در `src/app/layout/header/header.scss` sticky است و `z-index: 1000` دارد.
-- در `max-width: 1000px`، container Header wrap می‌شود و جست‌وجو به ردیف بعد و عرض کامل منتقل می‌شود.
-- در `max-width: 600px`، Header به grid دو ردیفه تبدیل می‌شود: لوگو، تم، سبد و ورود در ردیف اول؛ جست‌وجو با تمام ستون‌ها در ردیف دوم. متن سبد و زیرعنوان لوگو پنهان می‌شوند.
-- در `max-width: 600px`، `site-header__nav` با `display: none` پنهان می‌شود.
-- **پیاده‌سازی‌نشده:** در قالب و TypeScript Header دکمهٔ بازکردن منوی موبایل، پنل منو، state منو یا جایگزینی برای navigation پنهان‌شده وجود ندارد.
-- ورودی جست‌وجو در `header.html` وجود دارد، اما هیچ binding، handler یا منطق جست‌وجو ندارد.
+- طراحی جدید از ابتدا در موبایل و دسکتاپ بررسی شود.
+- اسکرول افقی ناخواسته ایجاد نشود.
+- دکمه‌های اصلی در موبایل سطح لمس مناسبی داشته باشند.
+- فرم‌های چندستونه در عرض کم تک‌ستونه شوند.
+- متن و قیمت در اندازه‌های کوچک بریده یا غیرقابل‌خواندن نشوند.
 
-## Light Theme و Dark Theme
+## Header و جست‌وجو
 
-- توکن‌های تم روشن در `src/styles/abstracts/_tokens.scss` زیر `:root` و جایگزین‌های تم تیره زیر `html[data-theme='dark']` تعریف شده‌اند.
-- اسکریپت آغازین `src/index.html` ابتدا کلید `shop-theme` را از `localStorage` می‌خواند؛ اگر مقدار معتبر وجود نداشته باشد، از `prefers-color-scheme` استفاده و `data-theme` را روی عنصر `html` تنظیم می‌کند.
-- `src/app/core/services/theme.ts` در مرورگر تم را از `document.documentElement.dataset.theme` می‌خواند، با `toggle()` تغییر می‌دهد و در `localStorage` با همان کلید `shop-theme` ذخیره می‌کند.
-- کنترل تم Header در `src/app/layout/header/header.html` به `themeService.toggle()` متصل است. آیکن‌های روشن/تیره در `header.scss` با `:host-context(html[data-theme='dark'])` تغییر می‌کنند.
-- رنگ‌های UI در فایل‌های SCSS عمدتاً از `var(--color-…)` استفاده می‌کنند؛ تغییر بصری باید توکن‌های هر دو تم را در نظر بگیرد.
+Header فعلی شامل موارد زیر است:
 
-## توکن‌ها و متغیرهای موجود
+- لوگو و عنوان فروشگاه
+- فرم جست‌وجو
+- لینک خانه و محصولات
+- تغییر Light/Dark Theme
+- سبد خرید و Badge تعداد
+- ورود و ثبت‌نام
 
-تمام توکن‌های زیر در `src/styles/abstracts/_tokens.scss` تعریف شده‌اند:
+جست‌وجوی Header پیاده‌سازی شده است:
 
-- رنگ برند: `--color-primary`، `--color-primary-hover` و `--color-on-primary`.
-- سطح‌ها: `--color-background`، `--color-surface` و `--color-surface-elevated`.
-- متن و مرز: `--color-text`، `--color-muted`، `--color-border` و `--color-border-strong`.
-- ورودی‌ها: `--color-input-background`، `--color-input-background-hover`، `--color-input-text`، `--color-input-placeholder`، `--color-input-border` و `--color-input-border-focus`.
-- دکمه‌ها: `--color-button-primary`، `--color-button-primary-hover` و `--color-button-primary-text`.
-- وضعیت‌ها: `--color-danger` و `--color-success`.
-- radius: `--radius-md: 0.75rem`، `--radius-lg: 1rem` و `--radius-xl: 1.5rem`.
-- فاصله‌گذاری: `--space-md: 1rem`، `--space-lg: 1.5rem` و `--space-xl: 2rem`.
-- عرض container: `--container-width: 1200px`.
-- سایه‌ها: `--shadow-sm` و `--shadow-md`.
+- مقدار ورودی با `FormControl` نگهداری می‌شود.
+- Submit کاربر را به `/products?q=...` هدایت می‌کند.
+- Query String دوباره در ورودی نمایش داده می‌شود.
+- دکمهٔ پاک‌کردن جست‌وجو وجود دارد.
 
-`--space-sm` در چند فایل مانند `src/app/layout/header/header.scss`، `src/styles/components/_auth.scss` و `src/app/layout/footer/footer.scss` استفاده شده، اما در `_tokens.scss` تعریف نشده است.
+جست‌وجوی صفحهٔ Products در وضعیت فعلی روی Mock Data انجام می‌شود و پس از اتصال کامل محصولات باید به API منتقل شود.
 
-## فونت و تایپوگرافی
+### محدودیت موبایل Header
 
-- `src/styles.scss` فایل فونت `vazirmatn/Vazirmatn-font-face.css` را import می‌کند و `font-family: Vazirmatn, sans-serif` را روی `body` قرار می‌دهد.
-- همان فایل typography Angular Material را با `typography: Vazirmatn` در `mat.theme()` پیکربندی می‌کند.
-- Product Card در `src/app/shared/ui/product-card/product-card.scss` از `clamp()` برای اندازهٔ عنوان استفاده می‌کند و در حالت touch/mobile اندازه‌ها و line clamp را کاهش می‌دهد.
-- Auth card در `src/styles/components/_auth.scss` برای عنوان `h1` وزن `900` و line-height `1.5` دارد؛ اندازهٔ آن در `max-width: 600px` کاهش می‌یابد.
+در عرض حداکثر `600px`، Navigation اصلی پنهان می‌شود، اما منوی موبایل جایگزین وجود ندارد. افزودن Menu Button، پنل موبایل، Focus Management و بستن منو پس از Navigation هنوز انجام نشده است.
 
-## Angular Material، Material Icons و Tailwind
+## Layout فروشگاه
 
-- Angular Material در `src/styles.scss` با `@use '@angular/material' as mat` و `mat.theme()` استفاده می‌شود؛ پالت‌ها `mat.$orange-palette` و `mat.$red-palette` هستند.
-- برای فرم‌ها و دکمه‌های Material، استایل‌های global در `src/styles.scss` وجود دارند: `mat-form-field`، input، placeholder، label، outline، `mat-error`، و دکمه‌های flat/raised/outlined.
-- کامپوننت‌ها ماژول‌های Material را به‌صورت local import می‌کنند؛ نمونه‌ها: `MatButtonModule` و `MatIconModule` در `src/app/layout/header/header.ts` و `MatFormFieldModule` و `MatInputModule` در `src/app/pages/checkout/checkout.ts`.
-- فونت Material Icons از CDN در `src/index.html` وارد شده و تگ `<mat-icon>` در Header، Product Card، صفحات auth، Cart و Checkout استفاده می‌شود.
-- Tailwind با `@import "tailwindcss"` در `src/styles.scss` وارد شده است. استایل اجزای موجود عمدتاً در فایل‌های SCSS همان کامپوننت‌ها و با نام‌گذاری BEM نوشته شده‌اند.
+`MainLayout` شامل Header، محتوای Route و Footer است. صفحات Storefront باید داخل همین Layout باقی بمانند مگر اینکه دلیل معماری مشخصی برای Layout جدا وجود داشته باشد.
 
-## اجزای مشترک: Product Card
+الگوهای مشترک صفحات:
 
-- جزء مشترک موجود `ProductCard` در `src/app/shared/ui/product-card/` است و ورودی الزامی `Product` می‌گیرد.
-- قالب `product-card.html` تصویر lazy-loaded، وضعیت عدم موجودی، category، عنوان، قیمت یا قیمت تخفیف‌خورده، پیوند جزئیات و دکمهٔ افزودن به سبد دارد.
-- `product-card.scss` از نسبت تصویر `1 / 1`، overlay گرادیانی و ساختار BEM با نام‌های `product-card__…` بهره می‌برد.
-- در hover یا `focus-within` روی دسکتاپ، کارت بالا می‌آید، تصویر بزرگ/تیره می‌شود و overlay آشکار می‌گردد.
-- در touch یا حداکثر `600px`، overlay همواره نمایش دارد، hover transform حذف می‌شود، عنوان حداکثر دو خط می‌گیرد و کنترل‌ها کوچک‌تر می‌شوند.
-- کارت محصول ناموجود کلاس `product-card--unavailable` می‌گیرد، تصویر grayscale می‌شود و دکمهٔ سبد `disabled` است.
+- Container با عرض محدود
+- عنوان و توضیح صفحه
+- Breadcrumb در صفحات داخلی مرتبط
+- Grid واکنش‌گرا برای فهرست محصولات
+- Empty، Loading و Error State در صفحات داده‌محور
 
-## حالت‌های تعاملی و وضعیت‌ها
+## صفحهٔ خانه
 
-- **Hover و focus:** Header search از `:focus-within`، Product Card از `:hover` و `:focus-within` و buttonها/پیوندهای متعدد از `:hover` استفاده می‌کنند. `home.scss` حداقل برای کارت‌های دسته‌بندی `:focus-visible` دارد.
-- **Disabled:** دکمهٔ سبد Product Card در `product-card.html` برای محصول ناموجود disabled است و در SCSS opacity `0.45` و cursor `not-allowed` دارد.
-- **Empty:** حالت خالی در قالب‌ها و استایل‌های صفحات محصولات، دسته‌بندی، Cart و Checkout وجود دارد: `pages/products/products.html`، `pages/category-products/category-products.html`، `pages/cart/cart.html` و `pages/checkout/checkout.html` به‌همراه SCSS متناظر.
-- **Error:** خطاهای اعتبارسنجی با `mat-error` در Checkout و فرم‌های auth پیاده‌سازی شده‌اند. `src/styles.scss` رنگ خطای Material را از `--color-danger` می‌گیرد.
-- **Loading:** **پیاده‌سازی‌نشده.** در قالب‌ها و کامپوننت‌های UI فعلی loading indicator، skeleton یا state بارگذاری صفحه/داده وجود ندارد.
-- **موفقیت:** پیام‌های موفقیت فقط در جریان‌های فراموشی و بازنشانی رمز در قالب‌های `forgot-password.html` و `reset-password.html` وجود دارند؛ ارسال واقعی داده در کد فعلی انجام نمی‌شود.
+صفحهٔ Home شامل Hero Slider، دسته‌بندی‌ها و محصولات منتخب است.
 
-## فرم‌ها، ورودی‌ها و اعتبارسنجی
+- Slider دارای Previous، Next، Indicator و Autoplay است.
+- Autoplay فقط در Browser اجرا می‌شود.
+- دسته‌بندی‌های فعال از API دریافت می‌شوند.
+- محصولات منتخب فعلاً از Mock Data می‌آیند.
+- تصاویر از Assetهای WebP استفاده می‌کنند.
+- برای `prefers-reduced-motion` انیمیشن‌ها کاهش می‌یابند.
 
-- فرم‌های auth در `src/app/pages/auth/` و فرم Checkout در `src/app/pages/checkout/checkout.ts` از Reactive Forms و Angular Material با `appearance="outline"` استفاده می‌کنند.
-- اعتبارسنجی‌های فعلی شامل required، minlength، email، الگوی شمارهٔ موبایل و الگوی کد پستی هستند؛ پیام خطا پس از touched شدن control نمایش می‌یابد.
-- برای فیلدهای ایمیل، نام و تلفن از `autocomplete` استفاده شده است. فیلد تلفن ثبت‌نام در `register/register.html` دارای `type="tel"` و `inputmode="numeric"` است.
-- ورودی‌های رمز عبور در login، register و reset-password دکمهٔ Material برای نمایش/پنهان‌سازی دارند.
-- استایل سراسری `src/styles.scss` برای hover، focus، border، placeholder، autofill و `mat-error` فرم‌های Material تعریف شده است.
+## Product Card
 
-## دسترس‌پذیری قابل مشاهده
+`ProductCard` جزء مشترک نمایش محصول است و شامل تصویر، دسته‌بندی، عنوان، قیمت، وضعیت محصول، لینک جزئیات و افزودن به سبد است.
 
-- آیکن‌ها و buttonهای بدون متن در Header، Cart، Product Card، Slider و فرم‌های رمز عبور دارای `aria-label` هستند؛ نمونه‌ها در `layout/header/header.html`، `pages/cart/cart.html`، `shared/ui/product-card/product-card.html` و `pages/home/home.html`.
-- اسلایدر خانه در `pages/home/home.html` دارای `aria-label`، کنترل‌های قبلی/بعدی، `aria-hidden` برای اسلاید غیرفعال و مدیریت `tabindex` است.
-- Breadcrumb صفحهٔ دسته‌بندی در `pages/category-products/category-products.html` دارای `aria-label="مسیر صفحه"` است و نشانه‌های تزئینی با `aria-hidden` مشخص شده‌اند.
-- تصاویر Product Card در `product-card.html` مقدار `alt` را از عنوان محصول می‌گیرند.
-- پشتیبانی از `prefers-reduced-motion` در Home و Product Card وجود دارد.
-- **پیاده‌سازی‌نشده:** در کد بررسی‌شده، لینک پرش به محتوای اصلی (skip link) یا سازوکار focus management برای navigation موبایل وجود ندارد.
+قواعد:
 
-## اصول قابل مشاهده برای موبایل و صفحه‌های کوچک
+- نسبت تصویر کارت حفظ شود.
+- `alt` تصویر از نام محصول ساخته شود.
+- وضعیت Focus فقط به Hover وابسته نباشد.
+- در Touch Device اطلاعات ضروری بدون Hover قابل مشاهده باشند.
+- محصول غیرقابل‌فروش نباید به سبد اضافه شود.
+- نمایش Stock یا شمارندهٔ موجودی ممنوع است.
 
-- در `max-width: 600px`، padding صفحه‌ها معمولاً از `--space-lg` به `--space-md` کاهش می‌یابد؛ نمونه‌ها در `pages/checkout/checkout.scss` و `styles/components/_auth.scss`.
-- Cart و Checkout در `max-width: 900px` به تک‌ستونه تغییر می‌کنند؛ Header در `600px` و Product Card در touch/mobile فشرده می‌شوند.
-- Footer در `layout/footer/footer.scss` در `600px` ستونی و وسط‌چین می‌شود.
-- انیمیشن‌ها در Product Card و Home برای کاربرانی که reduced motion را ترجیح می‌دهند حذف می‌شوند.
+در موبایل و دستگاه‌های Touch، Overlay کارت دائماً قابل مشاهده است و Transformهای Hover محدود می‌شوند.
 
-## محدودیت‌ها و ناهماهنگی‌های UI قابل مشاهده
+## صفحهٔ جزئیات محصول
 
-- منوی موبایل وجود ندارد: navigation Header در `max-width: 600px` پنهان می‌شود و جایگزینی ندارد.
-- جست‌وجوی Header فقط نمایش داده می‌شود و کارکرد جست‌وجو ندارد.
-- `--space-sm` استفاده شده ولی در `src/styles/abstracts/_tokens.scss` تعریف نشده است.
-- استفاده از propertyهای منطقی و propertyهای فیزیکی چپ/راست هم‌زمان است؛ نمونه‌های فیزیکی در `layout/header/header.scss` و `shared/ui/product-card/product-card.scss` دیده می‌شوند.
-- بعضی رنگ‌ها به‌صورت literal در استایل‌های مؤلفه‌ای نوشته شده‌اند، مانند `#fff` و `#8f5833` در `layout/header/header.scss` و `shared/ui/product-card/product-card.scss`، در کنار سیستم توکن‌های رنگی.
-- loading state برای صفحات، داده‌ها یا عملیات فرم پیاده‌سازی نشده است.
+صفحهٔ Product Detail اکنون از API بارگذاری می‌شود و شامل موارد زیر است:
+
+- Loading State
+- حالت پیدا نشدن یا خطای دریافت محصول
+- تصویر محصول و تصویر پیش‌فرض
+- عنوان و قیمت پایه
+- گزینه‌های پویا با ترتیب `DisplayOrder`
+- پشتیبانی از Select، Radio و Color
+- اعتبارسنجی گزینه‌های Required
+- انتخاب تعداد
+- محاسبهٔ قیمت نهایی بر اساس `PriceAdjustment`
+- افزودن محصول همراه گزینه‌های انتخاب‌شده به Cart
+- Snackbar برای بازخورد عملیات
+
+Option UI نباید به Color یا Size محدود شود. نمایش کنترل بر اساس `ProductOptionInputType` تعیین می‌شود.
+
+## صفحهٔ دسته‌بندی و محصولات
+
+- Category Page داده را از API دریافت می‌کند.
+- Loading، Empty و حالت «پیدا نشد» دارد؛ خطای دریافت و نبود دسته‌بندی فعلاً در یک حالت نمایش داده می‌شوند.
+- Cover، عنوان، توضیح و Product Grid را نمایش می‌دهد.
+- صفحهٔ Products هنوز از Mock Data استفاده می‌کند و Query جست‌وجو را محلی فیلتر می‌کند.
+
+پس از اتصال کامل Public Product API، ظاهر و Stateهای فعلی حفظ و فقط Data Source جایگزین می‌شود.
+
+## Cart و Checkout
+
+Cart شامل موارد زیر است:
+
+- نمایش گزینه‌های انتخاب‌شده
+- قیمت نهایی هر واحد
+- افزایش و کاهش تعداد
+- حذف یک ردیف
+- پاک‌کردن سبد
+- مبلغ کل
+- Empty State
+
+دو ترکیب متفاوت از گزینه‌های یک محصول باید دو ردیف مستقل نمایش داده شوند.
+
+Checkout فعلی فرم اطلاعات گیرنده و نشانی را نمایش می‌دهد و Validation سمت Client دارد؛ هنوز به Order API متصل نیست. UI نباید پرداخت یا ثبت سفارش موفق را پیش از پاسخ معتبر Backend قطعی نشان دهد.
+
+## پنل مدیریت
+
+پنل مدیریت Layout مستقل دارد و در SSR به‌صورت Client-rendered اجرا می‌شود.
+
+صفحات فعلی:
+
+- Dashboard اولیه
+- فهرست و فرم Category
+- فهرست و فرم Product
+
+الگوهای Admin:
+
+- List Page دارای Header، Action اصلی، Loading، Empty و عملیات هر ردیف باشد.
+- عملیات حذف و تغییر وضعیت بازخورد واضح داشته باشند.
+- عملیات مخرب از Confirm Dialog استفاده کنند.
+- فرم‌ها با Reactive Forms و پیام خطای نزدیک به فیلد ساخته شوند.
+- Submit در حالت نامعتبر یا در حال ارسال غیرفعال شود.
+- Slug، URL و Color Code می‌توانند LTR باشند.
+
+### فرم Product
+
+فرم Product شامل اطلاعات پایه، Category، قیمت، Status، DisplayOrder، تصاویر و گزینه‌هاست.
+
+برای گزینه‌های پویا:
+
+- هر Option یک Card مستقل دارد.
+- Definition گزینه از لیست Backend انتخاب می‌شود.
+- Required و DisplayOrder قابل تنظیم‌اند.
+- Valueها شامل Label، Value، PriceAdjustment، ColorCode، DisplayOrder و Active هستند.
+- ColorCode فقط برای Input Type نوع Color نمایش داده شود.
+- حذف Option یا Value موجود باید با رفتار Backend و Deactivate هماهنگ باشد.
+
+آپلود واقعی فایل تصویر هنوز پیاده‌سازی نشده و یکی از Featureهای اصلی بعدی پروژه است. UI آینده باید انتخاب فایل، Preview، Progress، Error، ترتیب و انتخاب تصویر اصلی را پوشش دهد.
+
+## Theme روشن و تیره
+
+- Theme با `data-theme` روی عنصر `<html>` کنترل می‌شود.
+- انتخاب کاربر در `localStorage` با کلید `shop-theme` ذخیره می‌شود.
+- در نبود انتخاب ذخیره‌شده، `prefers-color-scheme` استفاده می‌شود.
+- رنگ یا Surface جدید باید در هر دو Theme بررسی شود.
+- Component جدید نباید با رنگ Literal فقط در یکی از Themeها خوانا باشد.
+
+## وضعیت‌های UI
+
+هر صفحهٔ متصل به داده باید در صورت نیاز این حالت‌ها را داشته باشد:
+
+1. Initial/Idle
+2. Loading
+3. Success
+4. Empty
+5. Error
+6. Submitting یا Mutating
+
+وضعیت فعلی:
+
+- Loading در Category Page، Product Detail و Listهای Admin وجود دارد.
+- Empty State در Products، Category، Cart، Checkout و Listهای Admin دیده می‌شود.
+- خطاهای Validation فرم با `mat-error` نمایش داده می‌شوند.
+- Loading و Error Stateها هنوز به یک Component یا الگوی مشترک تبدیل نشده‌اند.
+- Auth و Checkout هنوز به API واقعی متصل نیستند؛ Success State آن‌ها نهایی نیست.
+
+## فرم‌ها و اعتبارسنجی
+
+- از Reactive Forms استفاده شود.
+- پیام خطا بعد از تعامل کاربر یا Submit نامعتبر نمایش داده شود.
+- Required، Length، Pattern و Range در Client و Backend هماهنگ باشند.
+- Validation سمت Client جایگزین Validation سمت Server نیست.
+- هنگام Submit تکراری از ارسال چندباره جلوگیری شود.
+- خطای Server در سطح فیلد یا فرم قابل مشاهده باشد.
+- برای موبایل از `type`، `inputmode` و `autocomplete` مناسب استفاده شود.
+
+## دسترس‌پذیری
+
+موارد موجود:
+
+- `aria-label` برای دکمه‌های آیکنی
+- `alt` برای تصاویر محصول
+- کنترل Keyboard و ARIA در Slider
+- Breadcrumb با Label
+- `prefers-reduced-motion` در چند بخش
+- Focus State در اجزای تعاملی اصلی
+
+موارد باقی‌مانده:
+
+- Skip Link به محتوای اصلی
+- Focus Management منوی موبایل و Dialogهای پیچیده
+- بررسی Contrast در هر دو Theme
+- تست کامل Keyboard Navigation
+- اعلام مناسب Loading، Error و Success برای Screen Reader
+
+## SEO و تصویر
+
+- صفحات عمومی Title، Description، Open Graph و Canonical دارند.
+- تصویر محصول باید `alt` معنادار داشته باشد.
+- تصاویر پایین صفحه Lazy-load شوند.
+- ابعاد تصویر تا حد امکان مشخص باشد تا Layout Shift کم شود.
+- تصویر پیش‌فرض فقط هنگام نبود تصویر واقعی استفاده شود.
+- پس از پیاده‌سازی Upload، خروجی‌های بهینهٔ WebP/AVIF و Cache Policy بررسی شوند.
+
+## محدودیت‌های فعلی
+
+- منوی موبایل Header وجود ندارد.
+- Products و Featured Products هنوز Mock هستند.
+- جست‌وجو Server-side نیست.
+- `--space-sm` تعریف نشده است.
+- بعضی Propertyهای فیزیکی و رنگ‌های Literal باقی مانده‌اند.
+- Loading/Error Stateها الگوی مشترک ندارند.
+- Auth و Checkout نمایشی‌اند.
+- Upload واقعی تصویر وجود ندارد.
+- صفحهٔ 404 مستقل وجود ندارد.
+- Admin فاقد Authentication و Authorization است.
+
+## چک‌لیست تغییرات UI
+
+پیش از پایان هر تغییر UI بررسی شود:
+
+- [ ] فارسی و RTL حفظ شده است.
+- [ ] Light و Dark Theme بررسی شده‌اند.
+- [ ] موبایل، تبلت و دسکتاپ بررسی شده‌اند.
+- [ ] Keyboard و Focus State قابل‌استفاده‌اند.
+- [ ] Loading، Empty، Error و Success موردنیاز پوشش داده شده‌اند.
+- [ ] Browser APIها در SSR محافظت شده‌اند.
+- [ ] Stock در Storefront نمایش داده نمی‌شود.
+- [ ] Optionها generic باقی مانده‌اند.
+- [ ] تغییر به فایل‌های مرتبط محدود شده است.
+- [ ] Build و تست مرتبط اجرا شده‌اند.
+
+</div>
