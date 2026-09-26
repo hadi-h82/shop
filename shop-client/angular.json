@@ -29,37 +29,38 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": [
-                "localhost",
-                "127.0.0.1"
-              ]
+              "allowedHosts": ["localhost", "127.0.0.1"]
             },
             "ssr": {
               "entry": "src/server.ts"
-            } 
+            }
           },
           "configurations": {
             "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-{
-  "type": "anyComponentStyle",
-  "maximumWarning": "7kB",
-  "maximumError": "9kB"
-}
-              ],
-              "outputHashing": "all"
-            },
+  "fileReplacements": [
+    {
+      "replace": "src/environments/environment.ts",
+      "with": "src/environments/environment.production.ts"
+    }
+  ],
+  "budgets": [
+    {
+      "type": "initial",
+      "maximumWarning": "500kB",
+      "maximumError": "1MB"
+    },
+    {
+      "type": "anyComponentStyle",
+                  "maximumWarning": "7kB",
+                  "maximumError": "9kB"
+    }
+  ],
+  "outputHashing": "all"
+},
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -70,11 +71,11 @@
         },
         "serve": {
           "options": {
-                 "allowedHosts": [
-    "127.0.0.1",
-    "localhost",
-    "carolyne-unincreasing-nondiscriminatively.ngrok-free.dev"
-  ]
+            "allowedHosts": [
+              "127.0.0.1",
+              "localhost",
+              "carolyne-unincreasing-nondiscriminatively.ngrok-free.dev"
+            ]
           },
           "builder": "@angular/build:dev-server",
           "configurations": {
