@@ -3,7 +3,6 @@ using Sevart.Api.Contracts.Products;
 using Sevart.Application.Abstractions.Persistence;
 using Sevart.Domain.Entities;
 using Sevart.Application.Abstractions.Storage;
-using Sevart.Application.Abstractions.Storage;
 
 namespace Sevart.Api.Controllers;
 
