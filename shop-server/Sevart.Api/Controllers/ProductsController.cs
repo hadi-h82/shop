@@ -2,6 +2,8 @@
 using Sevart.Api.Contracts.Products;
 using Sevart.Application.Abstractions.Persistence;
 using Sevart.Domain.Entities;
+using Sevart.Application.Abstractions.Storage;
+using Sevart.Application.Abstractions.Storage;
 
 namespace Sevart.Api.Controllers;
 
@@ -12,15 +14,21 @@ public class ProductsController : ControllerBase
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IProductOptionDefinitionRepository _optionDefinitionRepository;
+    private readonly IFileStorage _fileStorage;
+    private readonly ILogger<ProductsController> _logger;
 
     public ProductsController(
         IProductRepository productRepository,
         ICategoryRepository categoryRepository,
-        IProductOptionDefinitionRepository optionDefinitionRepository)
+        IProductOptionDefinitionRepository optionDefinitionRepository,
+        IFileStorage fileStorage,
+        ILogger<ProductsController> logger)
     {
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _optionDefinitionRepository = optionDefinitionRepository;
+        _fileStorage = fileStorage;
+        _logger = logger;
     }
 
     [HttpGet("category/{slug}")]
@@ -452,24 +460,58 @@ public class ProductsController : ControllerBase
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(
-    int id,
-    CancellationToken cancellationToken)
+        int id,
+        CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetByIdAsync(
-            id,
-            cancellationToken);
+        var product =
+            await _productRepository.GetByIdAsync(
+                id,
+                cancellationToken);
 
         if (product is null)
         {
             return NotFound(new
             {
-                message = "Product was not found."
+                message =
+                    "Product was not found."
             });
         }
 
+        /*
+         * آدرس تصاویر را قبل از حذف محصول نگه می‌داریم؛
+         * چون پس از حذف رکورد دیگر به آن‌ها دسترسی نداریم.
+         */
+        var imageUrls =
+            product.Images
+                .Select(
+                    image =>
+                        image.Url)
+                .Where(
+                    imageUrl =>
+                        !string.IsNullOrWhiteSpace(
+                            imageUrl))
+                .Distinct(
+                    StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+        /*
+         * ابتدا محصول و روابط آن از دیتابیس حذف می‌شوند.
+         */
         await _productRepository.DeleteAsync(
             product,
             cancellationToken);
+
+        /*
+         * سپس فایل‌های فیزیکی تصاویر پاک می‌شوند.
+         * شکست در حذف یک فایل نباید پاسخ موفق
+         * حذف محصول را خراب کند.
+         */
+        foreach (var imageUrl in imageUrls)
+        {
+            await TryDeleteImageAsync(
+                imageUrl,
+                cancellationToken);
+        }
 
         return NoContent();
     }
@@ -532,65 +574,331 @@ public class ProductsController : ControllerBase
         return Ok(response);
     }
 
-    private static ProductResponse ToResponse(Product product)
+
+    [HttpPost("{id:int}/images")]
+    public async Task<IActionResult> AddImage(
+    int id,
+    AddProductImageRequest request,
+    CancellationToken cancellationToken)
     {
-        var primaryImage = product.Images
-            .OrderByDescending(x => x.IsPrimary)
-            .ThenBy(x => x.DisplayOrder)
-            .FirstOrDefault();
+        var product =
+            await _productRepository.GetByIdForUpdateAsync(
+                id,
+                cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "محصول پیدا نشد."
+            });
+        }
+
+        var imageUrl = request.Url.Trim();
+
+        if (string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return BadRequest(new
+            {
+                message = "آدرس تصویر الزامی است."
+            });
+        }
+
+        if (!IsValidImageUrl(imageUrl))
+        {
+            return BadRequest(new
+            {
+                message = "آدرس تصویر معتبر نیست."
+            });
+        }
+
+        var imageAlreadyExists =
+            product.Images.Any(
+                image =>
+                    string.Equals(
+                        image.Url,
+                        imageUrl,
+                        StringComparison.OrdinalIgnoreCase));
+
+        if (imageAlreadyExists)
+        {
+            return Conflict(new
+            {
+                message = "این تصویر قبلاً به محصول اضافه شده است."
+            });
+        }
+
+        product.AddImage(
+            imageUrl,
+            request.DisplayOrder,
+            request.IsPrimary);
+
+        await _productRepository.UpdateAsync(
+            product,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+
+    [HttpPatch("{id:int}/images/{imageId:int}/primary")]
+    public async Task<IActionResult> SetPrimaryImage(
+    int id,
+    int imageId,
+    CancellationToken cancellationToken)
+    {
+        var product =
+            await _productRepository.GetByIdForUpdateAsync(
+                id,
+                cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "محصول پیدا نشد."
+            });
+        }
+
+        var imageExists =
+            product.Images.Any(
+                image => image.Id == imageId);
+
+        if (!imageExists)
+        {
+            return NotFound(new
+            {
+                message = "تصویر محصول پیدا نشد."
+            });
+        }
+
+        product.SetPrimaryImage(imageId);
+
+        await _productRepository.UpdateAsync(
+            product,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}/images/{imageId:int}")]
+    public async Task<IActionResult> DeleteImage(
+    int id,
+    int imageId,
+    CancellationToken cancellationToken)
+    {
+        var product =
+            await _productRepository.GetByIdForUpdateAsync(
+                id,
+                cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "محصول پیدا نشد."
+            });
+        }
+
+        var image =
+            product.Images.FirstOrDefault(
+                productImage =>
+                    productImage.Id == imageId);
+
+        if (image is null)
+        {
+            return NotFound(new
+            {
+                message = "تصویر محصول پیدا نشد."
+            });
+        }
+
+        var imageUrl = image.Url;
+
+        product.RemoveImage(imageId);
+
+        await _productRepository.UpdateAsync(
+            product,
+            cancellationToken);
+
+        try
+        {
+            await _fileStorage.DeleteAsync(
+                imageUrl,
+                cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Product image file could not be deleted. Image URL: {ImageUrl}",
+                imageUrl);
+        }
+
+        return NoContent();
+    }
+
+    private static bool IsValidImageUrl(string imageUrl)
+    {
+        if (imageUrl.StartsWith(
+            "/uploads/",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return Uri.TryCreate(
+                   imageUrl,
+                   UriKind.Absolute,
+                   out var absoluteUri) &&
+               (absoluteUri.Scheme == Uri.UriSchemeHttps ||
+                absoluteUri.Scheme == Uri.UriSchemeHttp);
+    }
+
+    private static ProductResponse ToResponse(
+        Product product)
+    {
+        var orderedImages =
+            product.Images
+                .OrderByDescending(
+                    image => image.IsPrimary)
+                .ThenBy(
+                    image => image.DisplayOrder)
+                .ThenBy(
+                    image => image.Id)
+                .ToList();
+
+        var primaryImage =
+            orderedImages.FirstOrDefault();
 
         return new ProductResponse
         {
-            Id = product.Id,
-            CategoryId = product.CategoryId,
-            Name = product.Name,
-            Slug = product.Slug,
-            Description = product.Description,
-            Price = product.Price,
-            ImageUrl = primaryImage?.Url,
-            DisplayOrder = product.DisplayOrder,
+            Id =
+                product.Id,
 
-            Options = product.Options
-                .Where(x => x.IsActive)
-                .OrderBy(x => x.DisplayOrder)
-                .Select(option => new ProductOptionResponse
-                {
-                    Id = option.Id,
+            CategoryId =
+                product.CategoryId,
 
-                    ProductOptionDefinitionId =
-                        option.ProductOptionDefinitionId,
+            CategoryName =
+    product.Category.Name,
 
-                    Name =
-                        option.ProductOptionDefinition.Name,
+            CategorySlug =
+    product.Category.Slug,
 
-                    InputType =
-                        option.ProductOptionDefinition.InputType,
+            Name =
+                product.Name,
 
-                    IsRequired =
-                        option.IsRequired,
+            Slug =
+                product.Slug,
 
-                    DisplayOrder =
-                        option.DisplayOrder,
+            Description =
+                product.Description,
 
-                    Values = option.Values
-                        .Where(x => x.IsActive)
-                        .OrderBy(x => x.DisplayOrder)
-                        .Select(value => new ProductOptionValueResponse
+            Price =
+                product.Price,
+
+            /*
+             * برای سازگاری با صفحه لیست محصولات،
+             * تصویر اصلی همچنان جداگانه برگردانده می‌شود.
+             */
+            ImageUrl =
+                primaryImage?.Url,
+
+            DisplayOrder =
+                product.DisplayOrder,
+
+            /*
+             * تمام تصاویر برای گالری صفحه جزئیات
+             */
+            Images =
+                orderedImages
+                    .Select(image =>
+                        new ProductImageResponse
                         {
-                            Id = value.Id,
-                            Label = value.Label,
-                            Value = value.Value,
-                            PriceAdjustment = value.PriceAdjustment,
-                            ColorCode = value.ColorCode,
-                            IsActive = value.IsActive,
-                            DisplayOrder = value.DisplayOrder
+                            Id =
+                                image.Id,
+
+                            Url =
+                                image.Url,
+
+                            IsPrimary =
+                                image.IsPrimary,
+
+                            DisplayOrder =
+                                image.DisplayOrder
                         })
-                        .ToList()
-                })
-                .ToList()
+                    .ToList(),
+
+            Options =
+                product.Options
+                    .Where(
+                        option =>
+                            option.IsActive)
+                    .OrderBy(
+                        option =>
+                            option.DisplayOrder)
+                    .Select(option =>
+                        new ProductOptionResponse
+                        {
+                            Id =
+                                option.Id,
+
+                            ProductOptionDefinitionId =
+                                option.ProductOptionDefinitionId,
+
+                            Name =
+                                option
+                                    .ProductOptionDefinition
+                                    .Name,
+
+                            InputType =
+                                option
+                                    .ProductOptionDefinition
+                                    .InputType,
+
+                            IsRequired =
+                                option.IsRequired,
+
+                            DisplayOrder =
+                                option.DisplayOrder,
+
+                            Values =
+                                option.Values
+                                    .Where(
+                                        value =>
+                                            value.IsActive)
+                                    .OrderBy(
+                                        value =>
+                                            value.DisplayOrder)
+                                    .Select(value =>
+                                        new ProductOptionValueResponse
+                                        {
+                                            Id =
+                                                value.Id,
+
+                                            Label =
+                                                value.Label,
+
+                                            Value =
+                                                value.Value,
+
+                                            PriceAdjustment =
+                                                value.PriceAdjustment,
+
+                                            ColorCode =
+                                                value.ColorCode,
+
+                                            IsActive =
+                                                value.IsActive,
+
+                                            DisplayOrder =
+                                                value.DisplayOrder
+                                        })
+                                    .ToList()
+                        })
+                    .ToList()
         };
     }
-
 
 
     private static AdminProductResponse ToAdminResponse(Product product)
@@ -656,5 +964,31 @@ public class ProductsController : ControllerBase
                 })
                 .ToList()
         };
+    }
+
+
+    private async Task TryDeleteImageAsync(
+    string? imageUrl,
+    CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(
+                imageUrl))
+        {
+            return;
+        }
+
+        try
+        {
+            await _fileStorage.DeleteAsync(
+                imageUrl,
+                cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Product image file could not be deleted. Image URL: {ImageUrl}",
+                imageUrl);
+        }
     }
 }

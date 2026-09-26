@@ -3,6 +3,7 @@ using Sevart.Api.Contracts.Categories;
 using Sevart.Api.Contracts.Products;
 using Sevart.Application.Abstractions.Persistence;
 using Sevart.Domain.Entities;
+using Sevart.Application.Abstractions.Storage;
 
 namespace Sevart.Api.Controllers;
 
@@ -12,12 +13,26 @@ public class CategoriesController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IFileStorage _fileStorage;
+    private readonly ILogger<CategoriesController> _logger;
 
     public CategoriesController(
-        ICategoryRepository categoryRepository, IProductRepository productRepository)
+        ICategoryRepository categoryRepository,
+        IProductRepository productRepository,
+        IFileStorage fileStorage,
+        ILogger<CategoriesController> logger)
     {
-        _categoryRepository = categoryRepository;
-        _productRepository = productRepository;
+        _categoryRepository =
+            categoryRepository;
+
+        _productRepository =
+            productRepository;
+
+        _fileStorage =
+            fileStorage;
+
+        _logger =
+            logger;
     }
 
 
@@ -76,25 +91,51 @@ public class CategoriesController : ControllerBase
     UpdateCategoryRequest request,
     CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.GetByIdAsync(
-            id,
-            cancellationToken);
+        var category =
+            await _categoryRepository.GetByIdAsync(
+                id,
+                cancellationToken);
 
         if (category is null)
         {
-            return NotFound();
+            return NotFound(new
+            {
+                message = "دسته‌بندی پیدا نشد."
+            });
         }
+
+        var previousImageUrl =
+            category.ImageUrl;
+
+        var newImageUrl =
+            string.IsNullOrWhiteSpace(
+                request.ImageUrl)
+                ? null
+                : request.ImageUrl.Trim();
 
         category.Update(
             request.Name,
             request.Slug,
             request.Description,
-            request.ImageUrl,
+            newImageUrl,
             request.DisplayOrder);
 
         await _categoryRepository.UpdateAsync(
             category,
             cancellationToken);
+
+        var imageWasChanged =
+            !string.Equals(
+                previousImageUrl,
+                newImageUrl,
+                StringComparison.OrdinalIgnoreCase);
+
+        if (imageWasChanged)
+        {
+            await TryDeleteImageAsync(
+                previousImageUrl,
+                cancellationToken);
+        }
 
         return NoContent();
     }
@@ -132,6 +173,10 @@ public class CategoriesController : ControllerBase
 
         await _categoryRepository.DeleteAsync(
             category,
+            cancellationToken);
+
+        await TryDeleteImageAsync(
+            category.ImageUrl,
             cancellationToken);
 
         return NoContent();
@@ -277,5 +322,27 @@ public class CategoriesController : ControllerBase
         return Ok(response);
     }
 
+    private async Task TryDeleteImageAsync(
+    string? imageUrl,
+    CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return;
+        }
 
+        try
+        {
+            await _fileStorage.DeleteAsync(
+                imageUrl,
+                cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Category image file could not be deleted. Image URL: {ImageUrl}",
+                imageUrl);
+        }
+    }
 }
