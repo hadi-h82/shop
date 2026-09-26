@@ -1,8 +1,4 @@
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
-import { MOCK_PRODUCTS } from '../../core/mock-data/products.mock';
-
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 
 import {
   Component,
@@ -11,18 +7,28 @@ import {
   inject,
   OnInit,
   PLATFORM_ID,
-  signal
+  signal,
 } from '@angular/core';
-import {
-  isPlatformBrowser,
-  NgOptimizedImage
-} from '@angular/common';
-import { CategoryService } from '../../core/services/category/category.service';
+
 import { toSignal } from '@angular/core/rxjs-interop';
+
+import { MatButtonModule } from '@angular/material/button';
+
+import { MatIconModule } from '@angular/material/icon';
+
+import { RouterLink } from '@angular/router';
+
+import {
+  MediaUrlService,
+} from '../../core/services/media-url/media-url.service';
+
+import { CategoryService } from '../../core/services/category/category.service';
+
 import { Seo } from '../../core/services/seo/seo';
 
-
 const SITE_URL = 'https://sevart.ir';
+
+
 
 interface HeroSlide {
   title: string;
@@ -33,21 +39,22 @@ interface HeroSlide {
 
 @Component({
   selector: 'app-home',
-  imports: [
-  RouterLink,
-  MatButtonModule,
-  MatIconModule,
-  NgOptimizedImage,
 
-  ],
+  imports: [RouterLink, MatButtonModule, MatIconModule, NgOptimizedImage],
+
   templateUrl: './home.html',
-  styleUrl: './home.scss'
+  styleUrl: './home.scss',
 })
 export class Home implements OnInit {
   private readonly seo = inject(Seo);
+
   private readonly categoryService = inject(CategoryService);
+
   private readonly platformId = inject(PLATFORM_ID);
+
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly mediaUrl = inject(MediaUrlService);
 
   private sliderInterval?: ReturnType<typeof setInterval>;
 
@@ -56,52 +63,52 @@ export class Home implements OnInit {
   readonly slides: HeroSlide[] = [
     {
       title: 'هر چیزی برای خلق شیرینی‌های خاص',
-      description:
-        'انواع ابزار قنادی، قالب، تجهیزات پخت و لوازم حرفه‌ای برای شیرینی‌پزی.',
+
+      description: 'انواع ابزار قنادی، قالب، تجهیزات پخت و لوازم حرفه‌ای برای شیرینی‌پزی.',
+
       image: '/images/home/slide-tools.webp',
-      link: '/products'
+
+      link: '/products',
     },
     {
       title: 'تزئین حرفه‌ای، نتیجه‌ای چشم‌نواز',
-      description:
-        'ابزارهای تخصصی تزئین کیک و شیرینی برای تبدیل هر ایده به یک اثر زیبا.',
+
+      description: 'ابزارهای تخصصی تزئین کیک و شیرینی برای تبدیل هر ایده به یک اثر زیبا.',
+
       image: '/images/home/slide-decoration.webp',
-      link: '/products'
+
+      link: '/products',
     },
     {
       title: 'از پخت تا بسته‌بندی، همه‌چیز یکجا',
-      description:
-        'محصولات موردنیاز قنادی‌ها، شیرینی‌پزها و علاقه‌مندان به هنر شیرینی‌پزی.',
+
+      description: 'محصولات موردنیاز قنادی‌ها، شیرینی‌پزها و علاقه‌مندان به هنر شیرینی‌پزی.',
+
       image: '/images/home/slide-packaging.webp',
-      link: '/products'
-    }
+
+      link: '/products',
+    },
   ];
 
+  readonly categoriesResponse = toSignal(this.categoryService.getAll(), {
+    initialValue: [],
+  });
 
-readonly categoriesResponse = toSignal(
-  this.categoryService.getAll(),
-  {
-    initialValue: []
-  }
-);
-
-readonly categories = computed(() =>
-  this.categoriesResponse()
-    .filter(category => category.isActive)
-    .sort((first, second) =>
-      first.displayOrder - second.displayOrder
-    )
-);
-
-  readonly featuredProducts = MOCK_PRODUCTS;
+  readonly categories = computed(() =>
+    this.categoriesResponse()
+      .filter((category) => category.isActive)
+      .sort((first, second) => first.displayOrder - second.displayOrder),
+  );
 
   constructor() {
     this.seo.update({
       title: 'فروشگاه لوازم قنادی و شیرینی‌پزی',
-      description:
-        'خرید انواع ابزار قنادی، تجهیزات پخت، لوازم تزئین کیک و مواد اولیه شیرینی‌پزی.',
+
+      description: 'خرید انواع ابزار قنادی، تجهیزات پخت، لوازم تزئین کیک و مواد اولیه شیرینی‌پزی.',
+
       canonicalUrl: `${SITE_URL}/`,
-      type: 'website'
+
+      type: 'website',
     });
 
     this.destroyRef.onDestroy(() => {
@@ -115,10 +122,9 @@ readonly categories = computed(() =>
     }
   }
 
-  nextSlide(resetTimer = true): void {
-    this.activeSlide.update(
-      current => (current + 1) % this.slides.length
-    );
+
+ nextSlide(resetTimer = true): void {
+    this.activeSlide.update((current) => (current + 1) % this.slides.length);
 
     if (resetTimer) {
       this.restartAutoPlay();
@@ -126,9 +132,7 @@ readonly categories = computed(() =>
   }
 
   previousSlide(): void {
-    this.activeSlide.update(
-      current => (current - 1 + this.slides.length) % this.slides.length
-    );
+    this.activeSlide.update((current) => (current - 1 + this.slides.length) % this.slides.length);
 
     this.restartAutoPlay();
   }
@@ -157,6 +161,7 @@ readonly categories = computed(() =>
   private stopAutoPlay(): void {
     if (this.sliderInterval) {
       clearInterval(this.sliderInterval);
+
       this.sliderInterval = undefined;
     }
   }

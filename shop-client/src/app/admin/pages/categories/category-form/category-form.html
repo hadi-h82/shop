@@ -214,34 +214,147 @@
         <!-- Image URL -->
         <div class="space-y-2">
 
-          <label
-            for="imageUrl"
-            class="text-sm font-semibold"
-          >
-            تصویر دسته‌بندی
-          </label>
 
-          <input
-            id="imageUrl"
-            type="text"
-            formControlName="imageUrl"
-            dir="ltr"
-            placeholder="/images/categories/cake-board.webp"
-            class="
-              w-full
-              rounded-xl
-              border
-              border-neutral-200
-              bg-white
-              px-4
-              py-3
-              text-left
-              outline-none
-              transition
-              placeholder:text-neutral-300
-              focus:border-amber-700
-            "
-          />
+<!-- Category Image -->
+
+<div class="space-y-3 md:col-span-2">
+  <div>
+    <p class="text-sm font-semibold">
+      تصویر دسته‌بندی
+    </p>
+
+    <p class="mt-1 text-xs text-neutral-400">
+      فرمت‌های JPG، PNG و WebP با حداکثر حجم ۵ مگابایت
+    </p>
+  </div>
+
+  @if (imageError()) {
+    <div
+      class="
+        rounded-xl
+        border
+        border-red-200
+        bg-red-50
+        px-4
+        py-3
+        text-sm
+        text-red-700
+      "
+    >
+      {{ imageError() }}
+    </div>
+  }
+
+  @if (imagePreviewUrl(); as previewUrl) {
+    <div
+      class="
+        relative
+        aspect-square
+        max-w-xs
+        overflow-hidden
+        rounded-2xl
+        border
+        border-neutral-200
+        bg-neutral-50
+      "
+    >
+      <img
+        [src]="previewUrl"
+        alt="تصویر دسته‌بندی"
+        class="
+          h-full
+          w-full
+          object-cover
+        "
+      />
+
+      <button
+        type="button"
+        [disabled]="isSaving()"
+        (click)="removeImage()"
+        class="
+          absolute
+          left-2
+          top-2
+          inline-flex
+          h-9
+          w-9
+          items-center
+          justify-center
+          rounded-full
+          bg-red-600
+          text-white
+          shadow-md
+          transition
+          hover:bg-red-700
+          disabled:opacity-50
+        "
+        aria-label="حذف تصویر"
+        title="حذف تصویر"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  } @else {
+    <div
+      class="
+        flex
+        max-w-xs
+        flex-col
+        items-center
+        justify-center
+        rounded-2xl
+        border
+        border-dashed
+        border-neutral-300
+        p-8
+        text-center
+      "
+    >
+      <mat-icon class="text-neutral-400">
+        image
+      </mat-icon>
+
+      <p class="mt-2 text-sm text-neutral-500">
+        هنوز تصویری انتخاب نشده است.
+      </p>
+    </div>
+  }
+
+  <div>
+    <label
+      for="categoryImage"
+      class="
+        inline-flex
+        cursor-pointer
+        items-center
+        gap-2
+        rounded-xl
+        bg-amber-700
+        px-4
+        py-2.5
+        text-sm
+        font-semibold
+        text-white
+        transition
+        hover:bg-amber-800
+      "
+    >
+      <mat-icon>add_photo_alternate</mat-icon>
+
+      {{ imagePreviewUrl() ? 'تغییر تصویر' : 'انتخاب تصویر' }}
+    </label>
+
+    <input
+      id="categoryImage"
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      class="hidden"
+      [disabled]="isSaving()"
+      (change)="onImageSelected($event)"
+    />
+  </div>
+</div>
 
           <p class="text-xs text-neutral-400">
             فعلاً آدرس تصویر را وارد کنید؛ آپلود فایل را بعداً اضافه می‌کنیم.
@@ -324,33 +437,37 @@
       </a>
 
 
-      <button
-        type="submit"
-        [disabled]="form.invalid"
-        class="
-          inline-flex
-          items-center
-          justify-center
-          gap-2
-          rounded-xl
-          bg-amber-700
-          px-5
-          py-3
-          text-sm
-          font-semibold
-          text-white
-          transition
-          hover:bg-amber-800
+<button
+  type="submit"
+  [disabled]="form.invalid || isSaving()"
+  class="
+    inline-flex
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    bg-amber-700
+    px-5
+    py-3
+    text-sm
+    font-semibold
+    text-white
+    transition
+    hover:bg-amber-800
+    disabled:cursor-not-allowed
+    disabled:opacity-50
+    disabled:hover:bg-amber-700
+  "
+>
+  @if (isSaving()) {
+    <mat-icon>hourglass_top</mat-icon>
+    در حال ذخیره...
+  } @else {
+    <mat-icon>save</mat-icon>
 
-          disabled:cursor-not-allowed
-          disabled:opacity-50
-          disabled:hover:bg-amber-700
-        "
-      >
-        <mat-icon>save</mat-icon>
-
-       {{ isEditMode ? 'ذخیره تغییرات' : 'ذخیره دسته‌بندی' }}
-      </button>
+    {{ isEditMode ? 'ذخیره تغییرات' : 'ذخیره دسته‌بندی' }}
+  }
+</button>
 
     </div>
 

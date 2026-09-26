@@ -323,6 +323,324 @@
 
 
     <!-- =========================
+     تصاویر محصول
+========================== -->
+
+<div
+  class="
+    rounded-2xl
+    border
+    border-neutral-200
+    bg-white
+    p-4
+    sm:p-6
+  "
+>
+  <div
+    class="
+      mb-5
+      flex
+      flex-col
+      gap-4
+      sm:flex-row
+      sm:items-center
+      sm:justify-between
+    "
+  >
+    <div>
+      <h2 class="text-base font-bold sm:text-lg">
+        تصاویر محصول
+      </h2>
+
+      <p class="mt-1 text-sm text-neutral-500">
+        فرمت‌های JPG، PNG و WebP با حداکثر حجم ۵ مگابایت
+      </p>
+    </div>
+
+    <label
+      for="productImages"
+      class="
+        inline-flex
+        w-fit
+        cursor-pointer
+        items-center
+        gap-2
+        rounded-xl
+        bg-amber-700
+        px-4
+        py-2.5
+        text-sm
+        font-semibold
+        text-white
+        transition
+        hover:bg-amber-800
+      "
+    >
+      <mat-icon>add_photo_alternate</mat-icon>
+      انتخاب تصویر
+    </label>
+
+    <input
+      id="productImages"
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      multiple
+      class="hidden"
+      [disabled]="isUploadingImages()"
+      (change)="onImageSelected($event)"
+    />
+  </div>
+
+  @if (imageError()) {
+    <div
+      class="
+        mb-4
+        rounded-xl
+        border
+        border-red-200
+        bg-red-50
+        px-4
+        py-3
+        text-sm
+        text-red-700
+      "
+    >
+      {{ imageError() }}
+    </div>
+  }
+
+  @if (isUploadingImages()) {
+    <div
+      class="
+        mb-4
+        flex
+        items-center
+        gap-2
+        rounded-xl
+        bg-amber-50
+        px-4
+        py-3
+        text-sm
+        text-amber-800
+      "
+    >
+      <mat-icon>hourglass_top</mat-icon>
+      در حال ذخیره محصول و آپلود تصاویر...
+    </div>
+  }
+
+  @if (
+    existingImages().length > 0 ||
+    pendingImages().length > 0
+  ) {
+    <div
+      class="
+        grid
+        grid-cols-2
+        gap-4
+        sm:grid-cols-3
+        lg:grid-cols-4
+      "
+    >
+@for (
+  image of existingImages();
+  track image.id
+) {
+  <div
+    class="
+      overflow-hidden
+      rounded-xl
+      border
+      border-neutral-200
+      bg-neutral-50
+    "
+  >
+    <div class="relative aspect-square">
+      <img
+        [src]="getImageSource(image.url)"
+        alt="تصویر محصول"
+        class="
+          h-full
+          w-full
+          object-cover
+        "
+      />
+
+      <!-- دکمه حذف: بالا سمت چپ -->
+
+      <button
+        type="button"
+        [disabled]="isUploadingImages()"
+        (click)="deleteExistingImage(image.id)"
+        class="
+          absolute
+          left-2
+          top-2
+          inline-flex
+          h-9
+          w-9
+          items-center
+          justify-center
+          rounded-full
+          bg-red-600
+          text-white
+          shadow-md
+          transition
+          hover:bg-red-700
+          disabled:opacity-50
+        "
+        aria-label="حذف تصویر"
+        title="حذف تصویر"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <!-- برچسب تصویر اصلی: بالا سمت راست -->
+
+      @if (image.isPrimary) {
+        <span
+          class="
+            absolute
+            right-2
+            top-2
+            rounded-lg
+            bg-emerald-600
+            px-2
+            py-1
+            text-xs
+            font-semibold
+            text-white
+          "
+        >
+          تصویر اصلی
+        </span>
+      }
+    </div>
+
+    @if (!image.isPrimary) {
+      <div class="p-2">
+        <button
+          type="button"
+          [disabled]="isUploadingImages()"
+          (click)="setPrimaryImage(image.id)"
+          class="
+            w-full
+            rounded-lg
+            border
+            border-neutral-200
+            bg-white
+            px-2
+            py-2
+            text-xs
+            font-semibold
+            disabled:opacity-50
+          "
+        >
+          انتخاب به‌عنوان اصلی
+        </button>
+      </div>
+    }
+  </div>
+}
+
+      @for (
+        image of pendingImages();
+        track image.previewUrl;
+        let imageIndex = $index
+      ) {
+        <div
+          class="
+            overflow-hidden
+            rounded-xl
+            border
+            border-dashed
+            border-amber-300
+            bg-amber-50
+          "
+        >
+          <div class="relative aspect-square">
+            <img
+              [src]="image.previewUrl"
+              [alt]="image.file.name"
+              class="
+                h-full
+                w-full
+                object-cover
+              "
+            />
+
+            <span
+              class="
+                absolute
+                right-2
+                top-2
+                rounded-lg
+                bg-amber-700
+                px-2
+                py-1
+                text-xs
+                font-semibold
+                text-white
+              "
+            >
+              آماده آپلود
+            </span>
+          </div>
+
+          <div class="p-2">
+            <button
+              type="button"
+              [disabled]="isUploadingImages()"
+              (click)="removePendingImage(imageIndex)"
+              class="
+                inline-flex
+                w-full
+                items-center
+                justify-center
+                gap-1
+                rounded-lg
+                border
+                border-red-200
+                bg-white
+                px-3
+                py-2
+                text-xs
+                font-semibold
+                text-red-700
+                disabled:opacity-50
+              "
+            >
+              <mat-icon>delete</mat-icon>
+              حذف از انتخاب
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div
+      class="
+        rounded-xl
+        border
+        border-dashed
+        border-neutral-300
+        p-8
+        text-center
+      "
+    >
+      <mat-icon class="text-neutral-400">
+        image
+      </mat-icon>
+
+      <p class="mt-2 text-sm text-neutral-500">
+        هنوز تصویری برای این محصول انتخاب نشده است.
+      </p>
+    </div>
+  }
+</div>
+
+
+    <!-- =========================
          ویژگی‌های محصول
     ========================== -->
 
@@ -1113,30 +1431,35 @@
       </a>
 
 
-      <button
-        type="submit"
-        [disabled]="form.invalid"
-        class="
-          inline-flex
-          items-center
-          gap-2
-          rounded-xl
-          bg-amber-700
-          px-5
-          py-3
-          font-semibold
-          text-white
-          transition
-          hover:bg-amber-800
-          disabled:cursor-not-allowed
-          disabled:opacity-50
-          disabled:hover:bg-amber-700
-        "
-      >
-        <mat-icon>save</mat-icon>
+<button
+  type="submit"
+  [disabled]="form.invalid || isUploadingImages()"
+  class="
+    inline-flex
+    items-center
+    gap-2
+    rounded-xl
+    bg-amber-700
+    px-5
+    py-3
+    font-semibold
+    text-white
+    transition
+    hover:bg-amber-800
+    disabled:cursor-not-allowed
+    disabled:opacity-50
+    disabled:hover:bg-amber-700
+  "
+>
+  @if (isUploadingImages()) {
+    <mat-icon>hourglass_top</mat-icon>
+    در حال ذخیره...
+  } @else {
+    <mat-icon>save</mat-icon>
 
-        {{ isEditMode ? 'ذخیره تغییرات' : 'ذخیره محصول' }}
-      </button>
+    {{ isEditMode ? 'ذخیره تغییرات' : 'ذخیره محصول' }}
+  }
+</button>
 
     </div>
 
