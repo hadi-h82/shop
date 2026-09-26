@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Sevart.Application.Abstractions.Persistence;
@@ -25,21 +26,42 @@ builder.Services.AddScoped<
     IProductOptionDefinitionRepository,
     ProductOptionDefinitionRepository>();
 
-var uploadsRootPath = Path.Combine(
-    builder.Environment.ContentRootPath,
-    "uploads");
+var uploadsRootPath =
+    builder.Configuration["Storage:RootPath"]
+    ?? Path.Combine(
+        builder.Environment.ContentRootPath,
+        "uploads");
+
+var uploadsBaseUrl =
+    builder.Configuration["Storage:BaseUrl"]
+    ?? "/uploads";
 
 Directory.CreateDirectory(uploadsRootPath);
 
 builder.Services.AddSingleton<IFileStorage>(
     new LocalFileStorage(
         uploadsRootPath,
-        "/uploads"));
+        uploadsBaseUrl));
 
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+
+var allowedOrigins =
+    builder.Configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>()
+    ??
+    [
+        "http://localhost:4200",
+        "http://localhost:4500",
+        "https://sevart.ir",
+        "https://www.sevart.ir",
+        "https://noviraone.ir",
+        "https://www.noviraone.ir",
+        "https://noviraone.runflare.run"
+    ];
 
 builder.Services.AddCors(options =>
 {
@@ -48,15 +70,25 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins(
-                    "http://localhost:4200",
-                    "http://localhost:4500")
+                .WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto;
+
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
@@ -66,18 +98,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
 app.UseStaticFiles(
     new StaticFileOptions
     {
         FileProvider =
             new PhysicalFileProvider(uploadsRootPath),
 
-        RequestPath = "/uploads"
+        RequestPath = uploadsBaseUrl
     });
 
 app.UseCors("AngularClient");
@@ -85,5 +112,22 @@ app.UseCors("AngularClient");
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet(
+    "/health",
+    () => Results.Ok(
+        new
+        {
+            status = "healthy"
+        }));
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext =
+        scope.ServiceProvider
+            .GetRequiredService<SevartDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+}
 
 app.Run();
