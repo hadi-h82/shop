@@ -11,14 +11,21 @@
 
   @else if (product(); as item) {
     <div class="product-detail__container">
-      <a
-        class="product-detail__breadcrumb"
-        routerLink="/products"
-      >
-        <mat-icon>arrow_forward</mat-icon>
+<a
+  class="product-detail__breadcrumb"
+  [routerLink]="[
+    '/categories',
+    item.categorySlug
+  ]"
+>
+  <mat-icon>
+    arrow_forward
+  </mat-icon>
 
-        <span>بازگشت به محصولات</span>
-      </a>
+  <span>
+    بازگشت به {{ item.categoryName }}
+  </span>
+</a>
 
       <div class="product-detail__content">
         @if (item.categoryName) {
@@ -241,13 +248,79 @@
            Product Image
       ========================== -->
 
-      <div class="product-detail__image">
-        <img
-          [src]="item.imageUrl"
-          [alt]="item.title"
-          (error)="onImageError($event)"
-        />
-      </div>
+<div class="product-detail__image">
+  <div
+    class="product-detail__image-main"
+  >
+ <img
+  [src]="selectedImageUrl()"
+  [alt]="item.title"
+  (error)="
+    mediaUrl.applyFallback($event)
+  "
+/>
+  </div>
+
+  @if (productImages().length > 1) {
+    <div
+      class="product-detail__thumbnails"
+      aria-label="گالری تصاویر محصول"
+    >
+      @for (
+        image of productImages();
+        track image.id;
+        let imageIndex = $index
+      ) {
+        <button
+          type="button"
+          class="
+            product-detail__thumbnail
+          "
+          [class.product-detail__thumbnail--active]="
+            isSelectedImage(image.url)
+          "
+          [attr.aria-label]="
+            'نمایش تصویر ' +
+            (imageIndex + 1)
+          "
+          [attr.aria-pressed]="
+            isSelectedImage(image.url)
+          "
+          (click)="
+            selectImage(image.url)
+          "
+        >
+          <img
+          [src]="
+  mediaUrl.resolve(
+    image.url
+  )
+"
+            [alt]="
+              item.title +
+              ' - تصویر ' +
+              (imageIndex + 1)
+            "
+            loading="lazy"
+           (error)="
+  mediaUrl.applyFallback($event)
+"
+          />
+
+          @if (image.isPrimary) {
+            <span
+              class="
+                product-detail__primary-badge
+              "
+            >
+              اصلی
+            </span>
+          }
+        </button>
+      }
+    </div>
+  }
+</div>
 
     </div>
   }

@@ -8,9 +8,17 @@ public class ProductResponse
 
     public int CategoryId { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public string CategoryName { get; set; } =
+    string.Empty;
 
-    public string Slug { get; set; } = string.Empty;
+    public string CategorySlug { get; set; } =
+        string.Empty;
+
+    public string Name { get; set; } =
+        string.Empty;
+
+    public string Slug { get; set; } =
+        string.Empty;
 
     public string? Description { get; set; }
 
@@ -20,9 +28,24 @@ public class ProductResponse
 
     public int DisplayOrder { get; set; }
 
-    public List<ProductOptionResponse> Options { get; set; } = [];
+    public List<ProductImageResponse> Images { get; set; } =
+        [];
+
+    public List<ProductOptionResponse> Options { get; set; } =
+        [];
 }
 
+public class ProductImageResponse
+{
+    public int Id { get; set; }
+
+    public string Url { get; set; } =
+        string.Empty;
+
+    public bool IsPrimary { get; set; }
+
+    public int DisplayOrder { get; set; }
+}
 
 public class ProductOptionResponse
 {
@@ -30,7 +53,8 @@ public class ProductOptionResponse
 
     public int ProductOptionDefinitionId { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } =
+        string.Empty;
 
     public ProductOptionInputType InputType { get; set; }
 
@@ -38,17 +62,19 @@ public class ProductOptionResponse
 
     public int DisplayOrder { get; set; }
 
-    public List<ProductOptionValueResponse> Values { get; set; } = [];
+    public List<ProductOptionValueResponse> Values { get; set; } =
+        [];
 }
-
 
 public class ProductOptionValueResponse
 {
     public int Id { get; set; }
 
-    public string Label { get; set; } = string.Empty;
+    public string Label { get; set; } =
+        string.Empty;
 
-    public string Value { get; set; } = string.Empty;
+    public string Value { get; set; } =
+        string.Empty;
 
     public decimal PriceAdjustment { get; set; }
 

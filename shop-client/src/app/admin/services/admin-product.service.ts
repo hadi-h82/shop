@@ -91,6 +91,12 @@ export interface AdminProductImageResponse {
   displayOrder: number;
 }
 
+export interface AddAdminProductImageRequest {
+  url: string;
+  displayOrder: number;
+  isPrimary: boolean;
+}
+
 export interface AdminProductOptionResponse {
   id: number;
   productOptionDefinitionId: number;
@@ -159,6 +165,35 @@ export class AdminProductService {
       request,
     );
   }
+
+  addImage(
+  productId: number,
+  request: AddAdminProductImageRequest,
+): Observable<void> {
+  return this.http.post<void>(
+    `${this.apiUrl}/${productId}/images`,
+    request,
+  );
+}
+
+setPrimaryImage(
+  productId: number,
+  imageId: number,
+): Observable<void> {
+  return this.http.patch<void>(
+    `${this.apiUrl}/${productId}/images/${imageId}/primary`,
+    {},
+  );
+}
+
+deleteImage(
+  productId: number,
+  imageId: number,
+): Observable<void> {
+  return this.http.delete<void>(
+    `${this.apiUrl}/${productId}/images/${imageId}`,
+  );
+}
 
   activate(
     id: number,

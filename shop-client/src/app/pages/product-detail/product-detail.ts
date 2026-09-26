@@ -1,15 +1,6 @@
-import {
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-
+import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import {
-  ActivatedRoute,
-  RouterLink,
-} from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,22 +21,21 @@ import { Seo } from '../../core/services/seo/seo';
 import { CartService } from '../../core/services/cart/cart';
 
 import {
+  ProductImageResponse,
   ProductResponse,
   ProductService,
 } from '../../core/services/product/product';
+import {
+  MediaUrlService,
+} from '../../core/services/media-url/media-url.service';
+
 
 const SITE_URL = 'https://sevart.ir';
 
 @Component({
   selector: 'app-product-detail',
 
-  imports: [
-    DecimalPipe,
-    RouterLink,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-  ],
+  imports: [DecimalPipe, RouterLink, MatButtonModule, MatIconModule, MatSelectModule],
 
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
@@ -53,43 +43,36 @@ const SITE_URL = 'https://sevart.ir';
 export class ProductDetail {
   private readonly route = inject(ActivatedRoute);
 
-  private readonly productService =
-    inject(ProductService);
+  private readonly productService = inject(ProductService);
 
-  private readonly seo =
-    inject(Seo);
+  private readonly seo = inject(Seo);
 
-  private readonly cartService =
-    inject(CartService);
+  private readonly cartService = inject(CartService);
 
-  private readonly snackBar =
-    inject(MatSnackBar);
+  private readonly snackBar = inject(MatSnackBar);
 
-  readonly slug =
-    this.route.snapshot.paramMap.get('id');
+  readonly mediaUrl = inject(MediaUrlService);
 
-  readonly ProductOptionInputType =
-    ProductOptionInputType;
+  readonly slug = this.route.snapshot.paramMap.get('id');
 
-  readonly product =
-    signal<Product | undefined>(undefined);
+  readonly ProductOptionInputType = ProductOptionInputType;
 
-  readonly loading =
-    signal(true);
+  readonly product = signal<Product | undefined>(undefined);
+  readonly productImages = signal<ProductImageResponse[]>([]);
 
-  readonly selectedOptions =
-    signal<Record<number, ProductOptionValue>>({});
+  readonly selectedImageUrl = signal(this.mediaUrl.resolve(null));
+
+  readonly loading = signal(true);
+
+  readonly selectedOptions = signal<Record<number, ProductOptionValue>>({});
 
   readonly quantity = signal(1);
 
-readonly sortedOptions = computed(() =>
-  [...(this.product()?.options ?? [])]
-    .sort(
-      (firstOption, secondOption) =>
-        firstOption.displayOrder -
-        secondOption.displayOrder,
+  readonly sortedOptions = computed(() =>
+    [...(this.product()?.options ?? [])].sort(
+      (firstOption, secondOption) => firstOption.displayOrder - secondOption.displayOrder,
     ),
-);
+  );
 
   readonly finalPrice = computed(() => {
     const product = this.product();
@@ -98,42 +81,23 @@ readonly sortedOptions = computed(() =>
       return 0;
     }
 
-    const basePrice =
-      product.discountPrice ??
-      product.price;
+    const basePrice = product.discountPrice ?? product.price;
 
-    const optionsPrice =
-      Object.values(
-        this.selectedOptions(),
-      ).reduce(
-        (total, selectedValue) =>
-          total +
-          selectedValue.priceAdjustment,
-        0,
-      );
+    const optionsPrice = Object.values(this.selectedOptions()).reduce(
+      (total, selectedValue) => total + selectedValue.priceAdjustment,
+      0,
+    );
 
     return basePrice + optionsPrice;
   });
 
-  readonly requiredOptionsSelected =
-    computed(() => {
-      const selectedOptions =
-        this.selectedOptions();
+  readonly requiredOptionsSelected = computed(() => {
+    const selectedOptions = this.selectedOptions();
 
-      return this.sortedOptions()
-        .filter(
-          option =>
-            option.isRequired,
-        )
-        .every(
-          option =>
-            Boolean(
-              selectedOptions[
-                option.id
-              ],
-            ),
-        );
-    });
+    return this.sortedOptions()
+      .filter((option) => option.isRequired)
+      .every((option) => Boolean(selectedOptions[option.id]));
+  });
 
   constructor() {
     this.loadProduct();
@@ -149,333 +113,251 @@ readonly sortedOptions = computed(() =>
       return;
     }
 
-    this.productService
-      .getBySlug(slug)
-      .subscribe({
-        next: (
-          response: ProductResponse,
-        ) => {
-          const product =
-            this.mapProduct(response);
+    this.productService.getBySlug(slug).subscribe({
+next: (
+  response: ProductResponse,
+) => {
+  const orderedImages =
+    [...(response.images ?? [])]
+      .sort(
+        (first, second) => {
+          if (
+            first.isPrimary !==
+            second.isPrimary
+          ) {
+            return first.isPrimary
+              ? -1
+              : 1;
+          }
 
-          this.product.set(product);
-
-          this.selectedOptions.set({});
-
-          this.loading.set(false);
-
-          this.setProductSeo(product);
-        },
-
-        error: (
-          error: unknown,
-        ) => {
-          console.error(
-            'Load product failed:',
-            error,
+          return (
+            first.displayOrder -
+            second.displayOrder
           );
-
-          this.product.set(undefined);
-
-          this.loading.set(false);
-
-          this.setNotFoundSeo();
         },
-      });
+      );
+
+  /*
+   * این خط برای نمایش Thumbnailها ضروری است.
+   */
+  this.productImages.set(
+    orderedImages,
+  );
+
+  const initialImageUrl =
+    orderedImages[0]?.url ??
+    response.imageUrl;
+
+this.selectedImageUrl.set(
+  this.mediaUrl.resolve(
+    initialImageUrl,
+  ),
+);
+
+  const product =
+    this.mapProduct(response);
+
+  this.product.set(product);
+  this.selectedOptions.set({});
+  this.loading.set(false);
+
+  this.setProductSeo(product);
+},
+
+      error: (error: unknown) => {
+        console.error('Load product failed:', error);
+
+        this.product.set(undefined);
+
+        this.loading.set(false);
+
+        this.setNotFoundSeo();
+      },
+    });
   }
 
-  private mapProduct(
-    response: ProductResponse,
-  ): Product {
+  private mapProduct(response: ProductResponse): Product {
     return {
-      id:
-        response.id,
+      id: response.id,
 
-      categoryId:
-        response.categoryId,
+      categoryId: response.categoryId,
 
-      title:
-        response.name,
-
-      slug:
-        response.slug,
-
-      price:
-        response.price,
-
-      imageUrl:
-        response.imageUrl ??
-        '/images/home/default-product-image.webp',
-
-      // فعلاً Backend عمومی CategoryName برنمی‌گرداند.
       categoryName:
-        '',
+  response.categoryName,
+
+categorySlug:
+  response.categorySlug,
+
+      title: response.name,
+
+      slug: response.slug,
+
+      price: response.price,
+
+     imageUrl:
+  this.mediaUrl.resolve(
+    response.imageUrl,
+  ),
 
       // endpoint عمومی فقط Product منتشرشده را برمی‌گرداند.
-      isAvailable:
-        true,
+      isAvailable: true,
 
-      options:
-        response.options ?? [],
+      options: response.options ?? [],
     };
   }
 
-  private setProductSeo(
-    product: Product,
-  ): void {
+  private setProductSeo(product: Product): void {
     this.seo.update({
-      title:
-        `${product.title} | فروشگاه آنلاین`,
+      title: `${product.title} | فروشگاه آنلاین`,
 
-      description:
-        `خرید ${product.title} با قیمت مناسب از فروشگاه آنلاین سِوارت.`,
+      description: `خرید ${product.title} با قیمت مناسب از فروشگاه آنلاین سِوارت.`,
 
-      canonicalUrl:
-        `${SITE_URL}/products/${product.slug}`,
+      canonicalUrl: `${SITE_URL}/products/${product.slug}`,
 
-      imageUrl:
-        product.imageUrl.startsWith(
-          'http',
-        )
-          ? product.imageUrl
-          : `${SITE_URL}${product.imageUrl}`,
+      imageUrl: product.imageUrl.startsWith('http')
+        ? product.imageUrl
+        : `${SITE_URL}${product.imageUrl}`,
 
-      type:
-        'product',
+      type: 'product',
     });
   }
 
   private setNotFoundSeo(): void {
     this.seo.update({
-      title:
-        'محصول پیدا نشد | فروشگاه آنلاین',
+      title: 'محصول پیدا نشد | فروشگاه آنلاین',
 
-      description:
-        'محصول موردنظر شما در فروشگاه پیدا نشد.',
+      description: 'محصول موردنظر شما در فروشگاه پیدا نشد.',
 
-      canonicalUrl:
-        `${SITE_URL}/products/${this.slug ?? ''}`,
+      canonicalUrl: `${SITE_URL}/products/${this.slug ?? ''}`,
 
-      type:
-        'website',
+      type: 'website',
     });
   }
 
-  sortedOptionValues(
-    option: ProductOption,
-  ): ProductOptionValue[] {
+  sortedOptionValues(option: ProductOption): ProductOptionValue[] {
     return [...option.values]
-      .filter(
-        value =>
-          value.isActive,
-      )
-      .sort(
-        (firstValue, secondValue) =>
-          firstValue.displayOrder -
-          secondValue.displayOrder,
-      );
+      .filter((value) => value.isActive)
+      .sort((firstValue, secondValue) => firstValue.displayOrder - secondValue.displayOrder);
   }
 
-  selectOption(
-    optionId: number,
-    optionValue: ProductOptionValue,
-  ): void {
+  selectOption(optionId: number, optionValue: ProductOptionValue): void {
     if (!optionValue.isActive) {
       return;
     }
 
-    this.selectedOptions.update(
-      currentOptions => ({
-        ...currentOptions,
+    this.selectedOptions.update((currentOptions) => ({
+      ...currentOptions,
 
-        [optionId]:
-          optionValue,
-      }),
-    );
+      [optionId]: optionValue,
+    }));
   }
 
-  selectFromDropdown(
-    option: ProductOption,
-    selectedValueId: number | null,
-  ): void {
-    const selectedValue =
-      option.values.find(
-        value =>
-          value.id ===
-          selectedValueId,
-      );
+  selectFromDropdown(option: ProductOption, selectedValueId: number | null): void {
+    const selectedValue = option.values.find((value) => value.id === selectedValueId);
 
     if (!selectedValue) {
-      this.removeSelectedOption(
-        option.id,
-      );
+      this.removeSelectedOption(option.id);
 
       return;
     }
 
-    this.selectOption(
-      option.id,
-      selectedValue,
-    );
+    this.selectOption(option.id, selectedValue);
   }
 
-  removeSelectedOption(
-    optionId: number,
-  ): void {
-    this.selectedOptions.update(
-      currentOptions => {
-        const updatedOptions = {
-          ...currentOptions,
-        };
+  removeSelectedOption(optionId: number): void {
+    this.selectedOptions.update((currentOptions) => {
+      const updatedOptions = {
+        ...currentOptions,
+      };
 
-        delete updatedOptions[
-          optionId
-        ];
+      delete updatedOptions[optionId];
 
-        return updatedOptions;
-      },
-    );
+      return updatedOptions;
+    });
   }
 
-  isOptionSelected(
-    optionId: number,
-    valueId: number,
-  ): boolean {
-    return (
-      this.selectedOptions()[
-        optionId
-      ]?.id === valueId
-    );
+  isOptionSelected(optionId: number, valueId: number): boolean {
+    return this.selectedOptions()[optionId]?.id === valueId;
   }
 
   addToCart(): void {
-    const product =
-      this.product();
+    const product = this.product();
 
-    if (
-      !product ||
-      !product.isAvailable
-    ) {
+    if (!product || !product.isAvailable) {
       return;
     }
 
-    if (
-      !this.requiredOptionsSelected()
-    ) {
-      this.snackBar.open(
-        'لطفاً گزینه‌های ضروری محصول را انتخاب کنید.',
-        'باشه',
-        {
-          duration: 3500,
-          horizontalPosition:
-            'center',
-          verticalPosition:
-            'bottom',
-        },
-      );
+    if (!this.requiredOptionsSelected()) {
+      this.snackBar.open('لطفاً گزینه‌های ضروری محصول را انتخاب کنید.', 'باشه', {
+        duration: 3500,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
 
       return;
     }
 
-    const selectedCartOptions =
-      this.createSelectedCartOptions();
+    const selectedCartOptions = this.createSelectedCartOptions();
 
-    this.cartService.add(
-      product,
-      selectedCartOptions,
-      this.finalPrice(),
-      this.quantity(),
-    );
+    this.cartService.add(product, selectedCartOptions, this.finalPrice(), this.quantity());
 
-    this.snackBar.open(
-      'محصول با موفقیت به سبد خرید اضافه شد.',
-      'بستن',
-      {
-        duration: 3000,
-        horizontalPosition:
-          'center',
-        verticalPosition:
-          'bottom',
-      },
-    );
+    this.snackBar.open('محصول با موفقیت به سبد خرید اضافه شد.', 'بستن', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
   }
 
   increaseQuantity(): void {
-    this.quantity.update(quantity => quantity + 1);
+    this.quantity.update((quantity) => quantity + 1);
   }
 
   decreaseQuantity(): void {
-    this.quantity.update(quantity => Math.max(1, quantity - 1));
+    this.quantity.update((quantity) => Math.max(1, quantity - 1));
   }
 
-  onImageError(
-    event: Event,
-  ): void {
-    const image =
-      event.target;
+selectImage(
+  imageUrl: string,
+): void {
+  this.selectedImageUrl.set(
+    this.mediaUrl.resolve(
+      imageUrl,
+    ),
+  );
+}
 
-    if (
-      !(
-        image instanceof
-        HTMLImageElement
-      ) ||
-      image.dataset[
-        'fallbackApplied'
-      ] === 'true'
-    ) {
-      return;
-    }
+isSelectedImage(
+  imageUrl: string,
+): boolean {
+  return (
+    this.selectedImageUrl() ===
+    this.mediaUrl.resolve(
+      imageUrl,
+    )
+  );
+}
 
-    image.dataset[
-      'fallbackApplied'
-    ] = 'true';
+ 
 
-    image.src =
-      '/images/home/default-product-image.webp';
-  }
-
-  private createSelectedCartOptions():
-    SelectedCartOption[] {
-    const selectedOptions =
-      this.selectedOptions();
+  private createSelectedCartOptions(): SelectedCartOption[] {
+    const selectedOptions = this.selectedOptions();
 
     return this.sortedOptions()
-      .filter(
-        option =>
-          Boolean(
-            selectedOptions[
-              option.id
-            ],
-          ),
-      )
-      .map(
-        option => {
-          const selectedValue =
-            selectedOptions[
-              option.id
-            ];
+      .filter((option) => Boolean(selectedOptions[option.id]))
+      .map((option) => {
+        const selectedValue = selectedOptions[option.id];
 
-          return {
-            optionId:
-              String(
-                option.id,
-              ),
+        return {
+          optionId: String(option.id),
 
-            optionTitle:
-              option.name,
+          optionTitle: option.name,
 
-            valueId:
-              String(
-                selectedValue.id,
-              ),
+          valueId: String(selectedValue.id),
 
-            valueTitle:
-              selectedValue.label,
+          valueTitle: selectedValue.label,
 
-            priceModifier:
-              selectedValue.priceAdjustment,
-          };
-        },
-      );
+          priceModifier: selectedValue.priceAdjustment,
+        };
+      });
   }
 }

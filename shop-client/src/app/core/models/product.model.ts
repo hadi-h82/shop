@@ -8,6 +8,7 @@ export interface Product {
   price: number;
   discountPrice?: number;
   imageUrl: string;
+  categorySlug?: string;
   categoryName: string;
   isAvailable: boolean;
   options?: ProductOption[];
