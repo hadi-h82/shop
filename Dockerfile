@@ -2,11 +2,11 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /src
 
-COPY . .
+COPY shop-server/ ./shop-server/
 
-RUN dotnet restore "Sevart.Api/Sevart.Api.csproj"
+RUN dotnet restore "shop-server/Sevart.Api/Sevart.Api.csproj"
 
-RUN dotnet publish "Sevart.Api/Sevart.Api.csproj" \
+RUN dotnet publish "shop-server/Sevart.Api/Sevart.Api.csproj" \
     --configuration Release \
     --output /app/publish \
     /p:UseAppHost=false
