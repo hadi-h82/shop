@@ -47,6 +47,33 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/products/product-form/product-form').then((m) => m.AdminProductForm),
       },
+
+      {
+        path: 'product-options',
+
+        loadComponent: () =>
+          import('./pages/product-options/product-option-list/product-option-list').then(
+            (m) => m.AdminProductOptionList,
+          ),
+      },
+
+      {
+        path: 'product-options/create',
+
+        loadComponent: () =>
+          import('./pages/product-options/product-option-form/product-option-form').then(
+            (m) => m.AdminProductOptionForm,
+          ),
+      },
+
+      {
+        path: 'product-options/:id',
+
+        loadComponent: () =>
+          import('./pages/product-options/product-option-form/product-option-form').then(
+            (m) => m.AdminProductOptionForm,
+          ),
+      },
     ],
   },
 ];
