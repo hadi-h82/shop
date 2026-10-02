@@ -1,10 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Sevart.Domain.Entities;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Sevart.Domain.Common;
+using Sevart.Domain.Entities;
+using Sevart.Infrastructure.Identity;
 
 namespace Sevart.Infrastructure.Persistence;
 
-public class SevartDbContext : DbContext
+public class SevartDbContext
+    : IdentityDbContext<
+        ApplicationUser,
+        IdentityRole<Guid>,
+        Guid>
 {
     public SevartDbContext(
         DbContextOptions<SevartDbContext> options)
@@ -12,22 +19,28 @@ public class SevartDbContext : DbContext
     {
     }
 
-    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Category> Categories
+        => Set<Category>();
 
-    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Product> Products
+        => Set<Product>();
 
-    public DbSet<ProductImage> ProductImages => Set<ProductImage>();
+    public DbSet<ProductImage> ProductImages
+        => Set<ProductImage>();
 
-    public DbSet<ProductOption> ProductOptions => Set<ProductOption>();
+    public DbSet<ProductOption> ProductOptions
+        => Set<ProductOption>();
 
     public DbSet<ProductOptionValue> ProductOptionValues
         => Set<ProductOptionValue>();
 
     public DbSet<ProductOptionDefinition> ProductOptionDefinitions
-    => Set<ProductOptionDefinition>();
+        => Set<ProductOptionDefinition>();
+    public DbSet<RefreshToken> RefreshTokens
+    => Set<RefreshToken>();
 
     public override async Task<int> SaveChangesAsync(
-    CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)
     {
         var entries = ChangeTracker
             .Entries<BaseAuditableEntity>();
@@ -49,11 +62,12 @@ public class SevartDbContext : DbContext
             }
         }
 
-        return await base.SaveChangesAsync(cancellationToken);
+        return await base.SaveChangesAsync(
+            cancellationToken);
     }
 
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(
+        ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
