@@ -465,7 +465,67 @@ namespace Sevart.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasDatabaseName("PhoneNumberIndex")
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
+
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Sevart.Infrastructure.Identity.OtpChallenge", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FailedAttemptCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("InvalidatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MaxAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("IX_OtpChallenges_ExpiresAt");
+
+                    b.HasIndex("CreatedByIp", "CreatedAt")
+                        .HasDatabaseName("IX_OtpChallenges_CreatedByIp_CreatedAt");
+
+                    b.HasIndex("PhoneNumber", "Purpose", "CreatedAt")
+                        .HasDatabaseName("IX_OtpChallenges_PhoneNumber_Purpose_CreatedAt");
+
+                    b.ToTable("OtpChallenges", (string)null);
                 });
 
             modelBuilder.Entity("Sevart.Infrastructure.Identity.RefreshToken", b =>

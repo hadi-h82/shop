@@ -18,4 +18,6 @@ public sealed class JwtOptions
 
     public int RefreshTokenExpirationDays { get; init; }
         = 30;
+
+    public int MaxActiveSessionsPerUser { get; init; }
 }

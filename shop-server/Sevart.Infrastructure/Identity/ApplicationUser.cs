@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Sevart.Application.Abstractions.Identity;
 
 namespace Sevart.Infrastructure.Identity;
 
@@ -6,9 +7,11 @@ public class ApplicationUser : IdentityUser<Guid>
 {
     private readonly List<RefreshToken> _refreshTokens = [];
 
-    public IReadOnlyCollection<RefreshToken> RefreshTokens
-        => _refreshTokens;
-    public string FullName { get; private set; } = string.Empty;
+    public IReadOnlyCollection<RefreshToken> RefreshTokens =>
+        _refreshTokens;
+
+    public string FullName { get; private set; } =
+        string.Empty;
 
     public DateTime CreatedAt { get; private set; }
 
@@ -18,45 +21,45 @@ public class ApplicationUser : IdentityUser<Guid>
     {
     }
 
+    // Constructor used for mobile and OTP registration.
     public ApplicationUser(
-        string fullName,
-        string email,
         string phoneNumber)
     {
         Id = Guid.NewGuid();
 
-        SetFullName(fullName);
-
-        Email = email.Trim().ToLowerInvariant();
-        UserName = Email;
-        PhoneNumber = phoneNumber.Trim();
+        SetPhoneNumber(phoneNumber);
 
         CreatedAt = DateTime.UtcNow;
     }
 
+
     public void UpdateProfile(
         string fullName,
-        string phoneNumber)
+        string? email)
     {
         SetFullName(fullName);
+        SetEmail(email);
 
-        PhoneNumber = phoneNumber.Trim();
         UpdatedAt = DateTime.UtcNow;
     }
 
     public void AddRefreshToken(
-    RefreshToken refreshToken)
+        RefreshToken refreshToken)
     {
-        ArgumentNullException.ThrowIfNull(refreshToken);
+        ArgumentNullException.ThrowIfNull(
+            refreshToken);
 
         _refreshTokens.Add(refreshToken);
     }
 
-    private void SetFullName(string fullName)
+    private void SetFullName(
+        string fullName)
     {
-        var normalizedFullName = fullName.Trim();
+        var normalizedFullName =
+            fullName.Trim();
 
-        if (string.IsNullOrWhiteSpace(normalizedFullName))
+        if (string.IsNullOrWhiteSpace(
+                normalizedFullName))
         {
             throw new ArgumentException(
                 "Full name is required.",
@@ -71,5 +74,32 @@ public class ApplicationUser : IdentityUser<Guid>
         }
 
         FullName = normalizedFullName;
+    }
+
+    private void SetPhoneNumber(
+        string phoneNumber)
+    {
+        if (!IranianMobileNumberNormalizer.TryNormalize(
+                phoneNumber,
+                out var normalizedPhoneNumber))
+        {
+            throw new ArgumentException(
+                "A valid Iranian mobile number is required.",
+                nameof(phoneNumber));
+        }
+
+        PhoneNumber = normalizedPhoneNumber;
+        UserName = normalizedPhoneNumber;
+    }
+
+    private void SetEmail(
+        string? email)
+    {
+        Email =
+            string.IsNullOrWhiteSpace(email)
+                ? null
+                : email
+                    .Trim()
+                    .ToLowerInvariant();
     }
 }

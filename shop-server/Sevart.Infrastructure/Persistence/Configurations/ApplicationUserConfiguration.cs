@@ -38,5 +38,10 @@ public class ApplicationUserConfiguration
 
         builder.Property(x => x.PhoneNumber)
             .HasMaxLength(20);
+
+        builder.HasIndex(x => x.PhoneNumber)
+            .HasDatabaseName("PhoneNumberIndex")
+            .IsUnique()
+            .HasFilter("[PhoneNumber] IS NOT NULL");
     }
 }

@@ -3,7 +3,8 @@
 public sealed record AuthSession(
     Guid UserId,
     string FullName,
-    string Email,
+    string PhoneNumber,
+    string? Email,
     IReadOnlyCollection<string> Roles,
     string AccessToken,
     DateTime AccessTokenExpiresAt,

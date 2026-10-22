@@ -20,7 +20,8 @@ public sealed class TokenService : ITokenService
 
     public GeneratedAuthTokens GenerateTokens(
         Guid userId,
-        string email,
+        string phoneNumber,
+        string? email,
         string fullName,
         IReadOnlyCollection<string> roles)
     {
@@ -37,8 +38,8 @@ public sealed class TokenService : ITokenService
                 userId.ToString()),
 
             new(
-                "email",
-                email),
+                "phone_number",
+                 phoneNumber),
 
             new(
                 "name",
@@ -48,6 +49,14 @@ public sealed class TokenService : ITokenService
                 "jti",
                 Guid.NewGuid().ToString())
         };
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            claims.Add(
+                new Claim(
+                    "email",
+                    email));
+        }
 
         claims.AddRange(
             roles.Select(
@@ -88,10 +97,7 @@ public sealed class TokenService : ITokenService
                 RandomNumberGenerator.GetBytes(64));
 
         var refreshTokenHash =
-            Convert.ToHexString(
-                SHA256.HashData(
-                    Encoding.UTF8.GetBytes(
-                        refreshToken)));
+            HashRefreshToken(refreshToken);
 
         var refreshTokenExpiresAt =
             now.AddDays(
@@ -103,5 +109,21 @@ public sealed class TokenService : ITokenService
             RefreshToken: refreshToken,
             RefreshTokenHash: refreshTokenHash,
             RefreshTokenExpiresAt: refreshTokenExpiresAt);
+    }
+
+    public string HashRefreshToken(
+    string refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            throw new ArgumentException(
+                "Refresh token is required.",
+                nameof(refreshToken));
+        }
+
+        return Convert.ToHexString(
+            SHA256.HashData(
+                Encoding.UTF8.GetBytes(
+                    refreshToken)));
     }
 }

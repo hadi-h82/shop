@@ -12,6 +12,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Sevart.Application.Abstractions.Identity;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Sevart.Api.Contracts.Auth;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +27,7 @@ builder.Services.AddDbContext<SevartDbContext>(options =>
 builder.Services
     .AddIdentityCore<ApplicationUser>(options =>
     {
-        options.User.RequireUniqueEmail = true;
+        options.User.RequireUniqueEmail = false;
 
         options.Password.RequiredLength = 8;
         options.Password.RequireDigit = true;
@@ -48,6 +51,22 @@ builder.Services
 builder.Services.AddScoped<
     ITokenService,
     TokenService>();
+
+builder.Services.AddSingleton<
+    IOtpCodeService,
+    OtpCodeService>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<
+        IOtpMessageSender,
+        DevelopmentOtpMessageSender>();
+}
+else
+{
+    throw new InvalidOperationException(
+        "A production OTP message sender must be configured.");
+}
 
 builder.Services.AddScoped<
     IAuthService,
@@ -81,6 +100,50 @@ builder.Services
         options =>
             options.RefreshTokenExpirationDays > 0,
         "Refresh token expiration must be greater than zero.")
+    .Validate(
+        options =>
+          options.MaxActiveSessionsPerUser > 0,
+        "Maximum active sessions per user must be greater than zero.")
+    .ValidateOnStart();
+
+var otpSection =
+    builder.Configuration.GetSection(
+        OtpOptions.SectionName);
+
+builder.Services
+    .AddOptions<OtpOptions>()
+    .Bind(otpSection)
+    .Validate(
+        options =>
+            options.CodeLength is >= 4 and <= 8,
+        "OTP code length must be between 4 and 8.")
+    .Validate(
+        options =>
+            options.ExpirationMinutes > 0,
+        "OTP expiration must be greater than zero.")
+    .Validate(
+        options =>
+            options.ResendCooldownSeconds > 0,
+        "OTP resend cooldown must be greater than zero.")
+    .Validate(
+        options =>
+            options.MaxVerificationAttempts > 0,
+        "OTP maximum verification attempts must be greater than zero.")
+    .Validate(
+        options =>
+            options.MaxSendsPerPhonePerHour > 0 &&
+            options.MaxSendsPerPhonePerDay > 0,
+        "OTP phone rate limits must be greater than zero.")
+    .Validate(
+        options =>
+            options.MaxSendsPerIpPerHour > 0 &&
+            options.MaxSendsPerIpPerDay > 0,
+        "OTP IP rate limits must be greater than zero.")
+    .Validate(
+        options =>
+            Encoding.UTF8.GetByteCount(
+                options.HashKey) >= 32,
+        "OTP hash key must be at least 32 bytes.")
     .ValidateOnStart();
 
 var jwtOptions =
@@ -131,6 +194,110 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode =
+        StatusCodes.Status429TooManyRequests;
+
+    options.OnRejected =
+    async (context, cancellationToken) =>
+    {
+        var retryAfterSeconds = 0;
+
+        if (context.Lease.TryGetMetadata(
+                MetadataName.RetryAfter,
+                out var retryAfter))
+        {
+            retryAfterSeconds =
+                Math.Max(
+                    1,
+                    (int)Math.Ceiling(
+                        retryAfter.TotalSeconds));
+
+            context.HttpContext
+                .Response
+                .Headers["Retry-After"] =
+                    retryAfterSeconds.ToString();
+        }
+
+        context.HttpContext.Response.StatusCode =
+            StatusCodes.Status429TooManyRequests;
+
+        var response =
+            new RequestOtpErrorResponse(
+                Errors:
+                [
+                    new AuthErrorItem(
+                        "RateLimitExceeded",
+                        "تعداد درخواست‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.")
+                ],
+                RetryAfterSeconds:
+                    retryAfterSeconds);
+
+        await context.HttpContext
+            .Response
+            .WriteAsJsonAsync(
+                response,
+                cancellationToken);
+    };
+
+    options.AddPolicy(
+        "OtpRequestPolicy",
+        httpContext =>
+        {
+            var partitionKey =
+                httpContext.Connection
+                    .RemoteIpAddress?
+                    .ToString()
+                ?? "unknown";
+
+            return RateLimitPartition
+                .GetFixedWindowLimiter(
+                    partitionKey,
+                    _ =>
+                        new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 10,
+                            Window =
+                                TimeSpan.FromMinutes(1),
+                            QueueLimit = 0,
+                            QueueProcessingOrder =
+                                QueueProcessingOrder
+                                    .OldestFirst,
+                            AutoReplenishment = true
+                        });
+        });
+
+
+
+    options.AddPolicy(
+    "OtpVerifyPolicy",
+    httpContext =>
+    {
+        var partitionKey =
+            httpContext.Connection
+                .RemoteIpAddress?
+                .ToString()
+            ?? "unknown";
+
+        return RateLimitPartition
+            .GetFixedWindowLimiter(
+                partitionKey,
+                _ =>
+                    new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 30,
+                        Window =
+                            TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                        QueueProcessingOrder =
+                            QueueProcessingOrder
+                                .OldestFirst,
+                        AutoReplenishment = true
+                    });
+    });
+});
 
 builder.Services.AddScoped<
     ICategoryRepository,
@@ -190,7 +357,8 @@ builder.Services.AddCors(options =>
             policy
                 .WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -200,8 +368,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor |
         ForwardedHeaders.XForwardedProto;
 
-    options.KnownIPNetworks.Clear();
-    options.KnownProxies.Clear();
+    options.ForwardLimit = 1;
 });
 
 var app = builder.Build();
@@ -225,7 +392,11 @@ app.UseStaticFiles(
         RequestPath = uploadsBaseUrl
     });
 
+app.UseRouting();
+
 app.UseCors("AngularClient");
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 

@@ -39,6 +39,9 @@ public class SevartDbContext
     public DbSet<RefreshToken> RefreshTokens
     => Set<RefreshToken>();
 
+    public DbSet<OtpChallenge> OtpChallenges
+    => Set<OtpChallenge>();
+
     public override async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {

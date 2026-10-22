@@ -3,10 +3,9 @@
 public sealed record AuthResponse(
     Guid UserId,
     string FullName,
-    string Email,
+    string PhoneNumber,
+    string? Email,
     IReadOnlyCollection<string> Roles,
     string TokenType,
     string AccessToken,
-    DateTime AccessTokenExpiresAt,
-    string RefreshToken,
-    DateTime RefreshTokenExpiresAt);
+    DateTime AccessTokenExpiresAt);
