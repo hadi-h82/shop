@@ -1,4 +1,13 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  OnDestroy,
+  signal,
+  viewChild
+} from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -33,6 +42,23 @@ export class Login implements OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  private readonly snackBar = inject(MatSnackBar);
+
+  private readonly otpInput =
+    viewChild<ElementRef<HTMLInputElement>>('otpInput');
+
+  readonly otpCode = signal('');
+
+  readonly otpDigits = computed(() =>
+    Array.from(
+      { length: 6 },
+      (_, index) => this.otpCode()[index] ?? ''
+    )
+  );
+
+  readonly otpTotalSeconds = signal(120);
+
 
   readonly isSubmitting = signal(false);
   readonly requestError = signal('');
@@ -234,12 +260,14 @@ export class Login implements OnDestroy {
         switch (errorCode) {
           case 'InvalidOtp':
             this.verifyError.set('کد تأیید واردشده صحیح نیست.');
+            this.notify(this.verifyError(), 'error');
             break;
 
           case 'InvalidOrExpiredOtp':
             this.verifyError.set(
               'کد تأیید نامعتبر یا منقضی شده است. لطفاً کد جدید دریافت کنید.'
             );
+            this.notify(this.verifyError(), 'error');
             break;
 
           default:
@@ -281,7 +309,7 @@ export class Login implements OnDestroy {
         this.isSubmitting.set(false);
 
         this.challengeId.set(response.challengeId);
-        this.otpForm.reset();
+        this.resetOtpInput();
 
         this.startOtpTimer(response.expiresInSeconds);
         this.startResendTimer(response.retryAfterSeconds);
@@ -334,7 +362,7 @@ export class Login implements OnDestroy {
     this.challengeId.set(null);
     this.otpExpiresInSeconds.set(0);
 
-    this.otpForm.reset();
+    this.resetOtpInput();
     this.verifyError.set('');
     this.requestError.set('');
   }
@@ -343,6 +371,7 @@ export class Login implements OnDestroy {
 
   private startOtpTimer(seconds: number): void {
     this.stopOtpTimer();
+    this.otpTotalSeconds.set(seconds);
 
     this.otpExpiresAt = Date.now() + seconds * 1000;
     this.otpExpiresInSeconds.set(seconds);
@@ -376,6 +405,26 @@ export class Login implements OnDestroy {
       clearInterval(this.otpTimer);
       this.otpTimer = null;
     }
+  }
+
+
+
+  private notify(
+    message: string,
+    type: 'success' | 'error' = 'success'
+  ): void {
+    this.snackBar.open(message, 'بستن', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      direction: 'rtl',
+      panelClass: [
+        'shop-snackbar',
+        type === 'error'
+          ? 'shop-snackbar--error'
+          : 'shop-snackbar--success'
+      ]
+    });
   }
 
 
@@ -434,7 +483,7 @@ export class Login implements OnDestroy {
 
         this.otpStep.set('phone');
         this.challengeId.set(null);
-        this.otpForm.reset();
+        this.resetOtpInput();
 
         this.stopOtpTimer();
         this.stopResendTimer();
@@ -462,6 +511,38 @@ export class Login implements OnDestroy {
   }
 
 
+
+  onOtpInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    const normalized = input.value
+      .replace(/[۰-۹]/g, digit =>
+        String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit))
+      )
+      .replace(/[٠-٩]/g, digit =>
+        String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit))
+      )
+      .replace(/\D/g, '')
+      .slice(0, 6);
+
+    input.value = normalized;
+
+    this.otpCode.set(normalized);
+    this.otpForm.controls.code.setValue(normalized);
+  }
+
+  focusOtpInput(): void {
+    this.otpInput()?.nativeElement.focus();
+  }
+
+  private resetOtpInput(): void {
+    this.otpCode.set('');
+    this.resetOtpInput();
+  }
+
+
+
+  
 
 
 }
