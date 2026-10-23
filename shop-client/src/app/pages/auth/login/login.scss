@@ -1,0 +1,13 @@
+
+.auth-form__submit {
+  &:disabled,
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    filter: grayscale(35%);
+    transition:
+      opacity 0.2s ease,
+      filter 0.2s ease;
+  }
+}

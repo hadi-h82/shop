@@ -32,7 +32,7 @@ public sealed class AuthService : IAuthService
         _otpCodeService = otpCodeService;
         _otpMessageSender = otpMessageSender;
         _otpOptions = otpOptions.Value;
-        _otpOptions = otpOptions.Value;
+        _jwtOptions = jwtOptions.Value;
     }
 
     public async Task<RequestOtpResult> RequestOtpAsync(
