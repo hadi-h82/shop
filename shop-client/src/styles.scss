@@ -313,3 +313,14 @@ textarea:-webkit-autofill {
   transition:
     background-color 9999s ease-in-out 0s;
 }
+
+
+
+.mat-mdc-snack-bar-container.shop-toast-overlay {
+  .mdc-snackbar__surface {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    min-width: 0;
+  }
+}

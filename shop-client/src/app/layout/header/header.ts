@@ -20,6 +20,7 @@ import { ThemeService } from '../../core/services/theme/theme';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { ToastService } from '../../core/services/toast/toast.service';
 
 
 
@@ -41,7 +42,7 @@ import { MatDividerModule } from '@angular/material/divider';
 export class Header {
   readonly cart = inject(CartService);
   readonly themeService = inject(ThemeService);
-
+  private readonly toast = inject(ToastService);
   readonly authService = inject(AuthService);
   readonly isLoggingOut = signal(false);
 
@@ -93,6 +94,7 @@ export class Header {
         next: () => {
           this.isLoggingOut.set(false);
           void this.router.navigate(['/']);
+          this.toast.info('با موفقیت از حساب خارج شدید.');
         },
         error: (error) => {
           this.isLoggingOut.set(false);
