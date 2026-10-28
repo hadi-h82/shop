@@ -19,6 +19,13 @@ export interface AdminProductOptionDefinitionResponse {
   isActive: boolean;
 }
 
+export interface AdminProductOptionDefinitionRequest {
+  name: string;
+  slug: string;
+  inputType: ProductOptionInputType;
+  displayOrder: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -41,4 +48,38 @@ export class AdminProductOptionDefinitionService {
       `${this.apiUrl}/${id}`,
     );
   }
+
+
+  create(
+  request: AdminProductOptionDefinitionRequest,
+): Observable<AdminProductOptionDefinitionResponse> {
+  return this.http.post<AdminProductOptionDefinitionResponse>(
+    this.apiUrl,
+    request,
+  );
+}
+
+update(
+  id: number,
+  request: AdminProductOptionDefinitionRequest,
+): Observable<void> {
+  return this.http.put<void>(
+    `${this.apiUrl}/${id}`,
+    request,
+  );
+}
+
+activate(id: number): Observable<void> {
+  return this.http.patch<void>(
+    `${this.apiUrl}/${id}/activate`,
+    {},
+  );
+}
+
+deactivate(id: number): Observable<void> {
+  return this.http.patch<void>(
+    `${this.apiUrl}/${id}/deactivate`,
+    {},
+  );
+}
 }

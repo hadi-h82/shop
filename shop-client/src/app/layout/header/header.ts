@@ -1,7 +1,8 @@
 import {
   Component,
   DestroyRef,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 import {
   ActivatedRoute,
@@ -16,6 +17,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../core/services/cart/cart';
 import { ThemeService } from '../../core/services/theme/theme';
+import { AuthService } from '../../core/services/auth/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { ToastService } from '../../core/services/toast/toast.service';
+
 
 
 
@@ -26,7 +32,9 @@ import { ThemeService } from '../../core/services/theme/theme';
     RouterLinkActive,
     ReactiveFormsModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule,
+    MatDividerModule
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss'
@@ -34,6 +42,10 @@ import { ThemeService } from '../../core/services/theme/theme';
 export class Header {
   readonly cart = inject(CartService);
   readonly themeService = inject(ThemeService);
+  private readonly toast = inject(ToastService);
+  readonly authService = inject(AuthService);
+  readonly isLoggingOut = signal(false);
+
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -66,4 +78,32 @@ export class Header {
 
     this.router.navigate(['/products']);
   }
+
+
+
+  logout(): void {
+    if (this.isLoggingOut()) {
+      return;
+    }
+
+    this.isLoggingOut.set(true);
+
+    this.authService.logout()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isLoggingOut.set(false);
+          void this.router.navigate(['/']);
+          this.toast.info('با موفقیت از حساب خارج شدید.');
+        },
+        error: (error) => {
+          this.isLoggingOut.set(false);
+
+          console.error('Logout request failed', {
+            status: error.status
+          });
+        }
+      });
+  }
+
 }

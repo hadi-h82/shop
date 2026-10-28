@@ -1,97 +1,172 @@
 <section class="auth-page">
   <div class="auth-card">
+
+    @if (otpStep() === 'phone') {
+
     <div class="auth-card__header">
-      <span class="auth-card__eyebrow">حساب کاربری</span>
+      <span class="auth-card__eyebrow">
+        حساب کاربری
+      </span>
+
       <h1>ورود به فروشگاه</h1>
-      <p>برای ادامه، اطلاعات حساب خود را وارد کنید.</p>
+
+      <p>
+        برای ورود یا ثبت‌نام، شماره موبایل خود را وارد کنید.
+      </p>
     </div>
 
-    <form
-      class="auth-form"
-      [formGroup]="loginForm"
-      (ngSubmit)="submit()"
-    >
+    <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="submit()">
+
       <mat-form-field appearance="outline">
-        <mat-label>ایمیل</mat-label>
+        <mat-label>شماره موبایل</mat-label>
 
-        <input
-          matInput
-          type="email"
-          formControlName="email"
-          autocomplete="email"
-        />
+        <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" inputmode="numeric" maxlength="11"
+          placeholder="09123456789" dir="ltr" />
 
-        <mat-icon matSuffix>mail</mat-icon>
+        <mat-icon matSuffix>
+          phone_iphone
+        </mat-icon>
 
         @if (
-          loginForm.controls.email.touched &&
-          loginForm.controls.email.hasError('required')
+        loginForm.controls.phoneNumber.touched &&
+        loginForm.controls.phoneNumber.hasError('required')
         ) {
-          <mat-error>ایمیل را وارد کنید.</mat-error>
+        <mat-error>
+          شماره موبایل را وارد کنید.
+        </mat-error>
         }
 
         @if (
-          loginForm.controls.email.touched &&
-          loginForm.controls.email.hasError('email')
+        loginForm.controls.phoneNumber.touched &&
+        loginForm.controls.phoneNumber.hasError('pattern')
         ) {
-          <mat-error>فرمت ایمیل معتبر نیست.</mat-error>
+        <mat-error>
+          شماره موبایل معتبر نیست.
+        </mat-error>
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>رمز عبور</mat-label>
-
-        <input
-          matInput
-          [type]="hidePassword ? 'password' : 'text'"
-          formControlName="password"
-          autocomplete="current-password"
-        />
-
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          [attr.aria-label]="hidePassword ? 'نمایش رمز عبور' : 'مخفی کردن رمز عبور'"
-          (click)="hidePassword = !hidePassword"
-        >
-          <mat-icon>
-            {{ hidePassword ? 'visibility_off' : 'visibility' }}
-          </mat-icon>
-        </button>
-
-        @if (
-          loginForm.controls.password.touched &&
-          loginForm.controls.password.hasError('required')
-        ) {
-          <mat-error>رمز عبور را وارد کنید.</mat-error>
+      <button mat-flat-button color="primary" type="submit" class="auth-form__submit"
+        [disabled]="loginForm.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+        در حال ارسال...
+        } @else {
+        دریافت کد تأیید
         }
+      </button>
 
-        @if (
-          loginForm.controls.password.touched &&
-          loginForm.controls.password.hasError('minlength')
-        ) {
-          <mat-error>رمز عبور باید حداقل ۶ کاراکتر باشد.</mat-error>
-        }
-      </mat-form-field>
+    </form>
+    }
 
-      <div class="auth-form__links">
-        <a routerLink="/forgot-password">رمز عبور را فراموش کرده‌اید؟</a>
+
+    @if (otpStep() === 'verify') {
+
+    <form class="auth-form auth-form--verify" [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+
+      <!-- شش خانه کد تأیید -->
+      <div class="otp-code-field">
+
+<p class="otp-code-field__title">
+  کد تأیید را وارد کنید
+</p>
+
+
+        <div class="otp-code-field__boxes" dir="ltr" (click)="focusOtpInput()">
+
+          @for (digit of otpDigits(); track $index) {
+          <span class="otp-code-field__box" [class.otp-code-field__box--filled]="!!digit"
+            [class.otp-code-field__box--active]="
+                  otpCode().length === $index &&
+                  otpExpiresInSeconds() > 0
+                ">
+            {{ digit }}
+          </span>
+          }
+
+          <input #otpInput id="otp-code-input" class="otp-code-field__input" type="text" inputmode="numeric"
+            autocomplete="one-time-code" maxlength="6" formControlName="code" (input)="onOtpInput($event)"
+            aria-label="کد تأیید شش رقمی" />
+
+        </div>
+
       </div>
 
-      <button
-        mat-flat-button
-        color="primary"
-        type="submit"
-        class="auth-form__submit"
-      >
-        ورود
-      </button>
-    </form>
 
+      <!-- شماره موبایل کاربر -->
+      <p class="auth-form__hint">
+        کد تأیید برای شماره
+        <bdi dir="ltr" class="auth-form__phone-number">
+          {{ loginForm.controls.phoneNumber.value }}
+        </bdi>
+        ارسال شده است.
+      </p>
+
+
+      <!-- ساعت دایره‌ای -->
+      <div class="auth-form__otp-clock">
+
+        @if (otpExpiresInSeconds() > 0 && otpClockVisible()) {
+        <div class="otp-clock" role="timer" aria-label="زمان اعتبار کد تأیید"
+          [style.animation-duration]="otpTotalSeconds() + 's'">
+          <span class="otp-clock__hand"></span>
+          <span class="otp-clock__center"></span>
+        </div>
+        }
+
+      </div>
+
+
+      <!-- ارسال مجدد بعد از پایان زمان -->
+      <div class="auth-form__resend">
+
+        @if (resendRemainingSeconds() === 0) {
+        <button mat-button type="button" (click)="resendOtp()" [disabled]="isSubmitting()">
+          <mat-icon>refresh</mat-icon>
+
+          @if (isSubmitting()) {
+          در حال ارسال...
+          } @else {
+          ارسال مجدد کد
+          }
+        </button>
+        }
+
+      </div>
+
+
+      <!-- اصلاح شماره موبایل -->
+      <button mat-button type="button" class="auth-form__edit-phone" (click)="backToPhone()"
+        [disabled]="isSubmitting()">
+        <mat-icon>edit</mat-icon>
+        اصلاح شماره موبایل
+      </button>
+
+
+      <!-- تأیید و ورود -->
+      <button mat-flat-button color="primary" type="submit" class="auth-form__submit" [disabled]="
+            otpForm.invalid ||
+            isSubmitting() ||
+            otpExpiresInSeconds() === 0
+          ">
+        @if (isSubmitting()) {
+        در حال بررسی کد...
+        } @else {
+        تأیید و ورود
+        }
+      </button>
+
+    </form>
+    }
+
+
+    @if (otpStep() === 'phone') {
     <div class="auth-card__footer">
       <span>حساب کاربری ندارید؟</span>
-      <a routerLink="/register">ثبت‌نام کنید</a>
+      <a routerLink="/register">
+        ثبت‌نام کنید
+      </a>
     </div>
+    }
+
   </div>
 </section>

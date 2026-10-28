@@ -1,5 +1,4 @@
 <div class="admin-shell">
-
   @if (sidebarOpen()) {
     <button
       type="button"
@@ -9,20 +8,12 @@
     ></button>
   }
 
-  <aside
-    class="admin-sidebar"
-    [class.admin-sidebar--closed]="!sidebarOpen()"
-  >
+  <aside class="admin-sidebar" [class.admin-sidebar--closed]="!sidebarOpen()">
     <div class="admin-sidebar__header">
-
       <div class="admin-sidebar__brand">
-        <span class="admin-sidebar__brand-title">
-          سوارت
-        </span>
+        <span class="admin-sidebar__brand-title"> سوارت </span>
 
-        <span class="admin-sidebar__brand-subtitle">
-          پنل مدیریت
-        </span>
+        <span class="admin-sidebar__brand-subtitle"> پنل مدیریت </span>
       </div>
 
       <button
@@ -33,13 +24,9 @@
       >
         <mat-icon>close</mat-icon>
       </button>
-
     </div>
 
-    <nav
-      class="admin-sidebar__nav"
-      aria-label="منوی مدیریت"
-    >
+    <nav class="admin-sidebar__nav" aria-label="منوی مدیریت">
       <a
         routerLink="/admin"
         routerLinkActive="admin-sidebar__link--active"
@@ -69,6 +56,17 @@
       >
         <mat-icon>category</mat-icon>
         <span>دسته‌بندی‌ها</span>
+      </a>
+
+      <a
+        routerLink="/admin/product-options"
+        routerLinkActive="admin-sidebar__link--active"
+        class="admin-sidebar__link"
+        (click)="closeSidebarOnMobile()"
+      >
+        <mat-icon>tune</mat-icon>
+
+        <span> ویژگی‌های محصول </span>
       </a>
 
       <a
@@ -104,9 +102,7 @@
   </aside>
 
   <section class="admin-main">
-
     <header class="admin-topbar">
-
       <button
         type="button"
         class="admin-topbar__menu"
@@ -116,26 +112,18 @@
         <mat-icon>menu</mat-icon>
       </button>
 
-      <div class="admin-topbar__title">
-        پنل مدیریت فروشگاه
-      </div>
+      <div class="admin-topbar__title">پنل مدیریت فروشگاه</div>
 
       <div class="admin-topbar__actions">
-        <a
-          routerLink="/"
-          class="admin-topbar__store-link"
-        >
+        <a routerLink="/" class="admin-topbar__store-link">
           <mat-icon>storefront</mat-icon>
           <span>مشاهده فروشگاه</span>
         </a>
       </div>
-
     </header>
 
     <main class="admin-content">
       <router-outlet></router-outlet>
     </main>
-
   </section>
-
 </div>
