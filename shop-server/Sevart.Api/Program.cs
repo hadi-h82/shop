@@ -56,17 +56,26 @@ builder.Services.AddSingleton<
     IOtpCodeService,
     OtpCodeService>();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSingleton<
-        IOtpMessageSender,
-        DevelopmentOtpMessageSender>();
-}
-else
-{
-    throw new InvalidOperationException(
-        "A production OTP message sender must be configured.");
-}
+
+builder.Services
+    .AddOptions<MeliPayamakOptions>()
+    .Bind(builder.Configuration.GetSection(
+        MeliPayamakOptions.SectionName))
+    .Validate(
+        options =>
+            !string.IsNullOrWhiteSpace(options.Username) &&
+            !string.IsNullOrWhiteSpace(options.Password) &&
+            options.BodyId > 0,
+        "MeliPayamak configuration is invalid.")
+    .ValidateOnStart();
+
+builder.Services.AddHttpClient<
+    IOtpMessageSender,
+    MeliPayamakOtpMessageSender>(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(15);
+    });
+
 
 builder.Services.AddScoped<
     IAuthService,
